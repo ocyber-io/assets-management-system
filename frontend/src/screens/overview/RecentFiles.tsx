@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
 import fileIcon from "../../assets/icons/file.svg";
@@ -13,32 +13,31 @@ import {
   starredIcon,
   fullLinkIcon,
 } from "../../helpers/dropdownIcons";
-import { files } from "../../helpers/sampleTableData";
 import RecentFilesDropdown from "./RecentFilesDropdown";
 import Pagination from "./Pagination";
+import { File } from "../../Types";
 
 type RecentFilesProps = {
   fullScreenList?: boolean;
   filesPerPage?: number;
-};
-
-type File = {
-  id: number;
-  name: string;
-  lastModified: string;
-  link: string;
-  size: string;
+  files: File[]; // Now expects files as a prop
 };
 
 const RecentFiles: React.FC<RecentFilesProps> = ({
   fullScreenList = false,
   filesPerPage = 10,
+  files,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<number | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
   const [hoveredItemId, setHoveredItemId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    // Reset to first page if filesPerPage changes
+    setCurrentPage(1);
+  }, [filesPerPage]);
 
   const lastFileIndex = currentPage * filesPerPage;
   const firstFileIndex = lastFileIndex - filesPerPage;

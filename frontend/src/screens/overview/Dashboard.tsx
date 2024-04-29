@@ -3,6 +3,7 @@ import OverviewTopBar from "./OverviewTopBar";
 import OverviewStorage from "./OverviewStorage";
 import RecentStorage from "./RecentStorage";
 import RecentFiles from "./RecentFiles";
+import { files } from "../../helpers/sampleTableData";
 
 const Dashboard: React.FC = () => {
   return (
@@ -17,7 +18,7 @@ const Dashboard: React.FC = () => {
         <RecentStorage />
       </div>
       <div>
-        <RecentFiles filesPerPage={6} />
+        <RecentFiles files={files} filesPerPage={6} />
       </div>
     </div>
   );
