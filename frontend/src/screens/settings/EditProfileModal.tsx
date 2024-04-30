@@ -34,7 +34,7 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           <div></div>
         </div>
         <div className="flex flex-col">
-          <label className="text-gray-700 font-semibold">Email</label>
+          <label className="text-gray-700 font-semibold">Emails</label>
           <input
             type="email"
             placeholder="example@email.com"
