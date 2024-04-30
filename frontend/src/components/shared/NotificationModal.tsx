@@ -5,6 +5,8 @@ type NotificationModalProps = {
   isOpen: boolean;
   imageUrl?: string;
   heading?: string;
+  headingStyles?: string;
+  descriptionAndHeadingPosition?: string;
   description?: string;
   onCancel?: () => void;
   onSubmit: () => void;
@@ -14,13 +16,16 @@ type NotificationModalProps = {
   submitButtonStyle?: string;
   submitButtonExtraStyle?: string;
   closeModal: () => void;
+  children?: React.ReactNode; // Allow any valid React node
 };
 
 const NotificationModal: React.FC<NotificationModalProps> = ({
   isOpen,
   imageUrl,
   heading,
+  headingStyles,
   description,
+  descriptionAndHeadingPosition,
   onCancel,
   onSubmit,
   cancelButtonText,
@@ -29,6 +34,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   submitButtonStyle,
   closeModal,
   submitButtonExtraStyle,
+  children,
 }) => {
   if (!isOpen) return null;
 
@@ -43,18 +49,17 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           <FaTimes size={20} />
         </button>
 
-        <div className="text-center">
+        <div className={`${descriptionAndHeadingPosition}`}>
           {imageUrl && (
             <img src={imageUrl} alt="Notification" className="mx-auto" />
           )}
-          {heading && (
-            <h3 className="text-xl text-gray-600 font-extrabold mt-4">
-              {heading}
-            </h3>
-          )}
+          {heading && <h3 className={`${headingStyles}`}>{heading}</h3>}
           {description && (
             <p className="text-gray-600 mt-2 text-sm">{description}</p>
           )}
+
+          {/* Children elements rendered here */}
+          {children}
         </div>
         <div className="flex w-full gap-x-3 mt-6">
           {onCancel && (
