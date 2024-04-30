@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import NewFolderModal from "./shared/NewFolderModal";
+import ReplaceSuccessfullModal from "./shared/ReplaceSuccessfullModal";
 
 const Test: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,8 +7,15 @@ const Test: React.FC = () => {
   const submitHandler = () => {
     console.log("submit");
   };
-  const cancelHandler = () => {
-    console.log("cancel or copy");
+
+  const file = {
+    id: 11,
+    name: "Image.png",
+    lastModified: "2023-04-16",
+    link: "https://example.com/file5",
+    type: "PNG",
+    size: "2.5 MB",
+    tags: ["image", "text"],
   };
 
   return (
@@ -19,12 +26,12 @@ const Test: React.FC = () => {
       >
         Open Rename Modal
       </button>
-      <NewFolderModal
+      <ReplaceSuccessfullModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onSubmit={submitHandler}
-        onCancel={cancelHandler}
-      ></NewFolderModal>
+        fileDetails={file}
+      ></ReplaceSuccessfullModal>
     </div>
   );
 };

@@ -6,6 +6,9 @@ import newMessageIcon from "../assets/icons/share/newMessage.svg";
 import userIcon from "../assets/icons/share/user.svg";
 import copylinkIcon from "../assets/icons/copyLink.svg";
 import viewIcon from "../assets/icons/view.svg";
+import folderAddIcon from "../assets/icons/folder-add.svg";
+import fileUploadIcon from "../assets/icons/file-upload.svg";
+import folderUploadIcon from "../assets/icons/folder-upload.svg";
 
 export {
   canEditIcon,
@@ -16,4 +19,7 @@ export {
   canViewIcon,
   copylinkIcon,
   viewIcon,
+  folderAddIcon,
+  fileUploadIcon,
+  folderUploadIcon,
 };
