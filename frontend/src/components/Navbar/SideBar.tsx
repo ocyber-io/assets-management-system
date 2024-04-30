@@ -7,8 +7,14 @@ import { navSections } from "../../helpers/navItems";
 import AddNewButton from "../AddNewButton";
 import NavLinkItem from "./NavLinkItems";
 
-const SideBar: React.FC<{ setModalOpen: (isOpen: boolean) => void }> = ({
+type AddNewButtonProps = {
+  setModalOpen: (isOpen: boolean) => void;
+  setNewFolderModalOpen: (isOpen: boolean) => void;
+};
+
+const SideBar: React.FC<AddNewButtonProps> = ({
   setModalOpen,
+  setNewFolderModalOpen,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
@@ -64,7 +70,10 @@ const SideBar: React.FC<{ setModalOpen: (isOpen: boolean) => void }> = ({
             </NavLink>
           </div>
           <div className="p-4 border-b">
-            <AddNewButton setModalOpen={setModalOpen} />
+            <AddNewButton
+              setModalOpen={setModalOpen}
+              setNewFolderModalOpen={setNewFolderModalOpen}
+            />
             {/* <TestAddNew setModalOpen={setModalOpen} /> */}
           </div>
           <ul className="flex flex-col">

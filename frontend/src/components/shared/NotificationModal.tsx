@@ -11,12 +11,13 @@ type NotificationModalProps = {
   onCancel?: () => void;
   onSubmit: () => void;
   cancelButtonText: string;
+  cancelButtonIcon?: string;
   submitButtonText: string;
   cancelButtonStyle?: string;
   submitButtonStyle?: string;
   submitButtonExtraStyle?: string;
   closeModal: () => void;
-  children?: React.ReactNode; // Allow any valid React node
+  children?: React.ReactNode;
 };
 
 const NotificationModal: React.FC<NotificationModalProps> = ({
@@ -29,6 +30,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   onCancel,
   onSubmit,
   cancelButtonText,
+  cancelButtonIcon,
   submitButtonText,
   cancelButtonStyle,
   submitButtonStyle,
@@ -64,11 +66,19 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         <div className="flex w-full gap-x-3 mt-6">
           {onCancel && (
             <button
-              className={`w-full py-2 rounded ${
+              className={`w-full py-2 flex justify-center rounded ${
                 cancelButtonStyle || "bg-gray-300 hover:bg-gray-400"
               } text-gray-600`}
               onClick={onCancel}
             >
+              {cancelButtonIcon && (
+                <img
+                  src={cancelButtonIcon}
+                  alt="Cancel"
+                  className="mr-2 w-5 h-5 mt-0.5"
+                />
+              )}
+
               {cancelButtonText}
             </button>
           )}

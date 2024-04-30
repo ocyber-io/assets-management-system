@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import editProfileImage from "../../assets/images/edit-profile.svg";
 import editUserImage from "../../assets/icons/editUsers.svg";
 import EditProfileModal from "./EditProfileModal";
+import Breadcrumbs from "../../components/Breadcrumbs";
 
 const Profile: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -11,6 +12,8 @@ const Profile: React.FC = () => {
 
   return (
     <>
+      <Breadcrumbs />
+
       <h1 className="text-xl font-semibold w-full text-center sm:text-left sm:w-auto md:ml-4">
         Profile
       </h1>

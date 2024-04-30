@@ -142,37 +142,35 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
           />
         </div>
 
-        {tags.length > 0 && (
-          <div className="mb-4 mt-1">
-            <label htmlFor="tags" className="font-semibold text-lg mb-1">
-              Tags
-            </label>
-            <div className="border-2 border-gray-200 mt-1 rounded-md px-2 py-1 flex flex-wrap items-center">
-              {tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="flex items-center bg-white shadow pl-3 pr-1 py-1 rounded text-sm font-semibold text-gray-700 mr-2"
+        <div className="mb-4 mt-1">
+          <label htmlFor="tags" className="font-semibold text-lg mb-1">
+            Tags
+          </label>
+          <div className="border-2 border-gray-200 mt-1 rounded-md px-2 py-1 flex flex-wrap items-center">
+            {tags.map((tag, index) => (
+              <span
+                key={index}
+                className="flex items-center bg-white shadow pl-3 pr-1 py-1 rounded text-sm font-semibold text-gray-700 mr-2"
+              >
+                {tag}
+                <button
+                  onClick={() => removeTag(index)}
+                  className="ml-2 text-gray-400 hover:text-gray-700"
                 >
-                  {tag}
-                  <button
-                    onClick={() => removeTag(index)}
-                    className="ml-2 text-gray-400 hover:text-gray-700"
-                  >
-                    &times;
-                  </button>
-                </span>
-              ))}
-              <input
-                type="text"
-                placeholder={tags.length === 0 ? "Add tags" : ""}
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="flex-1 min-w-[100px] pr-8 py-1 rounded-md focus:outline-none"
-              />
-            </div>
+                  &times;
+                </button>
+              </span>
+            ))}
+            <input
+              type="text"
+              placeholder={tags.length === 0 ? "Add tags" : ""}
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 min-w-[100px] pr-8 py-1 rounded-md focus:outline-none"
+            />
           </div>
-        )}
+        </div>
 
         {file && uploadProgress < 100 && renderFileSection()}
 
