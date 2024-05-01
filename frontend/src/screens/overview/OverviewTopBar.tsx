@@ -12,7 +12,7 @@ const OverviewTopBar: React.FC<OverviewTopBarProps> = ({ heading }) => {
   return (
     <div className="mt-2 px-6 py-4 flex justify-between flex-col md:flex-row items-center w-full">
       {heading && (
-        <h1 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 md:mb-0">
+        <h1 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 md:mb-0 md:block hidden">
           {heading}
         </h1>
       )}

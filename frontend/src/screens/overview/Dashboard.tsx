@@ -9,7 +9,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="bg-white rounded-lg md:border-2 md:border-gray-200 mt-2">
       <div>
-        <OverviewTopBar />
+        <OverviewTopBar heading="Overview" />
       </div>
       <div>
         <OverviewStorage />

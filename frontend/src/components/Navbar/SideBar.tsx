@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CgClose, CgMenuRight } from "react-icons/cg";
+import { CgClose } from "react-icons/cg";
 import { RxCross2 } from "react-icons/rx";
 import { NavLink } from "react-router-dom";
+import BurgerMenu from "../../assets/icons/burger-menu.svg";
 import logo from "../../assets/logo.svg";
 import { navSections } from "../../helpers/navItems";
 import AddNewButton from "../AddNewButton";
 import NavLinkItem from "./NavLinkItems";
-import BurgerMenu from "../../assets/icons/burger-menu.svg";
 
 type AddNewButtonProps = {
   setModalOpen: (isOpen: boolean) => void;
@@ -36,7 +36,7 @@ const SideBar: React.FC<AddNewButtonProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [sidebarRef]);
+  }, []);
 
   return (
     <>
@@ -54,6 +54,13 @@ const SideBar: React.FC<AddNewButtonProps> = ({
           )}
         </button>
       </div>
+
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={toggleSidebar}
+        ></div>
+      )}
 
       <div
         ref={sidebarRef}
@@ -78,7 +85,6 @@ const SideBar: React.FC<AddNewButtonProps> = ({
               setModalOpen={setModalOpen}
               setNewFolderModalOpen={setNewFolderModalOpen}
             />
-            {/* <TestAddNew setModalOpen={setModalOpen} /> */}
           </div>
           <ul className="flex flex-col">
             {navSections.map((section, index) => (

@@ -7,6 +7,11 @@ import {
   organizeIcon,
   replaceIcon,
   starredIcon,
+  shareIcon,
+  movetobinIcon,
+  copylinkIcon,
+  downloadIcon,
+  renameIcon,
 } from "../../../helpers/dropdownIcons";
 
 // Define an interface for submenu items
@@ -34,7 +39,28 @@ const subItems: MenuItem[] = [
     key: "replace",
     label: "Replace",
     icon: replaceIcon,
-    subItems: [], // No sub-items for replace in the provided example
+    subItems: [],
+  },
+  {
+    key: "download",
+    label: "Download",
+    icon: downloadIcon,
+    subItems: [],
+  },
+  {
+    key: "rename",
+    label: "Rename",
+    icon: renameIcon,
+    subItems: [],
+  },
+  {
+    key: "share",
+    label: "Share",
+    icon: organizeIcon,
+    subItems: [
+      { label: "Share", icon: shareIcon },
+      { label: "Copy Link", icon: copylinkIcon },
+    ],
   },
   {
     key: "organize",
@@ -47,12 +73,18 @@ const subItems: MenuItem[] = [
   },
   {
     key: "fileInfo",
-    label: "File Information",
+    label: "File information",
     icon: fileinformationIcon,
     subItems: [
       { label: "Details", icon: fileinformationIcon },
       { label: "Lock", icon: lockIcon },
     ],
+  },
+  {
+    key: "trash",
+    label: "Move to bin",
+    icon: movetobinIcon,
+    subItems: [],
   },
 ];
 
@@ -69,8 +101,8 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        toggleDropdown(); // Close the main dropdown
-        setOpenSubMenu(null); // Reset the submenu state
+        toggleDropdown();
+        setOpenSubMenu(null);
       }
     };
 
@@ -92,45 +124,52 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
   return (
     <div ref={dropdownRef} className="relative">
       <div
-        className={`absolute z-10 ${
+        className={`absolute z-50 ${
           isOpen ? "block" : "hidden"
         } divide-y divide-gray-100 rounded-md bg-white border-2 border-gray-200 shadow w-44 dark:bg-gray-700`}
         style={{
-          top: "0px",
+          bottom: "18px",
           right: "10px",
         }}
       >
         <ul className="py-2 text-sm text-gray-700 text-left dark:text-gray-200">
-          {subItems.map((menu: MenuItem) => (
-            <li className="relative" key={menu.key}>
-              <button
-                className={`w-full text-left flex justify-left items-center px-4 py-2 ${
-                  openSubMenu === menu.key ? "bg-blue-50" : "hover:bg-blue-50"
-                } dark:hover:bg-gray-600 dark:hover:text-white`}
-                onClick={() => toggleSubMenu(menu.key)}
-              >
-                <img src={menu.icon} alt="" className="mr-2" />
-                {menu.label}
-                {menu.subItems.length > 0 && (
-                  <MdKeyboardArrowRight className="ml-auto h-6 w-4 mt-0.5" />
+          {subItems.map((menu: MenuItem, index) => (
+            <>
+              <li className="relative" key={menu.key}>
+                <button
+                  className={`w-full text-left flex justify-left items-center px-4 py-2 ${
+                    openSubMenu === menu.key ? "bg-blue-50" : "hover:bg-blue-50"
+                  } dark:hover:bg-gray-600 dark:hover:text-white`}
+                  onClick={() => toggleSubMenu(menu.key)}
+                >
+                  <img src={menu.icon} alt="" className="mr-2" />
+                  {menu.label}
+                  {menu.subItems.length > 0 && (
+                    <MdKeyboardArrowRight className="ml-auto h-6 w-4 mt-0.5" />
+                  )}
+                </button>
+                {openSubMenu === menu.key && (
+                  <ul className="absolute right-full top-0 mt-0 mr-1 bg-white rounded-md shadow-lg w-40 z-20">
+                    {menu.subItems.map((subItem: SubMenuItem) => (
+                      <li key={subItem.label}>
+                        <a
+                          href="#"
+                          className="flex px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
+                        >
+                          <img src={subItem.icon} alt="" className="mr-2" />
+                          {subItem.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 )}
-              </button>
-              {openSubMenu === menu.key && (
-                <ul className="absolute right-full top-0 mt-0 mr-1 bg-white rounded-md shadow-lg w-40 z-20">
-                  {menu.subItems.map((subItem: SubMenuItem) => (
-                    <li key={subItem.label}>
-                      <a
-                        href="#"
-                        className="flex px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        <img src={subItem.icon} alt="" className="mr-2" />
-                        {subItem.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+              </li>
+              {["replace", "rename", "fileInfo"].includes(menu.key) && (
+                <li>
+                  <div className="border-t border-gray-200"></div>
+                </li>
               )}
-            </li>
+            </>
           ))}
         </ul>
       </div>

@@ -44,13 +44,13 @@ const FilesTable: React.FC<FilesTableProps> = ({
       <thead>
         <tr className="bg-transparent border-b-2">
           <th className="py-2 md:px-4 px-1   border-gray-300"></th>
-          <th className="py-2 md:px-4 px-1 md:w-full w-32 border-gray-300">
+          <th className="py-2 md:px-4 px-1 md:w-48 w-32 border-gray-300">
             Name
           </th>
           <th className="py-2 md:px-4 px-1   border-gray-300 md:block hidden">
             Last Modified
           </th>
-          <th className="py-2 md:px-4 px-1 md:w-full w-32 ml-4 border-gray-300">
+          <th className="py-2 md:px-4 px-1 md:w-48 w-32 ml-4 border-gray-300">
             Link
           </th>
           <th className="py-2 md:px-4 px-1   border-gray-300 md:block hidden">
