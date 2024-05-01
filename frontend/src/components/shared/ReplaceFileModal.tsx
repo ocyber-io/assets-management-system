@@ -1,17 +1,27 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
-import crossIcon from "../assets/icons/cross.svg";
-import fileUploadIcon from "../assets/icons/fileUpload.svg";
-import modalUploadIcon from "../assets/icons/modalUpload.svg";
+import modalUploadIcon from "../../assets/icons/modalUpload.svg";
+import replaceFileImage from "../../assets/images/replace-file.svg";
+import NotificationModal from "./NotificationModal";
+import crossIcon from "../../assets/icons/cross.svg";
+import fileUploadIcon from "../../assets/icons/fileUpload.svg";
 
-type FileUploadModalProps = {
+import { File } from "../../Types";
+
+type ReplaceFileProps = {
   isOpen: boolean;
-  closeModal: () => void;
+  onClose: () => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+  fileDetails: File;
 };
 
-const FileUploadModal: React.FC<FileUploadModalProps> = ({
+const ReplaceFileModal: React.FC<ReplaceFileProps> = ({
   isOpen,
-  closeModal,
+  onClose,
+  onSubmit,
+  onCancel,
+  fileDetails,
 }) => {
   const [fileDescription, setFileDescription] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
@@ -20,17 +30,17 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
   const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (acceptedFiles: File[]) => {
-      setFile(acceptedFiles[0]);
-      simulateFileUpload(acceptedFiles[0]);
+    onDrop: (acceptedFiles: any[]) => {
+      const newFile = acceptedFiles[0];
+      setFile(newFile);
+      simulateFileUpload(newFile);
     },
   });
 
   const simulateFileUpload = (file: File) => {
-    const fileSize = file.size;
+    const fileSize: any = file.size;
     let uploaded = 0;
     const chunkSize = fileSize / 100;
-
     const interval = setInterval(() => {
       uploaded += chunkSize;
       setUploadProgress((uploaded / fileSize) * 100);
@@ -40,10 +50,10 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
     }, 50);
   };
 
-  const handleFileUpload = () => {
-    console.log(file); // Implement actual file upload logic here
-    alert("File upload functionality not implemented.");
-  };
+  //   const handleFileUpload = () => {
+  //     console.log(file);
+  //     alert("File upload functionality not implemented.");
+  //   };
 
   const removeFile = () => {
     setFile(null);
@@ -77,7 +87,7 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
           <div>
             <p className="ml-2">{file.name}</p>
             <p className="text-sm text-gray-500 ml-2">
-              {(file.size / 1024).toFixed(2)} KB
+              {(parseInt(file.size) / 1024).toFixed(2)} KB
             </p>
           </div>
         </div>
@@ -101,21 +111,52 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h3 className="font-semibold text-xl mb-4">Upload New File</h3>
+    <div>
+      <NotificationModal
+        heading="Replace File"
+        headingStyles="font-semibold text-xl"
+        closeModal={onClose}
+        submitButtonText="Replace File"
+        submitButtonStyle="bg-blue-500 hover:bg-blue-600"
+        cancelButtonStyle="bg-transparent border-2 border-gray-200 hover:bg-blue-50"
+        cancelButtonText="Cancel"
+        isOpen={isOpen}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      >
+        <div className="mt-5">
+          <h1 className="font-medium">Old File</h1>
+          <div className="flex mt-3">
+            <div className="p-1 border-2 border-gray-200 rounded">
+              <img src={replaceFileImage} alt="Old file" />
+            </div>
+            <div className="py-2 pl-3">
+              <p>
+                File Name: <span>{fileDetails.name}</span>
+              </p>
+              <p>
+                File Type: <span>{fileDetails.type}</span>
+              </p>
+              <p>
+                File Size:{" "}
+                <span className="text-gray-400">{fileDetails.size}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <h1 className="mt-6 mb-4 font-medium">Upload new file</h1>
         <div
           {...getRootProps()}
           className={`border-2 border-dashed bg-blue-50 ${
-            isDragActive ? "border-blue-500 border-dashed" : "border-blue-500"
+            isDragActive ? "border-blue-500" : "border-gray-300"
           } rounded-md px-4 py-10 text-center mb-4 cursor-pointer`}
         >
+          <input {...getInputProps()} />
           <div className="w-full justify-center flex mb-6">
             <div className="p-2 bg-white rounded-full">
-              <img src={modalUploadIcon} />
+              <img src={modalUploadIcon} alt="Upload icon" />
             </div>
           </div>
-          <input {...getInputProps()} />
           {isDragActive ? (
             <p className="text-blue-500">Drop the file here...</p>
           ) : (
@@ -159,6 +200,7 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
                 >
                   &times;
                 </button>
+                {tag}
               </span>
             ))}
             <input
@@ -170,27 +212,11 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
               className="flex-1 min-w-[100px] pr-8 py-1 rounded-md focus:outline-none"
             />
           </div>
+          {file && uploadProgress < 100 && renderFileSection()}
         </div>
-
-        {file && uploadProgress < 100 && renderFileSection()}
-
-        <div className="flex items-center w-full justify-between space-x-4">
-          <button
-            className="text-gray-500 border-2 border-gray-200 w-full hover:bg-gray-50 font-semibold py-2 px-4 rounded transition duration-150 ease-in-out"
-            onClick={closeModal}
-          >
-            Close
-          </button>
-          <button
-            className="bg-blue-500 w-full hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
-            onClick={handleFileUpload}
-          >
-            Import
-          </button>
-        </div>
-      </div>
+      </NotificationModal>
     </div>
   );
 };
 
-export default FileUploadModal;
+export default ReplaceFileModal;

@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import NotificationModal from "./NotificationModal"; // Adjust path if needed
+import React from "react";
 import deleteImage from "../../assets/images/delete-modal.svg"; // Correctly import delete image
+import NotificationModal from "./NotificationModal"; // Adjust path if needed
 
 type DeleteModalProps = {
   heading?: string;
   description?: string;
   onSubmit: () => void;
   submitButtonText: string;
+  onClose: () => void;
+  isOpen: boolean;
 };
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
@@ -14,16 +16,12 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   description = "Do you really want to delete this item? This process cannot be undone.",
   onSubmit,
   submitButtonText,
+  onClose,
+  isOpen,
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
   const handleDismiss = () => {
     console.log("Deletion cancelled");
-    closeModal();
+    onClose();
   };
 
   return (
@@ -41,7 +39,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       cancelButtonStyle="bg-white border border-gray-200 hover:bg-gray-50"
       submitButtonStyle="hover:bg-red-600"
       submitButtonExtraStyle="#FF6B50"
-      closeModal={closeModal}
+      closeModal={onClose}
     />
   );
 };

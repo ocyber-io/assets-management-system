@@ -31,7 +31,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <nav className="mt-4 flex justify-end md:mr-10">
+    <nav className="mt-4 flex justify-end">
       <ul className="list-none flex items-center">
         {/* Previous Page Button */}
         <li>

@@ -1,12 +1,20 @@
 import React, { MouseEvent, useEffect, useRef, useState } from "react";
-import { BsFolderPlus } from "react-icons/bs";
-import { LuFilePlus2 } from "react-icons/lu";
-import { MdDriveFolderUpload } from "react-icons/md";
 import plusIcon from "../assets/icons/plus.svg";
 import plusHoverIcon from "../assets/icons/plusHover.svg";
+import {
+  folderAddIcon,
+  folderUploadIcon,
+  fileUploadIcon,
+} from "../helpers/icons";
 
-const AddNewButton: React.FC<{ setModalOpen: (isOpen: boolean) => void }> = ({
+type AddNewButtonProps = {
+  setModalOpen: (isOpen: boolean) => void;
+  setNewFolderModalOpen: (isOpen: boolean) => void;
+};
+
+const AddNewButton: React.FC<AddNewButtonProps> = ({
   setModalOpen,
+  setNewFolderModalOpen,
 }) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -52,13 +60,16 @@ const AddNewButton: React.FC<{ setModalOpen: (isOpen: boolean) => void }> = ({
 
         {showDropdown && (
           <div className="origin-top-right absolute left-6 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-            <a
-              href="#"
-              className="flex px-4 py-2 my-2 text-sm font-semibold text-gray-700 hover:bg-blue-100"
+            <button
+              className="flex w-full px-4 py-2 my-2 text-sm font-semibold text-gray-700 hover:bg-blue-100"
+              onClick={() => {
+                setNewFolderModalOpen(true);
+                setShowDropdown(false);
+              }}
             >
-              <BsFolderPlus className="mr-2 mt-0.5 h-4 w-4" />
+              <img src={folderAddIcon} className="mr-2 mt-0.5" />
               Folder
-            </a>
+            </button>
             <div className="border-b"></div>
             <button
               className="px-4 py-2 my-2 text-sm flex text-gray-700 font-semibold hover:bg-blue-100 w-full text-left"
@@ -67,13 +78,13 @@ const AddNewButton: React.FC<{ setModalOpen: (isOpen: boolean) => void }> = ({
                 setShowDropdown(false);
               }}
             >
-              <LuFilePlus2 className="mr-2 mt-0.5 h-4 w-4" /> Files Upload
+              <img src={fileUploadIcon} className="mr-2 mt-0.5" /> Files Upload
             </button>
             <a
               href="#"
               className="flex px-4 py-2 my-2 text-sm font-semibold text-gray-700 hover:bg-blue-100"
             >
-              <MdDriveFolderUpload className="mr-2 mt-0.5 h-4 w-4" />
+              <img src={folderUploadIcon} className="mr-2" />
               Folder Upload
             </a>
           </div>

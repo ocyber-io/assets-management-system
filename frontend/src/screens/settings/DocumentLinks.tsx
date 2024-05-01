@@ -1,10 +1,16 @@
 import React from "react";
+import OverviewTopBar from "../overview/OverviewTopBar";
+import Breadcrumbs from "../../components/Breadcrumbs";
+import RecentFiles from "../overview/RecentFiles";
+import { files } from "../../helpers/sampleTableData";
 
 const DocumentLinks: React.FC = () => {
   return (
-    <div>
-      <h1>Document Links</h1>
-    </div>
+    <>
+      <Breadcrumbs fromDocumentLinks={true} />
+      <OverviewTopBar heading="Document Links" />
+      <RecentFiles files={files} />
+    </>
   );
 };
 

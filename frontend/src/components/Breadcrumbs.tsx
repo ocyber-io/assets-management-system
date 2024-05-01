@@ -5,11 +5,17 @@ import profileIcon from "../assets/icons/settings/profile.svg";
 import documentLinksIcon from "../assets/icons/settings/documentLink.svg";
 import arrowLeftIcon from "../assets/icons/arrow-left.svg";
 
-interface IconMap {
+type IconMap = {
   [key: string]: string;
-}
+};
 
-const Breadcrumbs: React.FC = () => {
+type BreadcrumbPropTypes = {
+  fromDocumentLinks?: boolean;
+};
+
+const Breadcrumbs: React.FC<BreadcrumbPropTypes> = ({
+  fromDocumentLinks = false,
+}: BreadcrumbPropTypes) => {
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
 
@@ -29,7 +35,9 @@ const Breadcrumbs: React.FC = () => {
   return (
     <nav
       aria-label="breadcrumb"
-      className="my-4 mt-6 ml-4 bg-blue-50 p-2 rounded-lg"
+      className={`${
+        fromDocumentLinks ? " mt-4" : "my-4"
+      } mt-6 ml-4 bg-blue-50 p-2 rounded-lg`}
     >
       <ol className="list-none p-0 inline-flex items-center md:px-3">
         {pathnames.map((value, index) => {

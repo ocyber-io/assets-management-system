@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import NotificationModal from "./NotificationModal"; // Ensure correct path to NotificationModal
+import React from "react";
 import warningImage from "../../assets/images/warning-modal.svg";
+import NotificationModal from "./NotificationModal"; // Ensure correct path to NotificationModal
 
 type WarningModalProps = {
   heading?: string;
   description?: string;
   onSubmit: () => void;
   submitButtonText: string;
+  onClose: () => void;
+  isOpen: boolean;
 };
 
 const WarningModal: React.FC<WarningModalProps> = ({
@@ -14,16 +16,12 @@ const WarningModal: React.FC<WarningModalProps> = ({
   description = "There is something that needs your attention. Please take action or dismiss this warning.",
   onSubmit,
   submitButtonText,
+  onClose,
+  isOpen,
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
   const handleDismiss = () => {
     console.log("Warning dismissed");
-    closeModal();
+    onClose();
   };
 
   return (
@@ -40,7 +38,7 @@ const WarningModal: React.FC<WarningModalProps> = ({
       submitButtonText={submitButtonText}
       cancelButtonStyle="bg-white border border-gray-200 hover:bg-gray-50"
       submitButtonStyle="bg-blue-500 hover:bg-blue-600"
-      closeModal={closeModal}
+      closeModal={onClose}
     />
   );
 };
