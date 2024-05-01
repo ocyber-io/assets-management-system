@@ -6,6 +6,7 @@ import logo from "../../assets/logo.svg";
 import { navSections } from "../../helpers/navItems";
 import AddNewButton from "../AddNewButton";
 import NavLinkItem from "./NavLinkItems";
+import BurgerMenu from "../../assets/icons/burger-menu.svg";
 
 type AddNewButtonProps = {
   setModalOpen: (isOpen: boolean) => void;
@@ -39,18 +40,21 @@ const SideBar: React.FC<AddNewButtonProps> = ({
 
   return (
     <>
-      <button
-        className="text-4xl md:mt-6 mt-2.5 px-1 md:hidden"
-        onClick={toggleSidebar}
-      >
-        {isOpen ? (
-          <CgClose />
-        ) : (
-          <div className="bg-white ml-3 p-1.5 rounded-lg">
-            <CgMenuRight className="text-gray-600 z-50 " />
-          </div>
-        )}
-      </button>
+      <div className="ml-2 w-full">
+        <button
+          className="text-4xl md:mt-6 mt-2.5 md:hidden"
+          onClick={toggleSidebar}
+        >
+          {isOpen ? (
+            <CgClose />
+          ) : (
+            <div className="bg-white p-1.5 rounded-lg">
+              <img src={BurgerMenu} className="text-gray-600 z-50" />
+            </div>
+          )}
+        </button>
+      </div>
+
       <div
         ref={sidebarRef}
         className={`fixed inset-y-0 left-0 w-64 transform ${

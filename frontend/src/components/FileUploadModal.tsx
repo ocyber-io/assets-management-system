@@ -69,8 +69,8 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
     if (!file) return null;
 
     return (
-      <div className="flex justify-between flex-col md:flex-row items-center p-2 mb-4 bg-white border-2 border-gray-200 rounded">
-        <div className="flex items-center">
+      <div className="flex justify-start flex-col w-full  md:flex-row items-center p-2 mb-4 bg-white border-2 border-gray-200 rounded">
+        <div className="flex justify-start w-full">
           <div className="p-2 bg-blue-50 rounded-md">
             <img src={fileUploadIcon} alt="File Icon" />
           </div>
@@ -81,8 +81,8 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
             </p>
           </div>
         </div>
-        <div className="flex items-center">
-          <div className="w-36 flex mr-2 items-center rounded overflow-hidden">
+        <div className="flex md:justify-end items-start justify-start md:mt-0 mt-2 w-full">
+          <div className="md:w-36 w-80 flex mr-2 items-center rounded overflow-hidden">
             <div
               className="bg-blue-500 h-2 rounded"
               style={{ width: `${uploadProgress}%` }}
@@ -93,7 +93,7 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
             onClick={removeFile}
             style={{ border: "none", background: "transparent" }}
           >
-            <img src={crossIcon} alt="Remove" />
+            <img src={crossIcon} className="md:mt-0 mt-0.5" alt="Remove" />
           </button>
         </div>
       </div>

@@ -17,3 +17,9 @@ body {
     scrollbar-width: none; /* Firefox */
   }
 }
+
+@media (max-width: 768px) {
+  .responsive-hide {
+    display: none;
+  }
+}

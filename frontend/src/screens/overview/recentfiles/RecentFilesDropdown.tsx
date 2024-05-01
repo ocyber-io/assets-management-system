@@ -7,7 +7,7 @@ import {
   organizeIcon,
   replaceIcon,
   starredIcon,
-} from "../../helpers/dropdownIcons";
+} from "../../../helpers/dropdownIcons";
 
 // Define an interface for submenu items
 type SubMenuItem = {
