@@ -18,7 +18,7 @@ const Dashboard: React.FC = () => {
         <RecentStorage />
       </div>
       <div>
-        <h2 className="text-2xl ml-3 font-bold my-4">Recent Files</h2>
+        <h2 className="text-2xl ml-3 md:ml-8 font-bold my-4">Recent Files</h2>
 
         <RecentFiles files={files} filesPerPage={6} />
       </div>

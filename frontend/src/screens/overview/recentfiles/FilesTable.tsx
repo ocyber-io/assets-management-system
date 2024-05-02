@@ -50,16 +50,16 @@ const FilesTable: React.FC<FilesTableProps> = ({
       <thead>
         <tr className="bg-transparent border-b-2">
           <th className="py-2 md:px-4 px-1   border-gray-300"></th>
-          <th className="py-2 md:px-4 px-1 md:w-48 w-32 border-gray-300">
+          <th className="py-2 md:px-4 px-1 xl:w-72 md:w-48 w-32 border-gray-300">
             Name
           </th>
-          <th className="py-2 md:px-4 px-1 border-gray-300 md:block hidden">
+          <th className="py-2 md:px-4 px-1 md:whitespace-nowrap border-gray-300 md:block hidden">
             Last Modified
           </th>
           <th className="py-2 md:px-4 px-1 md:w-48 w-32 ml-4 border-gray-300">
             Link
           </th>
-          <th className="py-2 md:px-4 px-1   border-gray-300 md:block hidden">
+          <th className="py-2 md:px-4 px-1 md:whitespace-nowrap  border-gray-300 md:block hidden">
             File Size
           </th>
           <th className="py-2 md:px-4 px-1   border-gray-300 text-center"></th>
@@ -105,7 +105,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
                 onMouseLeave={() => setHoverLinkId(null)}
                 onClick={() => setHoverLinkId(file.id)}
               >
-                <a className="text-blue-500 hover:text-blue-600 cursor-pointer max-w-xs break-words md:w-full w-32">
+                <a className="text-blue-500 hover:text-blue-600 cursor-pointer max-w-xs break-words md:w-48 w-32">
                   {file.link}
                 </a>
                 {hoverLinkId === file.id && (
