@@ -53,7 +53,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
           <th className="py-2 md:px-4 px-1 md:w-48 w-32 border-gray-300">
             Name
           </th>
-          <th className="py-2 md:px-4 px-1   border-gray-300 md:block hidden">
+          <th className="py-2 md:px-4 px-1 border-gray-300 md:block hidden">
             Last Modified
           </th>
           <th className="py-2 md:px-4 px-1 md:w-48 w-32 ml-4 border-gray-300">
@@ -139,7 +139,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
             <td className="md:px-4 px-1 py-3 md:block hidden">{file.size}</td>
             <td className="md:pr-4 pr-1 py-3 text-center relative">
               <div className="flex justify-end">
-                <div className="hidden md:block">
+                <div className="hidden lg:block">
                   <HoverOptions
                     file={file}
                     hoveredItemId={hoveredItemId}
