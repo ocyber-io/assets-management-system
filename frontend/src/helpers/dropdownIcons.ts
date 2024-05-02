@@ -12,6 +12,7 @@ import copylinkIcon from "../assets/icons/dropdown/copylink.svg";
 import disableIcon from "../assets/icons/dropdown/disable.svg";
 import moreIcon from "../assets/icons/dropdown/more.svg";
 import fullLinkIcon from "../assets/icons/fullLink.svg";
+import selectAllIcon from "../assets/icons/selectAll.svg";
 
 export {
   replaceIcon,
@@ -28,4 +29,5 @@ export {
   disableIcon,
   moreIcon,
   fullLinkIcon,
+  selectAllIcon,
 };

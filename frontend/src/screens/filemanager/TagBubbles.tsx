@@ -14,7 +14,7 @@ const TagBubbles: React.FC<TagBubblesProps> = ({ tags }) => {
 
   useEffect(() => {
     if (dimensions) {
-      const visibleCount = Math.floor(dimensions.width / 100); // Assuming each tag width of 120px
+      const visibleCount = Math.floor(dimensions.width / 110); // Assuming each tag width of 120px
       setTagsToShow(visibleCount);
     }
   }, [dimensions]);

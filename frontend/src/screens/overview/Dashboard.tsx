@@ -7,7 +7,7 @@ import { files } from "../../helpers/sampleTableData";
 
 const Dashboard: React.FC = () => {
   return (
-    <div className="bg-white rounded-lg border-2 border-gray-200 mt-2">
+    <div className="bg-white rounded-lg md:border-2 md:border-gray-200 mt-2">
       <div>
         <OverviewTopBar heading="Overview" />
       </div>
@@ -18,6 +18,8 @@ const Dashboard: React.FC = () => {
         <RecentStorage />
       </div>
       <div>
+        <h2 className="text-2xl ml-3 md:ml-8 font-bold my-4">Recent Files</h2>
+
         <RecentFiles files={files} filesPerPage={6} />
       </div>
     </div>

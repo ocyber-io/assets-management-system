@@ -1,0 +1,133 @@
+import { File } from "../Types";
+
+const sampleTags = [
+  "Finance",
+  "Marketing",
+  "HR",
+  "Project",
+  "Confidential",
+  "Public",
+  "Finankol",
+  "Markisidei",
+  "Kurksi",
+  "NMcnsue",
+  "Sakhat-Secret",
+  "What",
+  "Poeiure",
+  "Jdurs",
+  "MR",
+  "Csduir",
+  "When",
+];
+
+const getRandomTags = () => {
+  const shuffled = sampleTags.sort(() => 0.5 - Math.random()); // Shuffle array
+  return shuffled.slice(0, Math.floor(Math.random() * shuffled.length + 1)); // Get sub-array of tags
+};
+
+export const files: File[] = [
+  {
+    id: 1,
+    name: "Report and Other Stuff.pdf",
+    lastModified: "2023-04-20",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file1",
+    size: "1.5 MB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 2,
+    name: "Budget.xlsx",
+    lastModified: "2023-04-19",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file2",
+    size: "200 KB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 3,
+    name: "Present.pptx",
+    lastModified: "2023-04-18",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file3",
+    size: "3.2 MB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 4,
+    name: "Document.docx",
+    lastModified: "2023-04-17",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file4",
+    size: "4.5 MB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 5,
+    name: "Image.png",
+    lastModified: "2023-04-16",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file5",
+    size: "2.5 MB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 6,
+    name: "Notes.txt",
+    lastModified: "2023-04-15",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file6",
+    size: "750 KB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 7,
+    name: "Report.pdf",
+    lastModified: "2023-04-20",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file1",
+    size: "1.5 MB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 8,
+    name: "Budget.xlsx",
+    lastModified: "2023-04-19",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file2",
+    size: "200 KB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 9,
+    name: "Presentation.pptx",
+    lastModified: "2023-04-18",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file3",
+    size: "3.2 MB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 10,
+    name: "Document.docx",
+    lastModified: "2023-04-17",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file4",
+    size: "4.5 MB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 11,
+    name: "Image.png",
+    lastModified: "2023-04-16",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file5",
+    size: "2.5 MB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 12,
+    name: "Notes.txt",
+    lastModified: "2023-04-15",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file6",
+    size: "750 KB",
+    tags: getRandomTags(),
+  },
+  {
+    id: 12,
+    name: "Notes.txt",
+    lastModified: "2023-04-15",
+    link: "https://www.google.com/maps/dir/33.5724341,73.1467615//@33.4819547,72.8142909,9z/data=!4m5!4m4!1m1!4e1!1m0!3e0?entry=ttu/file6",
+    size: "750 KB",
+    tags: getRandomTags(),
+  },
+];

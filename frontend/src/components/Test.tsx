@@ -1,38 +1,54 @@
 import React, { useState } from "react";
-import ReplaceSuccessfullModal from "./shared/ReplaceSuccessfullModal";
+import ReplaceFileModal from "./shared/ReplaceFileModal";
+import ReplaceSuccessfullModal from "./shared/ReplaceSuccessfullModal"; // Adjust the path as needed
+import { files } from "../helpers/sampleTableData";
 
-const Test: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const Test = () => {
+  const [isReplaceModalOpen, setIsReplaceModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [fileDetails, setFileDetails] = useState(files[0]);
 
-  const submitHandler = () => {
-    console.log("submit");
+  const toggleReplaceModal = () => {
+    setIsReplaceModalOpen(!isReplaceModalOpen);
   };
 
-  const file = {
-    id: 11,
-    name: "Image.png",
-    lastModified: "2023-04-16",
-    link: "https://example.com/file5",
-    type: "PNG",
-    size: "2.5 MB",
-    tags: ["image", "text"],
+  const handleSubmit = () => {
+    console.log("Submit new file details");
+    toggleReplaceModal();
+    toggleSuccessModal();
+  };
+
+  const handleCancelReplace = () => {
+    console.log("Cancelled");
+    toggleReplaceModal();
+  };
+
+  const toggleSuccessModal = () => {
+    setIsSuccessModalOpen(!isSuccessModalOpen);
   };
 
   return (
-    <div className="m-4">
-      <button
-        onClick={() => setIsOpen(true)}
-        className="p-2 bg-blue-500 text-white rounded"
-      >
-        Open Rename Modal
-      </button>
-      <ReplaceSuccessfullModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onSubmit={submitHandler}
-        fileDetails={file}
-      ></ReplaceSuccessfullModal>
+    <div>
+      <button onClick={toggleReplaceModal}>Replace File</button>
+      {isReplaceModalOpen && (
+        <ReplaceFileModal
+          isOpen={isReplaceModalOpen}
+          onClose={toggleReplaceModal}
+          onSubmit={handleSubmit}
+          onCancel={handleCancelReplace}
+          fileDetails={fileDetails}
+        />
+      )}
+      {isSuccessModalOpen && (
+        <ReplaceSuccessfullModal
+          isOpen={isSuccessModalOpen}
+          onClose={toggleSuccessModal}
+          onSubmit={() => console.log("Continue after success")}
+          fileDetails={fileDetails}
+        />
+      )}
     </div>
   );
 };
+
 export default Test;

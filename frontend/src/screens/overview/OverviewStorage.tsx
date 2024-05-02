@@ -23,9 +23,9 @@ const hexToRGBA = (hex: string, opacity: number): string => {
 
 const OverviewStorage: React.FC = () => {
   return (
-    <div className="px-8 py-3">
+    <div className="md:px-8 px-3 py-3">
       <h2 className="text-2xl font-bold mb-6">Overview Storage</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 md:gap-x-8 gap-x-3 gap-y-4">
         {storageItems.map((item: StorageItem) => {
           const progressPercentage = `${(item.usedGB / item.totalGB) * 100}%`;
           const cardBackgroundColor = hexToRGBA(item.progressBarColor, 0.1); // Convert color to RGBA with 10% opacity

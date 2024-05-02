@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CgClose, CgMenuRight } from "react-icons/cg";
+import { CgClose } from "react-icons/cg";
 import { RxCross2 } from "react-icons/rx";
 import { NavLink } from "react-router-dom";
+import BurgerMenu from "../../assets/icons/burger-menu.svg";
+import menuCrossIcon from "../../assets/icons/menuCross.svg";
 import logo from "../../assets/logo.svg";
 import { navSections } from "../../helpers/navItems";
 import AddNewButton from "../AddNewButton";
@@ -35,32 +37,47 @@ const SideBar: React.FC<AddNewButtonProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [sidebarRef]);
+  }, []);
 
   return (
     <>
-      <button
-        className="text-4xl md:mt-6 mt-2.5 px-1 md:hidden"
-        onClick={toggleSidebar}
-      >
-        {isOpen ? (
-          <CgClose />
-        ) : (
-          <div className="bg-white ml-3 p-1.5 rounded-lg">
-            <CgMenuRight className="text-gray-600 z-50 " />
-          </div>
-        )}
-      </button>
+      <div className="lg:ml-6 md:ml-6 ml-2 w-full">
+        <button
+          className="text-4xl md:mt-6 mt-2.5 lg:hidden"
+          onClick={toggleSidebar}
+        >
+          {isOpen ? (
+            <CgClose />
+          ) : (
+            <div className="bg-white p-1.5 rounded-lg">
+              <img
+                src={BurgerMenu}
+                alt="Menu Icon"
+                className="text-gray-600 z-50"
+              />
+            </div>
+          )}
+        </button>
+      </div>
+
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={toggleSidebar}
+        ></div>
+      )}
+
       <div
         ref={sidebarRef}
         className={`fixed inset-y-0 left-0 w-64 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out z-40 md:relative md:translate-x-0`}
+        } transition-transform duration-300 ease-in-out z-40 lg:relative lg:translate-x-0`}
       >
-        <div className="w-full h-[99vh] bg-white text-gray-600 flex flex-col lg:m-2 rounded-2xl border-2 border-gray-200">
+        <div className="w-full h-[99vh] bg-white text-gray-600 flex flex-col lg:m-2 rounded-r-2xl border-2 border-gray-200">
           {isOpen && (
-            <RxCross2
-              className="absolute right-0 mr-2 mt-1 text-gray-500 font-bold md:hidden cursor-pointer"
+            <img
+              src={menuCrossIcon}
+              className="absolute right-0 mr-2 mt-1 text-gray-500 font-bold lg:hidden cursor-pointer"
               onClick={toggleSidebar}
             />
           )}
@@ -74,7 +91,6 @@ const SideBar: React.FC<AddNewButtonProps> = ({
               setModalOpen={setModalOpen}
               setNewFolderModalOpen={setNewFolderModalOpen}
             />
-            {/* <TestAddNew setModalOpen={setModalOpen} /> */}
           </div>
           <ul className="flex flex-col">
             {navSections.map((section, index) => (
