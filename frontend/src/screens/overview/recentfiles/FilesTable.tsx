@@ -20,6 +20,9 @@ type FilesTableProps = {
   fullLinkHandler: (link: string) => void;
   renameHandler: (filename: string) => void;
   deleteHandler: () => void;
+  fileInformationHandler: (fileDetails: File) => void;
+  shareHandler: () => void;
+  replaceHandler: (fileDetails: File) => void;
   disableHandler: (id: number) => void;
 };
 
@@ -38,6 +41,9 @@ const FilesTable: React.FC<FilesTableProps> = ({
   renameHandler,
   deleteHandler,
   disableHandler,
+  fileInformationHandler,
+  shareHandler,
+  replaceHandler,
 }) => {
   return (
     <table className="w-full text-left border-collapse">
@@ -140,6 +146,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
                     renameHandler={renameHandler}
                     deleteHandler={deleteHandler}
                     disableHandler={disableHandler}
+                    shareHandler={shareHandler}
                   />
                 </div>
                 <button
@@ -150,8 +157,15 @@ const FilesTable: React.FC<FilesTableProps> = ({
                 </button>
               </div>
               <RecentFilesDropdown
+                file={file}
+                hoveredItemId={hoveredItemId}
                 isOpen={openDropdownId === file.id.toString()}
                 toggleDropdown={() => toggleDropdown(file.id.toString())}
+                fileInformationHandler={fileInformationHandler}
+                shareHandler={shareHandler}
+                replaceHandler={replaceHandler}
+                deleteHandler={deleteHandler}
+                renameHandler={renameHandler}
               />
             </td>
           </tr>

@@ -34,7 +34,7 @@ const LinkModal: React.FC<LinkModalProps> = ({
           <img src={FullLinkIcon} className="mr-2" />
           <a
             href={link}
-            className="text-blue-500 hover:text-blue-700"
+            className="text-blue-500 hover:text-blue-700 break-words w-11/12 pr-2"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -43,14 +43,14 @@ const LinkModal: React.FC<LinkModalProps> = ({
         </div>
         <div className="flex gap-x-3 mt-6">
           <button
-            className="flex w-full items-center px-4 py-2 justify-center bg-white border border-gray-200 hover:bg-gray--50 text-gray-600 rounded font-semibold"
+            className="flex w-full items-center px-4 py-2 justify-center bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 rounded font-semibold"
             onClick={handleCopyLink}
           >
             <img src={CopyLinkIcon} className="mr-2" />{" "}
             {copied ? "Copied!" : "Copy Link"}
           </button>
           <button
-            className="px-4 w-full py-2  text-white bg-blue-500 hover:bg-blue-600 rounded font-semibold"
+            className="px-4 w-full py-2 text-white bg-blue-500 hover:bg-blue-600 rounded font-semibold"
             onClick={closeModal}
           >
             Done

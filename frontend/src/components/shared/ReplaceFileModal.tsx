@@ -13,7 +13,7 @@ type ReplaceFileProps = {
   onClose: () => void;
   onSubmit: () => void;
   onCancel: () => void;
-  fileDetails: File;
+  fileDetails: File | undefined;
 };
 
 const ReplaceFileModal: React.FC<ReplaceFileProps> = ({
@@ -49,11 +49,6 @@ const ReplaceFileModal: React.FC<ReplaceFileProps> = ({
       }
     }, 50);
   };
-
-  //   const handleFileUpload = () => {
-  //     console.log(file);
-  //     alert("File upload functionality not implemented.");
-  //   };
 
   const removeFile = () => {
     setFile(null);
@@ -132,14 +127,16 @@ const ReplaceFileModal: React.FC<ReplaceFileProps> = ({
             </div>
             <div className="py-2 pl-3">
               <p>
-                File Name: <span>{fileDetails.name}</span>
+                File Name: <span>{fileDetails && fileDetails.name}</span>
               </p>
               <p>
-                File Type: <span>{fileDetails.type}</span>
+                File Type: <span>{fileDetails && fileDetails.type}</span>
               </p>
               <p>
                 File Size:{" "}
-                <span className="text-gray-400">{fileDetails.size}</span>
+                <span className="text-gray-400">
+                  {fileDetails && fileDetails.size}
+                </span>
               </p>
             </div>
           </div>

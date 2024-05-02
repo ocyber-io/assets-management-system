@@ -10,7 +10,7 @@ type ReplaceSuccessfullModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: () => void;
-  fileDetails: File;
+  fileDetails: File | undefined;
 };
 
 const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
@@ -41,14 +41,16 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
             </div>
             <div className="py-2 pl-3">
               <p>
-                File Name: <span>{fileDetails.name}</span>
+                File Name: <span>{fileDetails && fileDetails.name}</span>
               </p>
               <p>
-                File Type: <span>{fileDetails.type}</span>
+                File Type: <span>{fileDetails && fileDetails.type}</span>
               </p>
               <p>
                 File Size:{" "}
-                <span className="text-gray-400">{fileDetails.size}</span>
+                <span className="text-gray-400">
+                  {fileDetails && fileDetails.size}
+                </span>
               </p>
             </div>
           </div>
@@ -61,14 +63,16 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
             </div>
             <div className="py-2 pl-3">
               <p>
-                File Name: <span>{fileDetails.name}</span>
+                File Name: <span>{fileDetails && fileDetails.name}</span>
               </p>
               <p>
-                File Type: <span>{fileDetails.type}</span>
+                File Type: <span>{fileDetails && fileDetails.type}</span>
               </p>
               <p>
                 File Size:{" "}
-                <span className="text-gray-400">{fileDetails.size}</span>
+                <span className="text-gray-400">
+                  {fileDetails && fileDetails.size}
+                </span>
               </p>
             </div>
           </div>

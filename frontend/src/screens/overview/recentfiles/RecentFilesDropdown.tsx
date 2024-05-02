@@ -13,6 +13,7 @@ import {
   downloadIcon,
   renameIcon,
 } from "../../../helpers/dropdownIcons";
+import { File } from "../../../Types";
 
 // Define an interface for submenu items
 type SubMenuItem = {
@@ -30,8 +31,15 @@ type MenuItem = {
 
 // Define props for the RecentDropdown component
 interface RecentDropdownProps {
+  file: File;
+  hoveredItemId: number | null;
   isOpen: boolean;
   toggleDropdown: () => void;
+  fileInformationHandler: (fileDetails: File) => void;
+  shareHandler: () => void;
+  replaceHandler: (fileDetails: File) => void;
+  deleteHandler: () => void;
+  renameHandler: (filename: string) => void;
 }
 
 const subItems: MenuItem[] = [
@@ -89,8 +97,14 @@ const subItems: MenuItem[] = [
 ];
 
 const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
+  file,
   isOpen,
   toggleDropdown,
+  fileInformationHandler,
+  shareHandler,
+  replaceHandler,
+  deleteHandler,
+  renameHandler,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
@@ -127,23 +141,37 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
         className={`absolute z-50 ${
           isOpen ? "block" : "hidden"
         } divide-y divide-gray-100 rounded-md bg-white border-2 border-gray-200 shadow w-44 dark:bg-gray-700`}
-        style={{
-          bottom: "18px",
-          right: "10px",
-        }}
+        style={{ bottom: "18px", right: "10px" }}
       >
         <ul className="py-2 text-sm text-gray-700 text-left dark:text-gray-200">
           {subItems.map((menu: MenuItem, index) => (
-            <>
-              <li className="relative" key={menu.key}>
+            <React.Fragment key={index}>
+              <li className="relative">
                 <button
-                  className={`w-full text-left flex justify-left items-center px-4 py-2 ${
+                  className={`w-full text-left flex items-center px-4 py-2 ${
                     openSubMenu === menu.key ? "bg-blue-50" : "hover:bg-blue-50"
                   } dark:hover:bg-gray-600 dark:hover:text-white`}
-                  onClick={() => toggleSubMenu(menu.key)}
+                  onClick={() => {
+                    if (menu.subItems.length !== 0) {
+                      toggleSubMenu(menu.key);
+                    }
+                    if (menu.key === "replace") {
+                      replaceHandler(file);
+                      toggleDropdown();
+                    }
+                    if (menu.key === "trash") {
+                      deleteHandler();
+                      toggleDropdown();
+                    }
+                    if (menu.key === "rename") {
+                      renameHandler(file.name);
+                      toggleDropdown();
+                    }
+                  }}
                 >
                   <img src={menu.icon} alt="" className="mr-2" />
                   {menu.label}
+
                   {menu.subItems.length > 0 && (
                     <MdKeyboardArrowRight className="ml-auto h-6 w-4 mt-0.5" />
                   )}
@@ -152,13 +180,23 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                   <ul className="absolute right-full top-0 mt-0 mr-1 bg-white rounded-md shadow-lg w-40 z-20">
                     {menu.subItems.map((subItem: SubMenuItem) => (
                       <li key={subItem.label}>
-                        <a
-                          href="#"
-                          className="flex px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
+                        <button
+                          className="flex w-full p-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
+                          onClick={() => {
+                            // Trigger the handler when "Details" is clicked under "File information"
+                            if (subItem.label === "Details") {
+                              fileInformationHandler(file);
+                              toggleDropdown();
+                            }
+                            if (subItem.label === "Share") {
+                              shareHandler();
+                              toggleDropdown();
+                            }
+                          }}
                         >
-                          <img src={subItem.icon} alt="" className="mr-2" />
+                          <img src={subItem.icon} alt="" className="mr-2 mt-" />
                           {subItem.label}
-                        </a>
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -169,7 +207,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                   <div className="border-t border-gray-200"></div>
                 </li>
               )}
-            </>
+            </React.Fragment>
           ))}
         </ul>
       </div>

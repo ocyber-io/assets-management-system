@@ -15,6 +15,7 @@ interface HoverOptionsProps {
   renameHandler: (filename: string) => void;
   deleteHandler: (fileId: string) => void; // Assuming you need the file ID for deletion
   disableHandler: (fileId: number) => void;
+  shareHandler: () => void;
 }
 
 const HoverOptions: React.FC<HoverOptionsProps> = ({
@@ -23,6 +24,7 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
   renameHandler,
   deleteHandler,
   disableHandler,
+  shareHandler,
 }) => {
   return (
     <div
@@ -30,7 +32,12 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
         hoveredItemId === file.id ? "visible" : "invisible"
       }`}
     >
-      <img src={shareIcon} className="ml-6 cursor-pointer" alt="Share" />
+      <img
+        src={shareIcon}
+        className="ml-6 cursor-pointer"
+        alt="Share"
+        onClick={() => shareHandler()}
+      />
       <img src={downloadIcon} className="ml-4 cursor-pointer" alt="Download" />
       <img
         src={renameIcon}

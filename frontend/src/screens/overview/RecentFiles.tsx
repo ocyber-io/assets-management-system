@@ -24,9 +24,17 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
   const [showWarningModal, setShowWarningModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showFileInformationModal, setShowFileInformationModal] =
+    useState<boolean>(false);
   const [showRenameModal, setShowRenameModal] = useState<boolean>(false);
+  const [showShareModal, setShowShareModal] = useState<boolean>(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showReplaceModal, setShowReplaceModal] = useState(false);
   const [selectedLink, setSelectedLink] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>("");
+  const [selectedFileDetails, setSelectedFileDetails] = useState<
+    File | undefined
+  >();
 
   const toggleDisableModal = () => {
     setShowWarningModal(!showWarningModal);
@@ -36,6 +44,19 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   };
   const toggleRenameModal = () => {
     setShowRenameModal(!showRenameModal);
+  };
+  const toggleFileInformationModal = () => {
+    setShowFileInformationModal(!showFileInformationModal);
+  };
+  const toggleShareModal = () => {
+    setShowShareModal(!showShareModal);
+  };
+
+  const toggleReplaceModal = () => {
+    setShowReplaceModal(!showReplaceModal);
+  };
+  const toggleSuccessModal = () => {
+    setShowSuccessModal(!showSuccessModal);
   };
 
   useEffect(() => {
@@ -106,12 +127,41 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     setFileName(filename);
   };
 
+  const fileInformationHandler = (fileDetails: File) => {
+    setSelectedFileDetails(fileDetails);
+    toggleFileInformationModal();
+  };
+
+  const shareHandler = () => {
+    toggleShareModal();
+  };
+
+  const replaceHandler = (fileDetails: File) => {
+    setSelectedFileDetails(fileDetails);
+    toggleReplaceModal();
+  };
+
+  const shareSubmitClickHandler = () => {
+    console.log("shared");
+  };
+
   const handleOkAction = () => {
     console.log(fileName && fileName);
   };
 
   const handleWarningAction = () => {
     console.log("Action taken from Test component");
+  };
+
+  const handleReplaceSubmit = () => {
+    console.log("Submit new file details");
+    toggleReplaceModal();
+    toggleSuccessModal();
+  };
+
+  const handleCancelReplace = () => {
+    console.log("Cancelled");
+    toggleReplaceModal();
   };
 
   return (
@@ -139,6 +189,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           renameHandler={renameHandler}
           deleteHandler={deleteHandler}
           disableHandler={disableHandler}
+          fileInformationHandler={fileInformationHandler}
+          shareHandler={shareHandler}
+          replaceHandler={replaceHandler}
         />
         {files.length > 10 && (
           <Pagination
@@ -163,6 +216,18 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         fileName={fileName}
         toggleRenameModal={toggleRenameModal}
         handleOkAction={handleOkAction}
+        showFileInformationModal={showFileInformationModal}
+        toggleFileInformationModal={toggleFileInformationModal}
+        showShareModal={showShareModal}
+        toggleShareModal={toggleShareModal}
+        shareSubmitClickHandler={shareSubmitClickHandler}
+        showReplaceModal={showReplaceModal}
+        showSuccessModal={showSuccessModal}
+        toggleReplaceModal={toggleReplaceModal}
+        toggleSuccessModal={toggleSuccessModal}
+        handleReplaceSubmit={handleReplaceSubmit}
+        handleCancelReplace={handleCancelReplace}
+        selectedFileDetails={selectedFileDetails}
       />
     </div>
   );

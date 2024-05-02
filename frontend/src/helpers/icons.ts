@@ -9,6 +9,8 @@ import viewIcon from "../assets/icons/view.svg";
 import folderAddIcon from "../assets/icons/folder-add.svg";
 import fileUploadIcon from "../assets/icons/file-upload.svg";
 import folderUploadIcon from "../assets/icons/folder-upload.svg";
+import downRightArrowIcon from "../assets/icons/downRightArrow.svg";
+import pdfSmallIcon from "../assets/icons/pdfSmall.svg";
 
 export {
   canEditIcon,
@@ -22,4 +24,6 @@ export {
   folderAddIcon,
   fileUploadIcon,
   folderUploadIcon,
+  downRightArrowIcon,
+  pdfSmallIcon,
 };
