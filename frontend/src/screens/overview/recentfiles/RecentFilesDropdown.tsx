@@ -187,7 +187,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
           className={`absolute z-50 ${
             isOpen ? "block" : "hidden"
           } divide-y divide-gray-100 rounded-md bg-white border-2 border-gray-200 shadow w-44 dark:bg-gray-700`}
-          style={{ bottom: "18px", right: "10px" }}
+          style={{ bottom: "24px", right: "16px" }}
         >
           <ul className="py-2 text-sm text-gray-700 text-left dark:text-gray-200">
             {subItems.map((menu: MenuItem, index) => (
