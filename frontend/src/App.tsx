@@ -11,13 +11,36 @@ import Profile from "./screens/settings/Profile";
 import DocumentLinks from "./screens/settings/DocumentLinks";
 import Login from "./screens/login/Login";
 import Test from "./components/Test";
+import RequireAuth from "./middlewares/RequireAuth";
+import RedirectIfAuthenticated from "./middlewares/RedirectIfAuthenticated";
 
 const App: React.FC = () => {
   return (
     <Routes>
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Layout />}>
+      <Route
+        path="/signup"
+        element={
+          <RedirectIfAuthenticated>
+            <Signup />
+          </RedirectIfAuthenticated>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <RedirectIfAuthenticated>
+            <Login />
+          </RedirectIfAuthenticated>
+        }
+      />
+      <Route
+        path="/"
+        element={
+          <RequireAuth>
+            <Layout />
+          </RequireAuth>
+        }
+      >
         <Route index element={<Dashboard />} />
         <Route path="recent" element={<Recent />} />
         <Route path="tags" element={<Tags />} />

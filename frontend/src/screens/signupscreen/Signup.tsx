@@ -1,20 +1,53 @@
 import React, { useState } from "react";
-import logo from "../../assets/logo.svg";
+import { Link, useNavigate } from "react-router-dom";
 import "../../assets/css/signup.css";
-import googleLogo from "../../assets/icons/google.svg";
+import eyeIcon from "../../assets/icons/view.svg";
 import signupImage from "../../assets/images/signup.svg";
-import eyeIcon from "../../assets/icons/view.svg"; // Make sure you have an eye icon asset
-import { Link } from "react-router-dom";
+import logo from "../../assets/logo.svg";
+import GoogleLogin from "../../components/GoogleLogin";
+import { useUserStore } from "../../stores/userStore"; // Adjust the import path as necessary
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import { validateSignUpForm } from "../../utils/validateSignUpForm";
 
 const Signup: React.FC = () => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const { signUp } = useUserStore();
+
+  const handleSignup = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const formData = {
+      firstname: firstName,
+      lastname: lastName,
+      email: email,
+      password: password,
+    };
+
+    if (validateSignUpForm(formData)) {
+      try {
+        const res: any = await signUp(formData);
+        if (res) {
+          showSuccessToast("Signup Successfull!");
+          navigate("/");
+        }
+      } catch (error: any) {
+        showErrorToast(error.message || "Failed to sign up");
+        console.error(error.message);
+      }
+    }
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   return (
-    <div className="md:mx-40 pb-36 mx-4">
+    <div className="xl:mx-40 pb-36 mx-4">
       <div>
         <img
           src={logo}
@@ -34,14 +67,7 @@ const Signup: React.FC = () => {
           </div>
           <div className="mt-8 font-medium text-gray-700">
             <p>Please enter your login details below!</p>
-            <button className="bg-white flex border-2 hover:bg-gray-50 text-base font-semibold border-gray-200 md:w-3/4 w-full justify-center rounded mt-4 py-3">
-              <img
-                className="mr-2 opacity-90"
-                src={googleLogo}
-                alt="Google logo"
-              />
-              <span className="px-1.5">Sign up with Google</span>
-            </button>
+            <GoogleLogin />
 
             <div className="my-4 text-left">
               <div className="inline-block border-t-2 border-gray-200 md:w-40 w-28" />
@@ -49,7 +75,7 @@ const Signup: React.FC = () => {
               <div className="inline-block border-t-2 border-gray-200 md:w-44 w-28" />
             </div>
 
-            <form className="md:w-3/4 w-full">
+            <form className="md:w-3/4 w-full" onSubmit={handleSignup}>
               <div className="flex space-x-4">
                 <div className="md:w-1/2 w-full">
                   <label
@@ -61,6 +87,8 @@ const Signup: React.FC = () => {
                   <input
                     type="text"
                     id="firstName"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Paul"
                     className="w-full mt-1 px-3 py-3 border-2 border-gray-200 focus:outline-blue-500 rounded"
                   />
@@ -70,9 +98,11 @@ const Signup: React.FC = () => {
                     Last Name
                   </label>
                   <input
-                    placeholder="Walker"
                     type="text"
                     id="lastName"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Walker"
                     className="w-full mt-1 px-3 py-3 border-2 border-gray-200 focus:outline-blue-500 rounded"
                   />
                 </div>
@@ -84,6 +114,8 @@ const Signup: React.FC = () => {
                 <input
                   type="email"
                   id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="example@email.com"
                   className="w-full mt-1 pl-3 py-3 border-2 border-gray-200 focus:outline-blue-500 rounded"
                 />
@@ -95,6 +127,8 @@ const Signup: React.FC = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="********"
                   className="w-full mt-1 pl-3 py-3 border-2 border-gray-200 focus:outline-blue-500 rounded pr-10"
                 />
@@ -106,7 +140,10 @@ const Signup: React.FC = () => {
                 />
               </div>
 
-              <button className="mt-6 bg-blue-600 hover:bg-blue-500 text-white w-full py-3 rounded-md">
+              <button
+                type="submit"
+                className="mt-6 bg-blue-600 hover:bg-blue-500 text-white w-full py-3 rounded-md"
+              >
                 Sign Up
               </button>
             </form>
@@ -118,7 +155,7 @@ const Signup: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-2 text-left  text-sm">
+      <div className="mt-2 text-left text-sm">
         <span className="text-gray-400 font-semibold">
           Already have an account?
         </span>{" "}
