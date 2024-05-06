@@ -28,7 +28,7 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
 }) => {
   return (
     <div
-      className={`flex gap-x-1 md:mr-4 ${
+      className={`flex gap-x-1 xl:mt-2 md:mr-4 ${
         hoveredItemId === file.id ? "visible" : "invisible"
       }`}
     >
