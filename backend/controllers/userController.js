@@ -1,5 +1,21 @@
 import bcrypt from "bcryptjs";
 import User from "../models/userSchema.js";
+import jwt from "jsonwebtoken";
+
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "30d", // Token expires in 30 days
+    }
+  );
+};
 
 // SignUp Controller
 const signUp = async (req, res) => {
@@ -8,11 +24,12 @@ const signUp = async (req, res) => {
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        message: "Email already exists, Please choose a different email",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-
     const result = await User.create({
       firstname,
       lastname,
@@ -20,7 +37,10 @@ const signUp = async (req, res) => {
       password: hashedPassword,
     });
 
-    res.status(201).json({ message: "Signup successfull", userId: result._id });
+    const token = generateToken(result);
+    res
+      .status(201)
+      .json({ message: "Signup successful", userId: result._id, token });
   } catch (error) {
     res.status(500).json({ message: "Error creating the user" });
   }
@@ -33,7 +53,9 @@ const login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "Email or Password is incorrect",
+      });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
@@ -41,7 +63,10 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    res.status(200).json({ message: "Login successful", userId: user._id });
+    const token = generateToken(user);
+    res
+      .status(200)
+      .json({ message: "Login successful", userId: user._id, token });
   } catch (error) {
     res.status(500).json({ message: "Error logging in" });
   }

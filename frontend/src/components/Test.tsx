@@ -1,52 +1,29 @@
-import React, { useState } from "react";
-import ReplaceFileModal from "./shared/ReplaceFileModal";
-import ReplaceSuccessfullModal from "./shared/ReplaceSuccessfullModal"; // Adjust the path as needed
-import { files } from "../helpers/sampleTableData";
+import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const Test = () => {
-  const [isReplaceModalOpen, setIsReplaceModalOpen] = useState(false);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [fileDetails, setFileDetails] = useState(files[0]);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
-  const toggleReplaceModal = () => {
-    setIsReplaceModalOpen(!isReplaceModalOpen);
-  };
-
-  const handleSubmit = () => {
-    console.log("Submit new file details");
-    toggleReplaceModal();
-    toggleSuccessModal();
-  };
-
-  const handleCancelReplace = () => {
-    console.log("Cancelled");
-    toggleReplaceModal();
-  };
-
-  const toggleSuccessModal = () => {
-    setIsSuccessModalOpen(!isSuccessModalOpen);
-  };
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode<{ firstname: string; lastname: string }>(
+          token
+        );
+        setFirstName(decoded.firstname);
+        setLastName(decoded.lastname);
+      } catch (error) {
+        console.error("Failed to decode JWT:", error);
+      }
+    }
+  }, []);
 
   return (
     <div>
-      <button onClick={toggleReplaceModal}>Replace File</button>
-      {isReplaceModalOpen && (
-        <ReplaceFileModal
-          isOpen={isReplaceModalOpen}
-          onClose={toggleReplaceModal}
-          onSubmit={handleSubmit}
-          onCancel={handleCancelReplace}
-          fileDetails={fileDetails}
-        />
-      )}
-      {isSuccessModalOpen && (
-        <ReplaceSuccessfullModal
-          isOpen={isSuccessModalOpen}
-          onClose={toggleSuccessModal}
-          onSubmit={() => console.log("Continue after success")}
-          fileDetails={fileDetails}
-        />
-      )}
+      <p>First Name: {firstName}</p>
+      <p>Last Name: {lastName}</p>
     </div>
   );
 };
