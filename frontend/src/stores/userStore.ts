@@ -13,6 +13,12 @@ type UserState = {
     email: string;
     password: string;
   }) => Promise<void>;
+  googleSignUp: (googleData: {
+    email: string;
+    given_name: string;
+    family_name: string;
+    googleId: string;
+  }) => Promise<void>; // Add this line
   login: (credentials: { email: string; password: string }) => Promise<void>;
   fetchUsers: () => Promise<void>;
   updateUser: (id: string, updates: Object) => Promise<void>;
@@ -43,6 +49,7 @@ export const useUserStore = create<UserState>((set, get) => ({
   logout: () => {
     localStorage.removeItem("token"); // Clear token from localStorage
     set({ user: null });
+    window.location.reload();
   },
 
   signUp: async (formData) => {
@@ -66,6 +73,41 @@ export const useUserStore = create<UserState>((set, get) => ({
         throw new Error(error.response.data.message);
       } else {
         throw new Error("An unknown error occurred during signup");
+      }
+    }
+  },
+
+  googleSignUp: async (googleData: {
+    email: string;
+    given_name: string;
+    family_name: string;
+    googleId: string;
+  }) => {
+    try {
+      const response = await axios.post(
+        `${SERVER_URL}/api/users/google/signup`,
+        {
+          email: googleData.email,
+          given_name: googleData.given_name,
+          family_name: googleData.family_name,
+          googleId: googleData.googleId,
+        }
+      );
+      if (response.data && response.data.token) {
+        const { userId, token } = response.data;
+        get().setUser({ userId, token });
+      }
+      return response.data;
+    } catch (error) {
+      if (
+        isAxiosError(error) &&
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        throw new Error(error.response.data.message);
+      } else {
+        throw new Error("An unknown error occurred during Google signup");
       }
     }
   },

@@ -11,13 +11,28 @@ import Profile from "./screens/settings/Profile";
 import DocumentLinks from "./screens/settings/DocumentLinks";
 import Login from "./screens/login/Login";
 import Test from "./components/Test";
-import RequireAuth from "./components/RequireAuth"; // Import the authentication component
+import RequireAuth from "./middlewares/RequireAuth";
+import RedirectIfAuthenticated from "./middlewares/RedirectIfAuthenticated";
 
 const App: React.FC = () => {
   return (
     <Routes>
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
+      <Route
+        path="/signup"
+        element={
+          <RedirectIfAuthenticated>
+            <Signup />
+          </RedirectIfAuthenticated>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <RedirectIfAuthenticated>
+            <Login />
+          </RedirectIfAuthenticated>
+        }
+      />
       <Route
         path="/"
         element={

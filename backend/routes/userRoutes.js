@@ -1,6 +1,7 @@
 import express from "express";
 import {
   signUp,
+  googleSignUp,
   login,
   getAllUsers,
   updateUser,
@@ -11,6 +12,7 @@ const router = express.Router();
 
 // Public routes
 router.post("/signup", signUp);
+router.post("/google/signup", googleSignUp);
 router.post("/login", login);
 
 // Admin routes

@@ -1,12 +1,12 @@
 // src/utils/validator.ts
 import { showErrorToast } from "./toast"; // Assuming toast functions are exported from this file
 
-interface SignUpForm {
+type SignUpForm = {
   firstname: string;
   lastname: string;
   email: string;
   password: string;
-}
+};
 
 export const validateSignUpForm = (formData: SignUpForm): boolean => {
   const { firstname, lastname, email, password } = formData;

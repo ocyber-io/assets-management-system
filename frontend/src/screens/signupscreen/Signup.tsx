@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import { useUserStore } from "../../stores/userStore"; // Adjust the import path as necessary
-import logo from "../../assets/logo.svg";
+import { Link, useNavigate } from "react-router-dom";
 import "../../assets/css/signup.css";
-import googleLogo from "../../assets/icons/google.svg";
-import signupImage from "../../assets/images/signup.svg";
 import eyeIcon from "../../assets/icons/view.svg";
-import { Link } from "react-router-dom";
+import signupImage from "../../assets/images/signup.svg";
+import logo from "../../assets/logo.svg";
+import GoogleLogin from "../../components/GoogleLogin";
+import { useUserStore } from "../../stores/userStore"; // Adjust the import path as necessary
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { validateSignUpForm } from "../../utils/validateSignUpForm";
-import { useNavigate } from "react-router-dom";
 
 const Signup: React.FC = () => {
   const [firstName, setFirstName] = useState("");
@@ -34,7 +33,7 @@ const Signup: React.FC = () => {
         const res: any = await signUp(formData);
         if (res) {
           showSuccessToast("Signup Successfull!");
-          navigate("/test");
+          navigate("/");
         }
       } catch (error: any) {
         showErrorToast(error.message || "Failed to sign up");
@@ -68,14 +67,7 @@ const Signup: React.FC = () => {
           </div>
           <div className="mt-8 font-medium text-gray-700">
             <p>Please enter your login details below!</p>
-            <button className="bg-white flex border-2 hover:bg-gray-50 text-base font-semibold border-gray-200 md:w-3/4 w-full justify-center rounded mt-4 py-3">
-              <img
-                className="mr-2 opacity-90"
-                src={googleLogo}
-                alt="Google logo"
-              />
-              <span className="px-1.5">Sign up with Google</span>
-            </button>
+            <GoogleLogin />
 
             <div className="my-4 text-left">
               <div className="inline-block border-t-2 border-gray-200 md:w-40 w-28" />

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useUserStore } from "../../stores/userStore"; // Adjust the import path as necessary
 import { showErrorToast, showSuccessToast } from "../../utils/toast"; // Ensure toast utilities are correctly imported
-import { useNavigate } from "react-router-dom";
 
-import logo from "../../assets/logo.svg";
-import googleLogo from "../../assets/icons/google.svg";
 import eyeIcon from "../../assets/icons/view.svg";
 import signupImage from "../../assets/images/signup.svg";
+import logo from "../../assets/logo.svg";
+import GoogleLogin from "../../components/GoogleLogin";
 import ForgotPasswordModal from "./ForgotPasswordModal";
+import { validateLoginForm } from "../../utils/validateLoginForm";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -21,15 +21,21 @@ const Login: React.FC = () => {
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    try {
-      const res: any = await login({ email, password });
-      if (res) {
-        showSuccessToast("Logged in successfully!");
-        navigate("/test");
+    const formData = {
+      email: email,
+      password: password,
+    };
+    if (validateLoginForm(formData)) {
+      try {
+        const res: any = await login({ email, password });
+        if (res) {
+          showSuccessToast("Logged in successfully!");
+          navigate("/");
+        }
+      } catch (error: any) {
+        showErrorToast(error.message); // Show error message from the re-thrown error
+        console.error("Error during login:", error.message);
       }
-    } catch (error: any) {
-      showErrorToast(error.message); // Show error message from the re-thrown error
-      console.error("Error during login:", error.message);
     }
   };
 
@@ -64,14 +70,7 @@ const Login: React.FC = () => {
             </div>
             <div className="mt-8 font-medium text-gray-700">
               <p>Please enter your login details below!</p>
-              <button className="bg-white flex border-2 hover:bg-gray-50 text-base font-semibold border-gray-200 md:w-3/4 w-full justify-center rounded mt-4 py-3">
-                <img
-                  className="mr-2 opacity-90"
-                  src={googleLogo}
-                  alt="Google logo"
-                />
-                <span className="px-1.5">Login with Google</span>
-              </button>
+              <GoogleLogin />
 
               <div className="my-4 text-left">
                 <div className="inline-block border-t-2 border-gray-200 md:w-40 w-28" />
@@ -126,6 +125,7 @@ const Login: React.FC = () => {
                     to="/signup"
                     className="text-blue-400 font-bold hover:text-blue-600"
                   >
+                    {" "}
                     Signup
                   </Link>
                 </div>

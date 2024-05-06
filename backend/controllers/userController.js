@@ -46,6 +46,31 @@ const signUp = async (req, res) => {
   }
 };
 
+const googleSignUp = async (req, res) => {
+  const { email, given_name, family_name, googleId } = req.body;
+
+  try {
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create a new user if doesn't exist
+      user = await User.create({
+        firstname: given_name,
+        lastname: family_name,
+        email,
+        googleId,
+      });
+    }
+
+    const token = generateToken(user);
+    res
+      .status(201)
+      .json({ message: "Login successful", userId: user._id, token });
+  } catch (error) {
+    res.status(500).json({ message: "Error in Google authentication" });
+  }
+};
+
 // Login Controller
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -113,4 +138,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { signUp, login, getAllUsers, updateUser, deleteUser };
+export { signUp, googleSignUp, login, getAllUsers, updateUser, deleteUser };
