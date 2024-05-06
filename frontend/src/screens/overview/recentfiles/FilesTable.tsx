@@ -149,12 +149,18 @@ const FilesTable: React.FC<FilesTableProps> = ({
                     shareHandler={shareHandler}
                   />
                 </div>
-                <button
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
-                  onClick={() => toggleDropdown(file.id.toString())}
-                >
-                  <BsThreeDotsVertical />
-                </button>
+                <div className="">
+                  <button
+                    className={`text-gray-500 hover:text-gray-700 focus:outline-none ${
+                      openDropdownId === file.id.toString()
+                        ? "bg-white rounded-full p-2 shadow "
+                        : "p-2 bg-transparent"
+                    }`}
+                    onClick={() => toggleDropdown(file.id.toString())}
+                  >
+                    <BsThreeDotsVertical />
+                  </button>
+                </div>
               </div>
               <RecentFilesDropdown
                 file={file}
@@ -166,6 +172,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
                 replaceHandler={replaceHandler}
                 deleteHandler={deleteHandler}
                 renameHandler={renameHandler}
+                disableHandler={disableHandler}
               />
             </td>
           </tr>
