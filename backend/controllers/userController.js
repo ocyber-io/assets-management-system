@@ -9,6 +9,7 @@ const generateToken = (user) => {
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
+      googleId: user.googleId,
     },
     process.env.JWT_SECRET,
     {
@@ -61,7 +62,6 @@ const googleSignUp = async (req, res) => {
         googleId,
       });
     }
-
     const token = generateToken(user);
     res
       .status(201)

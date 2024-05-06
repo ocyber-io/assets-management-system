@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import NotificationModal from "../../components/shared/NotificationModal"; // Make sure the path is correct
-import showPasswordIcon from "../../assets/icons/view.svg"; // Ensure the path is correct
+import showPasswordIcon from "../../assets/icons/view.svg";
 
-const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
-  isOpen,
-  onClose,
-}) => {
+type UserInfo = {
+  firstname: string;
+  lastname: string;
+  email: string;
+  googleId: string;
+};
+
+const EditProfileModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  userInfo?: UserInfo;
+}> = ({ isOpen, onClose, userInfo }) => {
   if (!isOpen) return null;
   const [showPassword, setShowPassword] = useState({
     current: false,
@@ -13,6 +21,7 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     confirm: false,
   });
 
+  console.log(userInfo?.googleId);
   // Function to toggle password visibility
   const toggleShowPassword = (field: "current" | "new" | "confirm") => {
     setShowPassword((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -37,6 +46,7 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             <label className="text-gray-700 font-semibold">First Name</label>
             <input
               type="text"
+              value={userInfo?.firstname}
               placeholder="Paul"
               className="border-2 w-full border-gray-200 p-2 mt-1 rounded focus:outline-blue-500"
             />
@@ -45,6 +55,7 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             <label className="text-gray-700 font-semibold">Last Name</label>
             <input
               type="text"
+              value={userInfo?.lastname}
               placeholder="Walker"
               className="border-2 w-full border-gray-200 p-2 mt-1 rounded focus:outline-blue-500"
             />
@@ -54,62 +65,69 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           <label className="text-gray-700 font-semibold">Email</label>
           <input
             type="email"
+            value={userInfo?.email}
             placeholder="example@email.com"
             className="border-2 border-gray-200 p-2 mt-1 rounded focus:outline-blue-500"
           />
         </div>
-        <div className="flex flex-col">
-          <label className="text-gray-700 font-semibold">
-            Current Password
-          </label>
-          <div className="flex items-center border-2 border-gray-200 rounded mt-1 focus-within:border-2 focus-within:border-blue-500">
-            <input
-              type={showPassword.current ? "text" : "password"}
-              placeholder="Current Password"
-              className="p-2 flex-grow focus:outline-none"
-            />
-            <img
-              src={showPasswordIcon}
-              alt="Show Password"
-              className="mr-2 cursor-pointer"
-              onClick={() => toggleShowPassword("current")}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <label className="text-gray-700 font-semibold">New Password</label>
-          <div className="flex items-center border-2 border-gray-200 rounded mt-1 focus-within:border-2 focus-within:border-blue-500">
-            <input
-              type={showPassword.new ? "text" : "password"}
-              placeholder="Enter your new password"
-              className="p-2 flex-grow focus:outline-none"
-            />
-            <img
-              src={showPasswordIcon}
-              alt="Show Password"
-              className="mr-2 cursor-pointer"
-              onClick={() => toggleShowPassword("new")}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <label className="text-gray-700 font-semibold">
-            Confirm New Password
-          </label>
-          <div className="flex items-center border-2 border-gray-200 rounded mt-1 focus-within:border-2 focus-within:border-blue-500">
-            <input
-              type={showPassword.confirm ? "text" : "password"}
-              placeholder="Confirm your new password"
-              className="p-2 flex-grow focus:outline-none"
-            />
-            <img
-              src={showPasswordIcon}
-              alt="Show Password"
-              className="mr-2 cursor-pointer"
-              onClick={() => toggleShowPassword("confirm")}
-            />
-          </div>
-        </div>
+        {!userInfo?.googleId && (
+          <>
+            <div className="flex flex-col">
+              <label className="text-gray-700 font-semibold">
+                Current Password
+              </label>
+              <div className="flex items-center border-2 border-gray-200 rounded mt-1 focus-within:border-2 focus-within:border-blue-500">
+                <input
+                  type={showPassword.current ? "text" : "password"}
+                  placeholder="Current Password"
+                  className="p-2 flex-grow focus:outline-none"
+                />
+                <img
+                  src={showPasswordIcon}
+                  alt="Show Password"
+                  className="mr-2 cursor-pointer"
+                  onClick={() => toggleShowPassword("current")}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-700 font-semibold">
+                New Password
+              </label>
+              <div className="flex items-center border-2 border-gray-200 rounded mt-1 focus-within:border-2 focus-within:border-blue-500">
+                <input
+                  type={showPassword.new ? "text" : "password"}
+                  placeholder="Enter your new password"
+                  className="p-2 flex-grow focus:outline-none"
+                />
+                <img
+                  src={showPasswordIcon}
+                  alt="Show Password"
+                  className="mr-2 cursor-pointer"
+                  onClick={() => toggleShowPassword("new")}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-gray-700 font-semibold">
+                Confirm New Password
+              </label>
+              <div className="flex items-center border-2 border-gray-200 rounded mt-1 focus-within:border-2 focus-within:border-blue-500">
+                <input
+                  type={showPassword.confirm ? "text" : "password"}
+                  placeholder="Confirm your new password"
+                  className="p-2 flex-grow focus:outline-none"
+                />
+                <img
+                  src={showPasswordIcon}
+                  alt="Show Password"
+                  className="mr-2 cursor-pointer"
+                  onClick={() => toggleShowPassword("confirm")}
+                />
+              </div>
+            </div>
+          </>
+        )}
       </form>
     </NotificationModal>
   );
