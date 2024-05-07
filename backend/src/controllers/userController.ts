@@ -120,13 +120,52 @@ const updateUser = async (req: Request, res: Response): Promise<Response> => {
   const updates = req.body;
 
   try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Handle password updates specially
+    if (updates.password && updates.currentPassword) {
+      if (!user.password) {
+        return res
+          .status(400)
+          .json({ message: "Password update not allowed for this user" });
+      }
+      const isMatch = await bcrypt.compare(
+        updates.currentPassword,
+        user.password
+      );
+      if (!isMatch) {
+        return res
+          .status(401)
+          .json({ message: "Current password is incorrect" });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(updates.password, salt);
+      updates.password = hashedPassword;
+    } else if (updates.password) {
+      return res.status(400).json({
+        message: "Current password must be provided to update password",
+      });
+    }
+
+    // Apply updates to the user object
     const updatedUser = await User.findByIdAndUpdate(id, updates, {
       new: true,
     });
     if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User update failed" });
     }
-    return res.status(200).json(updatedUser);
+
+    const token = generateToken(updatedUser);
+
+    return res.status(200).json({
+      message: "User updated successfully",
+      userId: updatedUser._id,
+      token,
+    });
   } catch (error) {
     return res.status(500).json({ message: "Error updating the user" });
   }

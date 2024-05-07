@@ -6,6 +6,7 @@ import Breadcrumbs from "../../components/Breadcrumbs";
 import { jwtDecode } from "jwt-decode";
 
 type UserInfo = {
+  id: string;
   firstname: string;
   lastname: string;
   email: string;
@@ -18,12 +19,13 @@ const Profile: React.FC = () => {
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode<{
+          id: string;
           firstname: string;
           lastname: string;
           email: string;
@@ -36,7 +38,7 @@ const Profile: React.FC = () => {
         console.error("Failed to decode JWT:", error);
       }
     }
-  }, []);
+  }, [token]);
 
   return (
     <>

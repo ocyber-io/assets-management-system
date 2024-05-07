@@ -119,27 +119,24 @@ export const fetchUsers = createAsyncThunk(
   }
 );
 
-export const updateUser = createAsyncThunk(
-  "user/updateUser",
-  async (
-    { id, updates }: { id: string; updates: Object },
-    { rejectWithValue, getState }
-  ) => {
-    try {
-      const token = (getState() as any).user.user?.token;
-      const response = await axios.put(
-        `${SERVER_URL}/api/users/${id}`,
-        updates,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      return rejectWithValue("Error updating user");
-    }
+export const updateUser = createAsyncThunk<
+  any, // Type of the payload on fulfill
+  { id: string; updates: Object }, // Argument type
+  { rejectValue: string } // Type of the payload on reject
+>("user/updateUser", async ({ id, updates }, { rejectWithValue, getState }) => {
+  try {
+    const token = (getState() as any).user.user?.token;
+    const response = await axios.put(`${SERVER_URL}/api/users/${id}`, updates, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    // Make sure you're sending back a string as the rejected value
+    return rejectWithValue(
+      error.response.data?.message || "Unknown error during update"
+    );
   }
-);
+});
 
 export const deleteUser = createAsyncThunk(
   "user/deleteUser",
@@ -220,6 +217,7 @@ const userSlice = createSlice({
         if (index !== -1) {
           state.users[index] = action.payload;
         }
+        localStorage.setItem("token", action.payload.token);
         state.status = "idle";
       })
 
