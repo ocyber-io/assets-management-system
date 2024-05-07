@@ -2,6 +2,9 @@ import bcrypt from "bcryptjs";
 import User, { IUser } from "../models/userSchema"; // Assume IUser is exported from userSchema
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
+import crypto from "crypto";
+import nodemailer from "nodemailer";
+import { generateOTP } from "../utils/generateOTP";
 
 declare global {
   namespace NodeJS {
@@ -185,4 +188,116 @@ const deleteUser = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-export { signUp, googleSignUp, login, getAllUsers, updateUser, deleteUser };
+const forgotPassword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "No account with that email address exists." });
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 20);
+
+    user.resetPasswordToken = otp;
+    user.resetPasswordExpires = now;
+
+    await user.save();
+
+    // Configure Nodemailer to use Outlook
+    const transporter = nodemailer.createTransport({
+      host: "smtp-mail.outlook.com",
+      port: 587, // SMTP port for Outlook
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: "cute.arro@outlook.com", // Your Outlook email
+        pass: "Love14321", // Your Outlook password
+      },
+      tls: {
+        ciphers: "SSLv3",
+      },
+    });
+
+    const mailOptions = {
+      to: user.email,
+      from: "cute.arro@outlook.com", // Your Outlook email
+      subject: "Password Reset",
+      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+        Please use the following OTP to proceed: ${otp}\n\n
+        If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    return res
+      .status(200)
+      .json({ message: "An OTP has been sent to " + user.email });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error on the server." });
+  }
+};
+
+const verifyOtp = async (req: Request, res: Response): Promise<Response> => {
+  const { email, otp } = req.body;
+  try {
+    const user = await User.findOne({
+      email: email,
+      resetPasswordToken: otp,
+      resetPasswordExpires: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "OTP is invalid or has expired." });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "OTP verified successfully.", userId: user._id });
+  } catch (error) {
+    return res.status(500).json({ message: "Error verifying OTP." });
+  }
+};
+
+const resetPassword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { userId, newPassword } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    user.password = await bcrypt.hash(newPassword, 12);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+    return res.status(200).json({ message: "Password has been updated." });
+  } catch (error) {
+    return res.status(500).json({ message: "Error resetting password." });
+  }
+};
+
+export {
+  signUp,
+  googleSignUp,
+  login,
+  getAllUsers,
+  updateUser,
+  deleteUser,
+  forgotPassword,
+  verifyOtp,
+  resetPassword,
+};

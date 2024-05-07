@@ -5,6 +5,7 @@ import NotificationModal from "../../components/shared/NotificationModal";
 import { updateUser } from "../../reducers/user/userSlice";
 import { AppDispatch } from "../../stores/store";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import { validateUpdateProfile } from "../../utils/validateUpdateProfile";
 
 type UserInfo = {
   id: string;
@@ -56,12 +57,17 @@ const EditProfileModal: React.FC<{
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    // Validate form data before dispatching
     if (
-      formValues.newPassword &&
-      formValues.newPassword !== formValues.confirmPassword
+      !validateUpdateProfile({
+        firstname: formValues.firstname,
+        lastname: formValues.lastname,
+        email: formValues.email,
+        newPassword: formValues.newPassword,
+        confirmPassword: formValues.confirmPassword,
+      })
     ) {
-      showErrorToast("New passwords do not match!");
-      return;
+      return; // Stop submission if validation fails
     }
 
     const updatePayload = {
@@ -88,7 +94,6 @@ const EditProfileModal: React.FC<{
       showErrorToast(resultAction.payload || "Failed to update profile");
     }
   };
-
   return (
     <NotificationModal
       isOpen={isOpen}

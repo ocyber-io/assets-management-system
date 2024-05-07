@@ -12,9 +12,9 @@ const TopBar: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [userInitials, setUserInitials] = useState("SM");
   const dispatch = useDispatch<AppDispatch>();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode<{ firstname: string; lastname: string }>(
@@ -26,7 +26,7 @@ const TopBar: React.FC = () => {
         console.error("Failed to decode JWT:", error);
       }
     }
-  }, []);
+  }, [token]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);

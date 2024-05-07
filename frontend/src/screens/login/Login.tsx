@@ -113,6 +113,31 @@ const Login: React.FC = () => {
                     onClick={togglePasswordVisibility}
                   />
                 </div>
+                <div className="mt-2 flex items-center">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    className="mr-1 opacity-50 hover:opacity-90"
+                  />
+                  <div className="flex justify-between w-full">
+                    <label
+                      htmlFor="rememberMe"
+                      className="text-xs font-bold text-gray-700"
+                    >
+                      Remember me
+                    </label>
+                    <button
+                      type="button"
+                      className="text-xs text-blue-400 hover:text-blue-600 underline"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setModalOpen(true);
+                      }}
+                    >
+                      Forgot Password
+                    </button>
+                  </div>
+                </div>
                 <button
                   type="submit"
                   className="mt-6 bg-blue-600 hover:bg-blue-500 text-white w-full py-3 rounded-md"

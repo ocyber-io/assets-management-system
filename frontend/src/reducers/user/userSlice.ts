@@ -120,18 +120,17 @@ export const fetchUsers = createAsyncThunk(
 );
 
 export const updateUser = createAsyncThunk<
-  any, // Type of the payload on fulfill
-  { id: string; updates: Object }, // Argument type
-  { rejectValue: string } // Type of the payload on reject
->("user/updateUser", async ({ id, updates }, { rejectWithValue, getState }) => {
+  any,
+  { id: string; updates: Object },
+  { rejectValue: string }
+>("user/updateUser", async ({ id, updates }, { rejectWithValue }) => {
   try {
-    const token = (getState() as any).user.user?.token;
+    const token = localStorage.getItem("token");
     const response = await axios.put(`${SERVER_URL}/api/users/${id}`, updates, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
   } catch (error: any) {
-    // Make sure you're sending back a string as the rejected value
     return rejectWithValue(
       error.response.data?.message || "Unknown error during update"
     );
