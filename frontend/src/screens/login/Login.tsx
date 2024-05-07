@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useUserStore } from "../../stores/userStore"; // Adjust the import path as necessary
 import { showErrorToast, showSuccessToast } from "../../utils/toast"; // Ensure toast utilities are correctly imported
-
 import eyeIcon from "../../assets/icons/view.svg";
 import signupImage from "../../assets/images/signup.svg";
 import logo from "../../assets/logo.svg";
 import GoogleLogin from "../../components/GoogleLogin";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import { validateLoginForm } from "../../utils/validateLoginForm";
+import { useDispatch } from "react-redux";
+import { login } from "../../reducers/user/userSlice";
+import { AppDispatch } from "../../stores/store";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -16,8 +18,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
-
-  const { login } = useUserStore();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -25,16 +26,17 @@ const Login: React.FC = () => {
       email: email,
       password: password,
     };
+
     if (validateLoginForm(formData)) {
       try {
-        const res: any = await login({ email, password });
-        if (res) {
-          showSuccessToast("Logged in successfully!");
-          navigate("/");
-        }
+        const actionResult = await dispatch(login(formData));
+        unwrapResult(actionResult); // This will throw if the promise is rejected
+        showSuccessToast("Logged in successfully!");
+        navigate("/");
       } catch (error: any) {
-        showErrorToast(error.message); // Show error message from the re-thrown error
-        console.error("Error during login:", error.message);
+        // This will catch the error thrown by unwrapResult and should display the correct message
+        showErrorToast(error || "Failed to log in");
+        console.error("Error during login:", error);
       }
     }
   };

@@ -33,11 +33,9 @@ const signUp = async (req: Request, res: Response): Promise<Response> => {
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({
-          message: "Email already exists, Please choose a different email",
-        });
+      return res.status(400).json({
+        message: "Email already exists, Please choose a different email",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -94,7 +92,9 @@ const login = async (req: Request, res: Response): Promise<Response> => {
     const isPasswordCorrect =
       user.password && (await bcrypt.compare(password, user.password));
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ message: "Email or Password is incorrect" });
     }
 
     const token = generateToken(user);

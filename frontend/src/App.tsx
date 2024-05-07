@@ -13,6 +13,7 @@ import Login from "./screens/login/Login";
 import Test from "./components/Test";
 import RequireAuth from "./middlewares/RequireAuth";
 import RedirectIfAuthenticated from "./middlewares/RedirectIfAuthenticated";
+import Test2 from "./components/Test2";
 
 const App: React.FC = () => {
   return (
@@ -46,6 +47,7 @@ const App: React.FC = () => {
         <Route path="tags" element={<Tags />} />
         <Route path="trash" element={<Trash />} />
         <Route path="test" element={<Test />} />
+        <Route path="test2" element={<Test2 />} />
         <Route path="settings" element={<Settings />}>
           <Route path="profile" element={<Profile />} />
           <Route path="document-links" element={<DocumentLinks />} />
