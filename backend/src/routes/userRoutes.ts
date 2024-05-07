@@ -6,7 +6,7 @@ import {
   getAllUsers,
   updateUser,
   deleteUser,
-} from "../controllers/userController.js";
+} from "../controllers/userController";
 
 const router = express.Router();
 
@@ -16,8 +16,8 @@ router.post("/google/signup", googleSignUp);
 router.post("/login", login);
 
 // Admin routes
-router.get("/", getAllUsers); // This route should check if the user is an admin
-router.put("/:id", updateUser); // This route should check if the user is an admin
-router.delete("/:id", deleteUser); // This route should check if the user is an admin
+router.get("/", getAllUsers);
+router.put("/:id", updateUser);
+router.delete("/:id", deleteUser);
 
 export default router;

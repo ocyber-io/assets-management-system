@@ -1,8 +1,19 @@
 import bcrypt from "bcryptjs";
-import User from "../models/userSchema.js";
+import User, { IUser } from "../models/userSchema"; // Assume IUser is exported from userSchema
 import jwt from "jsonwebtoken";
+import { Request, Response } from "express";
 
-const generateToken = (user) => {
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      JWT_SECRET: string;
+      // Add other environment variables as needed
+    }
+  }
+}
+
+const generateToken = (user: IUser): string => {
+  const secret = process.env.JWT_SECRET || "default_secret"; // Provide a default or handle it appropriately
   return jwt.sign(
     {
       id: user._id,
@@ -11,23 +22,22 @@ const generateToken = (user) => {
       email: user.email,
       googleId: user.googleId,
     },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "30d", // Token expires in 30 days
-    }
+    secret,
+    { expiresIn: "30d" }
   );
 };
 
-// SignUp Controller
-const signUp = async (req, res) => {
+const signUp = async (req: Request, res: Response): Promise<Response> => {
   const { firstname, lastname, email, password } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({
-        message: "Email already exists, Please choose a different email",
-      });
+      return res
+        .status(400)
+        .json({
+          message: "Email already exists, Please choose a different email",
+        });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -39,22 +49,21 @@ const signUp = async (req, res) => {
     });
 
     const token = generateToken(result);
-    res
+    return res
       .status(201)
       .json({ message: "Signup successful", userId: result._id, token });
   } catch (error) {
-    res.status(500).json({ message: "Error creating the user" });
+    return res.status(500).json({ message: "Error creating the user" });
   }
 };
 
-const googleSignUp = async (req, res) => {
+const googleSignUp = async (req: Request, res: Response): Promise<Response> => {
   const { email, given_name, family_name, googleId } = req.body;
 
   try {
     let user = await User.findOne({ email });
 
     if (!user) {
-      // Create a new user if doesn't exist
       user = await User.create({
         firstname: given_name,
         lastname: family_name,
@@ -63,51 +72,50 @@ const googleSignUp = async (req, res) => {
       });
     }
     const token = generateToken(user);
-    res
+    return res
       .status(201)
       .json({ message: "Login successful", userId: user._id, token });
   } catch (error) {
-    res.status(500).json({ message: "Error in Google authentication" });
+    return res.status(500).json({ message: "Error in Google authentication" });
   }
 };
 
-// Login Controller
-const login = async (req, res) => {
+const login = async (req: Request, res: Response): Promise<Response> => {
   const { email, password } = req.body;
 
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({
-        message: "Email or Password is incorrect",
-      });
+      return res
+        .status(404)
+        .json({ message: "Email or Password is incorrect" });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect =
+      user.password && (await bcrypt.compare(password, user.password));
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const token = generateToken(user);
-    res
+    return res
       .status(200)
       .json({ message: "Login successful", userId: user._id, token });
   } catch (error) {
-    res.status(500).json({ message: "Error logging in" });
+    return res.status(500).json({ message: "Error logging in" });
   }
 };
 
-// Admin Routes
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
   try {
     const users = await User.find({});
-    res.status(200).json(users);
+    return res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching users" });
+    return res.status(500).json({ message: "Error fetching users" });
   }
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
   const updates = req.body;
 
@@ -118,13 +126,13 @@ const updateUser = async (req, res) => {
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.status(200).json(updatedUser);
+    return res.status(200).json(updatedUser);
   } catch (error) {
-    res.status(500).json({ message: "Error updating the user" });
+    return res.status(500).json({ message: "Error updating the user" });
   }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
 
   try {
@@ -132,9 +140,9 @@ const deleteUser = async (req, res) => {
     if (!result) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.status(200).json({ message: "User deleted successfully" });
+    return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting the user" });
+    return res.status(500).json({ message: "Error deleting the user" });
   }
 };
 
