@@ -9,7 +9,7 @@ type NotificationModalProps = {
   descriptionAndHeadingPosition?: string;
   description?: string;
   onCancel?: () => void;
-  onSubmit: () => void;
+  onSubmit: (event: React.FormEvent) => void;
   cancelButtonText?: string;
   cancelButtonIcon?: string;
   submitButtonText: string;
@@ -86,7 +86,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             className={`w-full py-2 rounded ${
               submitButtonStyle || "bg-blue-500 hover:bg-blue-600"
             } text-white font-bold`}
-            onClick={onSubmit}
+            onClick={(e) => onSubmit(e)}
             style={{ backgroundColor: submitButtonExtraStyle }}
           >
             {submitButtonText}

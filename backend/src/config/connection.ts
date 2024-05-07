@@ -3,7 +3,12 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const mongoURI = process.env.MONGO_URL;
+const mongoURI: string = process.env.MONGO_URL as string;
+console.log("Connecting to MongoDB at URI:", mongoURI); // To confirm the URI is correct
+
+if (!mongoURI) {
+  throw new Error("MONGO_URL must be defined");
+}
 
 mongoose
   .connect(mongoURI)

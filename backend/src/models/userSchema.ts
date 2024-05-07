@@ -1,6 +1,17 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+export type IUser = {
+  _id?: mongoose.Types.ObjectId;
+  firstname: string;
+  lastname: string;
+  email: string;
+  password?: string;
+  googleId?: string;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
+};
+
+const userSchema = new mongoose.Schema<IUser>({
   firstname: {
     type: String,
     required: [true, "First name is required"],
@@ -18,10 +29,11 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
     validate: {
-      validator: function (v) {
+      validator: function (v: string) {
         return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
       },
-      message: (props) => `${props.value} is not a valid email address!`,
+      message: (props: { value: string }) =>
+        `${props.value} is not a valid email address!`,
     },
   },
   password: {
@@ -30,8 +42,14 @@ const userSchema = new mongoose.Schema({
   googleId: {
     type: String,
   },
+  resetPasswordToken: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model<IUser>("User", userSchema);
 
 export default User;

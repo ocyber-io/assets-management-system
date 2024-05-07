@@ -5,9 +5,12 @@ import eyeIcon from "../../assets/icons/view.svg";
 import signupImage from "../../assets/images/signup.svg";
 import logo from "../../assets/logo.svg";
 import GoogleLogin from "../../components/GoogleLogin";
-import { useUserStore } from "../../stores/userStore"; // Adjust the import path as necessary
+import { useDispatch } from "react-redux";
+import { signUp } from "../../reducers/user/userSlice";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { validateSignUpForm } from "../../utils/validateSignUpForm";
+import { AppDispatch } from "../../stores/store";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 const Signup: React.FC = () => {
   const [firstName, setFirstName] = useState("");
@@ -16,8 +19,7 @@ const Signup: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-
-  const { signUp } = useUserStore();
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -30,14 +32,12 @@ const Signup: React.FC = () => {
 
     if (validateSignUpForm(formData)) {
       try {
-        const res: any = await signUp(formData);
-        if (res) {
-          showSuccessToast("Signup Successfull!");
-          navigate("/");
-        }
+        const actionResult = await dispatch(signUp(formData));
+        unwrapResult(actionResult); // This will throw if the promise is rejected
+        showSuccessToast("Signup Successful!");
+        navigate("/");
       } catch (error: any) {
-        showErrorToast(error.message || "Failed to sign up");
-        console.error(error.message);
+        showErrorToast(error || "Failed to sign up");
       }
     }
   };

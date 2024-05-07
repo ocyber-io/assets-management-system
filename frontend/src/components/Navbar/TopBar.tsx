@@ -3,16 +3,18 @@ import React, { useEffect, useRef, useState } from "react";
 import downArrowIcon from "../../assets/icons/arrow-down-profile.svg";
 import bellIcon from "../../assets/icons/bell.svg";
 import searchIcon from "../../assets/icons/search.svg";
-import { useUserStore } from "../../stores/userStore";
+import { logout } from "../../reducers/user/userSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../stores/store";
 
 const TopBar: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [userInitials, setUserInitials] = useState("SM");
-  const { logout } = useUserStore();
+  const dispatch = useDispatch<AppDispatch>();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode<{ firstname: string; lastname: string }>(
@@ -24,7 +26,7 @@ const TopBar: React.FC = () => {
         console.error("Failed to decode JWT:", error);
       }
     }
-  }, []);
+  }, [token]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -51,7 +53,7 @@ const TopBar: React.FC = () => {
   ) => {
     event.preventDefault();
     event.stopPropagation();
-    logout();
+    dispatch(logout());
   };
 
   return (

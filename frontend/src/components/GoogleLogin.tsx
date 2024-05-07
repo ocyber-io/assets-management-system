@@ -3,7 +3,10 @@ import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import googleIcon from "../assets/icons/google.svg";
-import { useUserStore } from "../stores/userStore";
+import { googleSignUp } from "../reducers/user/userSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { AppDispatch } from "../stores/store";
+import { useDispatch } from "react-redux";
 
 interface UserInfo {
   id: string;
@@ -17,8 +20,8 @@ interface UserInfo {
 }
 
 const GoogleLogin: React.FC = () => {
-  const { googleSignUp } = useUserStore();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -32,12 +35,15 @@ const GoogleLogin: React.FC = () => {
           }
         );
 
-        const res: any = await googleSignUp({
-          email: response.data.email,
-          given_name: response.data.given_name,
-          family_name: response.data.family_name,
-          googleId: response.data.id,
-        });
+        const res = await dispatch(
+          googleSignUp({
+            email: response.data.email,
+            given_name: response.data.given_name,
+            family_name: response.data.family_name,
+            googleId: response.data.id,
+          })
+        );
+        unwrapResult(res);
         if (res) {
           navigate("/");
         }
