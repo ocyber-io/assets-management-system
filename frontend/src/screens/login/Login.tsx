@@ -8,9 +8,9 @@ import GoogleLogin from "../../components/GoogleLogin";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import { validateLoginForm } from "../../utils/validateLoginForm";
 import { useDispatch } from "react-redux";
-import { login } from "../../reducers/user/userSlice";
 import { AppDispatch } from "../../stores/store";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { login } from "../../reducers/user/userThunks";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
