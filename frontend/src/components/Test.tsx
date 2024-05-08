@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { signUp, login } from "../reducers/user/userSlice";
 import { RootState, AppDispatch } from "../stores/store";
+import { login, signUp } from "../reducers/user/userThunks";
 
 const Test = () => {
   const dispatch = useDispatch<AppDispatch>();

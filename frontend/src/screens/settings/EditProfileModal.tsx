@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import showPasswordIcon from "../../assets/icons/view.svg";
 import NotificationModal from "../../components/shared/NotificationModal";
-import { updateUser } from "../../reducers/user/userSlice";
 import { AppDispatch } from "../../stores/store";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { validateUpdateProfile } from "../../utils/validateUpdateProfile";
+import { updateUser } from "../../reducers/user/userThunks";
 
 type UserInfo = {
   id: string;

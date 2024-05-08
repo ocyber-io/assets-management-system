@@ -3,10 +3,10 @@ import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import googleIcon from "../assets/icons/google.svg";
-import { googleSignUp } from "../reducers/user/userSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { AppDispatch } from "../stores/store";
 import { useDispatch } from "react-redux";
+import { googleSignUp } from "../reducers/user/userThunks";
 
 interface UserInfo {
   id: string;

@@ -1,17 +1,25 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import { SERVER_URL } from "../../constants/constants";
-
-interface User {
-  userId: string;
-  token: string;
-}
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  User,
+  signUp,
+  googleSignUp,
+  login,
+  fetchUsers,
+  updateUser,
+  deleteUser,
+  forgotPassword,
+  verifyOtp,
+  resetPassword,
+} from "./userThunks";
 
 interface UserState {
   user: User | null;
   users: any[];
   status: "idle" | "loading" | "failed";
   error: string | null;
+  forgotPasswordStatus: "idle" | "loading" | "failed";
+  resetPasswordStatus: "idle" | "loading" | "failed";
+  otpVerificationStatus: "idle" | "loading" | "failed";
 }
 
 const initialState: UserState = {
@@ -19,140 +27,11 @@ const initialState: UserState = {
   users: [],
   status: "idle",
   error: null,
+  forgotPasswordStatus: "failed",
+  resetPasswordStatus: "failed",
+  otpVerificationStatus: "failed",
 };
 
-// Async thunks
-export const signUp = createAsyncThunk(
-  "user/signUp",
-  async (
-    formData: {
-      firstname: string;
-      lastname: string;
-      email: string;
-      password: string;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await axios.post(
-        `${SERVER_URL}/api/users/signup`,
-        formData
-      );
-      return response.data;
-    } catch (error: any) {
-      if (error.response) {
-        // Assuming the error response is of the format { message: "Error message" }
-        const message =
-          error.response.data?.message || "An error occurred during signup";
-        return rejectWithValue(message);
-      }
-      return rejectWithValue("An unknown error occurred during signup");
-    }
-  }
-);
-
-export const googleSignUp = createAsyncThunk(
-  "user/googleSignUp",
-  async (
-    googleData: {
-      email: string;
-      given_name: string;
-      family_name: string;
-      googleId: string;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await axios.post(
-        `${SERVER_URL}/api/users/google/signup`,
-        googleData
-      );
-      return response.data;
-    } catch (error: any) {
-      if (error.response) {
-        const message =
-          error.response.data?.message ||
-          "An error occurred during Google sign up";
-        return rejectWithValue(message);
-      }
-      return rejectWithValue("Google sign up failed with unknown error");
-    }
-  }
-);
-
-export const login = createAsyncThunk(
-  "user/login",
-  async (
-    credentials: { email: string; password: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await axios.post(
-        `${SERVER_URL}/api/users/login`,
-        credentials
-      );
-      return response.data;
-    } catch (error: any) {
-      if (error.response) {
-        // This assumes your backend error is in the format { message: "Error message" }
-        const message =
-          error.response.data?.message || "An error occurred during login";
-        return rejectWithValue(message);
-      }
-      return rejectWithValue("Login failed with unknown error");
-    }
-  }
-);
-
-export const fetchUsers = createAsyncThunk(
-  "user/fetchUsers",
-  async (_, { rejectWithValue, getState }) => {
-    try {
-      const token = (getState() as any).user.user?.token;
-      const response = await axios.get(`${SERVER_URL}/api/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue("Error fetching users");
-    }
-  }
-);
-
-export const updateUser = createAsyncThunk<
-  any,
-  { id: string; updates: Object },
-  { rejectValue: string }
->("user/updateUser", async ({ id, updates }, { rejectWithValue }) => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.put(`${SERVER_URL}/api/users/${id}`, updates, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-  } catch (error: any) {
-    return rejectWithValue(
-      error.response.data?.message || "Unknown error during update"
-    );
-  }
-});
-
-export const deleteUser = createAsyncThunk(
-  "user/deleteUser",
-  async (id: string, { rejectWithValue, getState }) => {
-    try {
-      const token = (getState() as any).user.user?.token;
-      await axios.delete(`${SERVER_URL}/api/users/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      return id;
-    } catch (error) {
-      return rejectWithValue("Error deleting user");
-    }
-  }
-);
-
-// Slice definition
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -223,6 +102,39 @@ const userSlice = createSlice({
       .addCase(deleteUser.fulfilled, (state, action: PayloadAction<string>) => {
         state.users = state.users.filter((user) => user._id !== action.payload);
         state.status = "idle";
+      })
+      .addCase(forgotPassword.pending, (state) => {
+        state.forgotPasswordStatus = "loading";
+      })
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.forgotPasswordStatus = "idle";
+        state.error = null;
+      })
+      .addCase(forgotPassword.rejected, (state, action: PayloadAction<any>) => {
+        state.forgotPasswordStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(verifyOtp.pending, (state) => {
+        state.otpVerificationStatus = "loading";
+      })
+      .addCase(verifyOtp.fulfilled, (state) => {
+        state.otpVerificationStatus = "idle";
+        state.error = null;
+      })
+      .addCase(verifyOtp.rejected, (state, action: PayloadAction<any>) => {
+        state.otpVerificationStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.resetPasswordStatus = "loading";
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.resetPasswordStatus = "idle";
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action: PayloadAction<any>) => {
+        state.resetPasswordStatus = "failed";
+        state.error = action.payload;
       });
   },
 });

@@ -6,11 +6,11 @@ import signupImage from "../../assets/images/signup.svg";
 import logo from "../../assets/logo.svg";
 import GoogleLogin from "../../components/GoogleLogin";
 import { useDispatch } from "react-redux";
-import { signUp } from "../../reducers/user/userSlice";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { validateSignUpForm } from "../../utils/validateSignUpForm";
 import { AppDispatch } from "../../stores/store";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { signUp } from "../../reducers/user/userThunks";
 
 const Signup: React.FC = () => {
   const [firstName, setFirstName] = useState("");
