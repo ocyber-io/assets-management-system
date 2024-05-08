@@ -9,6 +9,9 @@ export type IUser = {
   googleId?: string;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
+  totalStorage: string;
+  usedStorage: number;
+  remainingStorage: number;
 };
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -48,6 +51,9 @@ const userSchema = new mongoose.Schema<IUser>({
   resetPasswordExpires: {
     type: Date,
   },
+  totalStorage: { type: String, default: "100GB" },
+  usedStorage: { type: Number, default: 0 },
+  remainingStorage: { type: Number, default: 107374182400 },
 });
 
 const User = mongoose.model<IUser>("User", userSchema);

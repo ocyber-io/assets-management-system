@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes";
+import fileRoutes from "./routes/fileRoutes";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/users", userRoutes);
+app.use("/api/files", fileRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
