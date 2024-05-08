@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../stores/store";
+import { addFile } from "../reducers/file/fileThunks";
 import crossIcon from "../assets/icons/cross.svg";
 import fileUploadIcon from "../assets/icons/fileUpload.svg";
 import modalUploadIcon from "../assets/icons/modalUpload.svg";
+import { jwtDecode } from "jwt-decode";
+import { showErrorToast, showSuccessToast } from "../utils/toast";
+import { FaTimes } from "react-icons/fa";
 
 type FileUploadModalProps = {
   isOpen: boolean;
@@ -18,6 +24,21 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
   const [tagInput, setTagInput] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [userId, setUserId] = useState<string | undefined>();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode<{ id: string }>(token);
+        setUserId(decoded.id);
+      } catch (error) {
+        console.error("Failed to decode JWT:", error);
+      }
+    }
+  }, [token]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles: File[]) => {
@@ -29,34 +50,60 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
   const simulateFileUpload = (file: File) => {
     const fileSize = file.size;
     let uploaded = 0;
-    const chunkSize = fileSize / 100;
+    const chunkSize = fileSize / 100; // Dividing into 100 pieces
 
     const interval = setInterval(() => {
       uploaded += chunkSize;
-      setUploadProgress((uploaded / fileSize) * 100);
+      const progress = (uploaded / fileSize) * 100;
+      setUploadProgress(progress);
       if (uploaded >= fileSize) {
         clearInterval(interval);
+        setUploadProgress(100); // Ensure it's exactly 100 at the end
       }
-    }, 50);
+    }, 50); // Update every 50ms
   };
 
-  const handleFileUpload = () => {
-    console.log(file); // Implement actual file upload logic here
-    alert("File upload functionality not implemented.");
+  const handleFileUpload = async () => {
+    if (file && userId && uploadProgress >= 100) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("description", fileDescription);
+      formData.append("tags", tags.join(","));
+      formData.append("userId", userId);
+
+      dispatch(addFile(formData))
+        .unwrap() // Assuming addFile is a thunk that returns a Promise
+        .then(() => {
+          showSuccessToast("File uploaded successfully!");
+          // Reset everything after successful upload
+          resetForm();
+        })
+        .catch((error) => {
+          showErrorToast("Upload failed: " + error.message);
+        });
+    } else {
+      showErrorToast("Wait until the file has completely uploaded.");
+    }
+  };
+
+  const resetForm = () => {
+    setFile(null);
+    setFileDescription("");
+    setTags([]);
+    setUploadProgress(0);
+  };
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && tagInput) {
+      event.preventDefault();
+      setTags([...tags, tagInput.trim()]);
+      setTagInput("");
+    }
   };
 
   const removeFile = () => {
     setFile(null);
     setFileDescription("");
     setUploadProgress(0);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && tagInput) {
-      event.preventDefault();
-      setTags([...tags, tagInput]);
-      setTagInput("");
-    }
   };
 
   const removeTag = (index: number) => {
@@ -71,10 +118,10 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
     return (
       <div className="flex justify-start flex-col w-full  md:flex-row items-center p-2 mb-4 bg-white border-2 border-gray-200 rounded">
         <div className="flex justify-start w-full">
-          <div className="p-2 bg-blue-50 rounded-md">
-            <img src={fileUploadIcon} alt="File Icon" />
+          <div className="p-2 bg-blue-50 rounded-md w-10 h-10 mt-1">
+            <img src={fileUploadIcon} alt="File Icon" className="w-6 h-6" />
           </div>
-          <div>
+          <div className=" w-3/4">
             <p className="ml-2">{file.name}</p>
             <p className="text-sm text-gray-500 ml-2">
               {(file.size / 1024).toFixed(2)} KB
@@ -103,7 +150,16 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h3 className="font-semibold text-xl mb-4">Upload New File</h3>
+        <div className="flex w-full justify-between">
+          <h3 className="font-semibold text-xl mb-4">Upload New File</h3>
+          <button
+            className=" mt-[-50px] mr-[-16px] text-gray-500 hover:text-gray-700"
+            onClick={closeModal}
+          >
+            <FaTimes size={20} />
+          </button>
+        </div>
+
         <div
           {...getRootProps()}
           className={`border-2 border-dashed bg-blue-50 ${
