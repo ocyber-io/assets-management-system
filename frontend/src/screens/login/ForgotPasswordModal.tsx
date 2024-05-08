@@ -29,6 +29,10 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const dispatch = useDispatch<AppDispatch>();
+  const [displayTime, setDisplayTime] = useState("");
+  const countdownRef = useRef(3600); // Ref to hold the countdown seconds
+  const intervalRef = useRef<number | null>(null);
+
   const { otpVerificationStatus, error } = useSelector(
     (state: RootState) => state.user
   );
@@ -45,7 +49,8 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
 
   const handleNext = async () => {
     if (modalStage === 1) {
-      setModalStage(2); // Move to the OTP stage immediately.
+      setModalStage(2);
+      startTimer(); // Move to the OTP stage immediately.
       try {
         const forgotPasswordAction = await dispatch(forgotPassword(email));
         unwrapResult(forgotPasswordAction);
@@ -102,6 +107,57 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
         }
       }
     }
+  };
+
+  const startTimer = () => {
+    countdownRef.current = 3600; // Reset countdown seconds to 3600
+    updateDisplayTime(countdownRef.current);
+
+    // Clear any existing timer
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+    }
+
+    // Start a new timer
+    intervalRef.current = setInterval(() => {
+      countdownRef.current -= 1;
+      updateDisplayTime(countdownRef.current);
+
+      if (countdownRef.current <= 0 && intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null; // Make sure to nullify the ref after clearing
+      }
+    }, 1000);
+  };
+
+  const updateDisplayTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secondsLeft = seconds % 60;
+    setDisplayTime(
+      `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+        2,
+        "0"
+      )}:${String(secondsLeft).padStart(2, "0")}`
+    );
+  };
+
+  useEffect(() => {
+    // Cleanup on component unmount
+    return () => {
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  const codeNotReceivedHandler = () => {
+    if (!window.confirm("Are you sure you want to resend the OTP?")) {
+      return;
+    }
+    dispatch(forgotPassword(email));
+    showSuccessToast("OTP resent successfully");
+    startTimer();
   };
 
   const renderContent = () => {
@@ -171,10 +227,13 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
             ))}
           </div>
           <div className="w-full flex justify-end mt-2 gap-x-2">
-            <button className="text-xs text-blue-500 font-semibold underline">
+            <button
+              className="text-xs text-blue-500 font-semibold underline"
+              onClick={codeNotReceivedHandler}
+            >
               Didn't Receive Code?
             </button>
-            <h5 className="md:mr-3 text-blue-500">00:00</h5>
+            <h5 className="md:mr-3 text-blue-500">{displayTime}</h5>
           </div>
         </>
       ) : modalStage === 3 ? (
