@@ -3,13 +3,15 @@ import {
   addFile,
   getUserFiles,
   renameFile,
+  deleteFile,
 } from "../controllers/fileController";
 
 const router = express.Router();
 
-// POST /api/files/add
-router.post("/add", addFile);
-router.get("/user/:userId", getUserFiles);
-router.patch("/rename/:fileId", renameFile);
+// Routes for file operations
+router.post("/add", addFile); // POST endpoint for adding a file
+router.get("/user/:userId", getUserFiles); // GET endpoint to fetch all files for a specific user
+router.patch("/rename/:fileId", renameFile); // PATCH endpoint for renaming a specific file
+router.delete("/delete/:fileId", deleteFile); // DELETE endpoint for deleting a specific file
 
 export default router;

@@ -40,7 +40,7 @@ interface RecentDropdownProps {
   fileInformationHandler: (fileDetails: File) => void;
   shareHandler: () => void;
   replaceHandler: (fileDetails: File) => void;
-  deleteHandler: () => void;
+  deleteHandler: (fileId: string) => void;
   renameHandler: (filename: string, fileId: string) => void;
   disableHandler: (fileId: string) => void;
 }
@@ -172,7 +172,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
               src={movetobinIcon}
               className="ml-2.5 cursor-pointer"
               alt="Move to bin"
-              onClick={() => deleteHandler()} // Example of passing the file ID
+              onClick={() => deleteHandler(file._id)} // Example of passing the file ID
             />
             <img
               src={disableIcon}
@@ -208,7 +208,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                         toggleDropdown();
                       }
                       if (menu.key === "trash") {
-                        deleteHandler();
+                        deleteHandler(file._id);
                         toggleDropdown();
                       }
                       if (menu.key === "rename") {

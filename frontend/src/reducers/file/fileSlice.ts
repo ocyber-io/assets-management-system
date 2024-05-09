@@ -1,7 +1,7 @@
 // fileSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../stores/store";
-import { addFile, fetchFiles, renameFile } from "./fileThunks";
+import { addFile, deleteFile, fetchFiles, renameFile } from "./fileThunks";
 import { File } from "../../Types";
 
 export interface FileState {
@@ -64,6 +64,18 @@ const fileSlice = createSlice({
       .addCase(renameFile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to rename file";
+      })
+      .addCase(deleteFile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteFile.fulfilled, (state, action: PayloadAction<string>) => {
+        state.loading = false;
+        state.files = state.files.filter((file) => file._id !== action.payload);
+        state.error = null;
+      })
+      .addCase(deleteFile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to delete file";
       });
   },
 });

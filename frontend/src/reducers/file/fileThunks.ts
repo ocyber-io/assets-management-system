@@ -56,3 +56,17 @@ export const renameFile = createAsyncThunk(
     }
   }
 );
+
+export const deleteFile = createAsyncThunk(
+  "files/deleteFile",
+  async (fileId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${SERVER_URL}/api/files/delete/${fileId}`
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);

@@ -14,6 +14,7 @@ export interface IFile extends Document {
   size: string;
   tags: string[];
   description?: string;
+  isDisabled?: string;
 }
 
 const fileSchema: Schema = new Schema(
@@ -34,6 +35,7 @@ const fileSchema: Schema = new Schema(
     size: { type: String, required: true },
     tags: { type: [String], required: true },
     description: { type: String },
+    isDisabled: { type: Boolean, default: false },
   },
   {
     timestamps: true, // Enable automatic timestamping

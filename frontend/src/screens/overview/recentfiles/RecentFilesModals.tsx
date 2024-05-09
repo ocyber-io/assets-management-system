@@ -20,7 +20,6 @@ type RecentFilesModalsProps = {
   handleWarningAction: () => void;
   showDeleteModal: boolean;
   toggleDeleteModal: () => void;
-  deleteHandler: () => void;
   showRenameModal: boolean;
   fileName: string | null;
   toggleRenameModal: () => void;
@@ -50,7 +49,6 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   handleWarningAction,
   showDeleteModal,
   toggleDeleteModal,
-  deleteHandler,
   showRenameModal,
   fileName,
   toggleRenameModal,
@@ -92,10 +90,11 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
         <DeleteModal
           heading="Delete File?"
           description="Are you sure you want to delete this file?"
-          onSubmit={deleteHandler}
           submitButtonText="Yes, Delete"
           onClose={toggleDeleteModal}
+          fileId={fileId}
           isOpen={showDeleteModal}
+          fetchAllFiles={fetchAllFiles}
         />
       )}
       {showRenameModal && fileName && (

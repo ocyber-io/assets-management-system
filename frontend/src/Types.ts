@@ -15,4 +15,5 @@ export type File = {
   size: string;
   tags: string[];
   description?: string;
+  isDisabled?: boolean;
 };

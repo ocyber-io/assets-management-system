@@ -2,8 +2,9 @@ import { Request, Response } from "express";
 import upload from "../utils/upload";
 import FileModel from "../models/fileSchema";
 import User from "../models/userSchema";
-import { formatFileSize } from "../utils/helpers";
+import { formatFileSize, sizeToBytes } from "../utils/helpers";
 import path from "path";
+import fs from "fs";
 
 export const addFile = (req: Request, res: Response) => {
   upload(req, res, async (error) => {
@@ -105,6 +106,50 @@ export const renameFile = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("Error updating file name:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+export const deleteFile = async (req: Request, res: Response) => {
+  const { fileId } = req.params;
+
+  try {
+    const file = await FileModel.findById(fileId);
+    if (!file) {
+      return res.status(404).send({ message: "File not found." });
+    }
+
+    // Construct the file path relative to the backend directory
+    const filePath = path.resolve(
+      __dirname,
+      "../../../frontend/public/uploads",
+      file.name
+    );
+
+    // Remove the physical file
+    fs.unlink(filePath, async (err) => {
+      if (err) {
+        console.error("Failed to delete the physical file:", err);
+        return res
+          .status(500)
+          .send({ message: "Failed to delete the physical file." });
+      }
+
+      // Update user storage usage
+      const user = await User.findById(file.owner);
+      if (user) {
+        const fileSizeInBytes = sizeToBytes(file.size); // Ensure size is converted from string to bytes
+        user.usedStorage -= fileSizeInBytes;
+        user.remainingStorage = 107374182400 - user.usedStorage; // Assuming total storage is a constant
+        await user.save();
+      }
+
+      // Delete the file record
+      await FileModel.findByIdAndDelete(fileId);
+      res.status(200).send({ message: "File deleted successfully." });
+    });
+  } catch (err) {
+    console.error("Error deleting file:", err);
     res.status(500).send({ message: "Internal server error." });
   }
 };

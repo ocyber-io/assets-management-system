@@ -148,9 +148,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     console.log(id);
   };
 
-  const deleteHandler = () => {
+  const deleteHandler = (fileId: string) => {
     toggleDeleteModal();
-    console.log(hoveredItemId);
+    setFileId(fileId);
   };
 
   const renameHandler = (filename: string, fileId: string) => {
@@ -245,7 +245,6 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         handleWarningAction={handleWarningAction}
         showDeleteModal={showDeleteModal}
         toggleDeleteModal={toggleDeleteModal}
-        deleteHandler={deleteHandler}
         showRenameModal={showRenameModal}
         fileName={fileName}
         fileId={fileId}

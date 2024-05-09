@@ -1,11 +1,16 @@
 import React from "react";
 import deleteImage from "../../assets/images/delete-modal.svg"; // Correctly import delete image
 import NotificationModal from "./NotificationModal"; // Adjust path if needed
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../stores/store";
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import { deleteFile } from "../../reducers/file/fileThunks";
 
 type DeleteModalProps = {
   heading?: string;
   description?: string;
-  onSubmit: () => void;
+  fetchAllFiles: () => void;
+  fileId: string | null;
   submitButtonText: string;
   onClose: () => void;
   isOpen: boolean;
@@ -14,14 +19,32 @@ type DeleteModalProps = {
 const DeleteModal: React.FC<DeleteModalProps> = ({
   heading = "Are you Sure?",
   description = "Do you really want to delete this item? This process cannot be undone.",
-  onSubmit,
   submitButtonText,
   onClose,
   isOpen,
+  fileId,
+  fetchAllFiles,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const handleDismiss = () => {
-    console.log("Deletion cancelled");
     onClose();
+  };
+
+  const handleSubmit = async () => {
+    if (!fileId) {
+      showErrorToast("Invalid file identifier.");
+      return;
+    }
+
+    try {
+      await dispatch(deleteFile(fileId)).unwrap();
+      showSuccessToast("File deleted successfully");
+      fetchAllFiles();
+      onClose();
+    } catch (error: any) {
+      showErrorToast(error || "An error occurred while deleting the file.");
+    }
   };
 
   return (
@@ -33,7 +56,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       description={description}
       descriptionAndHeadingPosition="text-center"
       onCancel={handleDismiss}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       cancelButtonText="Cancel"
       submitButtonText={submitButtonText}
       cancelButtonStyle="bg-white border border-gray-200 hover:bg-gray-50"

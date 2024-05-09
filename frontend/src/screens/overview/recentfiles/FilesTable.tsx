@@ -23,7 +23,7 @@ type FilesTableProps = {
   copyToClipboard: (link: string) => void;
   fullLinkHandler: (link: string) => void;
   renameHandler: (filename: string, fileId: string) => void;
-  deleteHandler: () => void;
+  deleteHandler: (fileId: string) => void;
   fileInformationHandler: (fileDetails: File) => void;
   shareHandler: () => void;
   replaceHandler: (fileDetails: File) => void;
@@ -53,21 +53,21 @@ const FilesTable: React.FC<FilesTableProps> = ({
 
   return (
     <>
-      <table className="w-full text-left border-collapse">
+      <table className="w-full text-left border-collapse text-gray-600">
         <thead>
           <tr className="bg-transparent border-b-2">
             <th className="py-2 md:px-4 px-1   border-gray-300"></th>
             <th className="py-2 md:px-4 px-1 xl:w-72 md:w-48 w-32 border-gray-300">
               Name
             </th>
-            <th className="py-2 md:px-4 px-1 md:whitespace-nowrap border-gray-300 md:block hidden">
-              Last Modified
+            <th className="py-2 md:px-4 px-1 md:whitespace-nowrap border-gray-300 ">
+              <div className="md:block hidden">Last Modified</div>
             </th>
-            <th className="py-2 md:px-4 px-1 md:w-48 w-32 ml-4 border-gray-300">
+            <th className="py-2 md:px-4 px-1 xl:w-72 md:w-56 w-32 ml-4 border-gray-300">
               Link
             </th>
-            <th className="py-2 md:px-4 px-1 md:whitespace-nowrap  border-gray-300 md:block hidden">
-              File Size
+            <th className="py-2 md:px-4 px-1 md:whitespace-nowrap  border-gray-300 ">
+              <div className="md:block hidden">File Size</div>
             </th>
             <th className="py-2 md:px-4 px-1   border-gray-300 text-center"></th>
           </tr>
@@ -104,8 +104,12 @@ const FilesTable: React.FC<FilesTableProps> = ({
                     </div>
                   </div>
                 </td>
-                <td className="md:px-4 px-1 py-3 md:block hidden">
-                  {formatDate(file.updatedAt)}
+                <td className="md:px-4 px-1 py-3 md:w-48 w-24 overflow-hidden">
+                  <div className="items-center break-words max-w-xs md:block hidden">
+                    <p className="md:text-md text-sm ">
+                      {formatDate(file.updatedAt)}
+                    </p>
+                  </div>
                 </td>
                 <td className="md:px-4 px-1 py-3 relative">
                   <div
@@ -114,7 +118,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
                     onMouseLeave={() => setHoverLinkId(null)}
                     onClick={() => setHoverLinkId(file._id)}
                   >
-                    <a className="text-blue-500 hover:text-blue-600 cursor-pointer max-w-xs break-words md:w-48 w-32">
+                    <a className="text-blue-500 hover:text-blue-600 cursor-pointer max-w-xs break-words xl:w-72 md:48 w-32">
                       {file.link}
                     </a>
                     {hoverLinkId === file._id && (
@@ -145,12 +149,14 @@ const FilesTable: React.FC<FilesTableProps> = ({
                     )}
                   </div>
                 </td>
-                <td className="md:px-4 px-1 py-3 md:block hidden">
-                  {file.size}
+                <td className="md:px-4 px-1 py-3 md:w-48 w-24 overflow-hidden">
+                  <div className="items-center break-words max-w-xs md:block hidden">
+                    <p className="md:text-md text-sm ">{file.size}</p>
+                  </div>
                 </td>
-                <td className="md:pr-4 pr-1 py-3 text-center relative">
+                <td className="py-3 text-center relative md:w-64 w-24">
                   <div className="flex justify-end">
-                    <div className="hidden lg:block">
+                    <div className="hidden lg:block md:mr-16">
                       <HoverOptions
                         file={file}
                         hoveredItemId={hoveredItemId}
