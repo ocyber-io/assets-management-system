@@ -9,7 +9,6 @@ import {
 } from "../../reducers/file/fileSlice";
 import { fetchFiles } from "../../reducers/file/fileThunks";
 import { AppDispatch } from "../../stores/store";
-import Loading from "../../utils/Loading";
 import ImagesCard from "../../utils/ImagesCard";
 
 const RecentStorage: React.FC = () => {
