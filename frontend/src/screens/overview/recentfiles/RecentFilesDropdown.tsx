@@ -34,15 +34,15 @@ type MenuItem = {
 // Define props for the RecentDropdown component
 interface RecentDropdownProps {
   file: File;
-  hoveredItemId: number | null;
+  hoveredItemId: string | null;
   isOpen: boolean;
   toggleDropdown: () => void;
   fileInformationHandler: (fileDetails: File) => void;
   shareHandler: () => void;
   replaceHandler: (fileDetails: File) => void;
   deleteHandler: () => void;
-  renameHandler: (filename: string) => void;
-  disableHandler: (fileId: number) => void;
+  renameHandler: (filename: string, fileId: string) => void;
+  disableHandler: (fileId: string) => void;
 }
 
 const subItems: MenuItem[] = [
@@ -165,7 +165,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
               src={renameIcon}
               className="ml-2.5 cursor-pointer"
               alt="Rename"
-              onClick={() => renameHandler(file.name)}
+              onClick={() => renameHandler(file.originalName, file._id)}
             />
             <img src={starredIcon} className="ml-4 cursor-pointer" alt="Star" />
             <img
@@ -178,7 +178,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
               src={disableIcon}
               className="ml-2.5 cursor-pointer"
               alt="Disable"
-              onClick={() => disableHandler(file.id)}
+              onClick={() => disableHandler(file._id)}
             />
           </div>
         </div>
@@ -212,7 +212,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                         toggleDropdown();
                       }
                       if (menu.key === "rename") {
-                        renameHandler(file.name);
+                        renameHandler(file.originalName, file._id);
                         toggleDropdown();
                       }
                     }}

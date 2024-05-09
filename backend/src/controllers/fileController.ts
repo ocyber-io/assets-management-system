@@ -3,17 +3,19 @@ import upload from "../utils/upload";
 import FileModel from "../models/fileSchema";
 import User from "../models/userSchema";
 import { formatFileSize } from "../utils/helpers";
+import path from "path";
 
 export const addFile = (req: Request, res: Response) => {
   upload(req, res, async (error) => {
     if (error) {
-      res.status(500).send({ message: error });
+      res.status(500).send({ message: error.message });
     } else {
       if (!req.file) {
         res.status(400).send({ message: "No file selected!" });
       } else {
         const { tags, description, userId } = req.body;
         const fileSize = req.file.size;
+        const baseURL = process.env.BASE_URL;
 
         try {
           const user = await User.findById(userId);
@@ -23,15 +25,18 @@ export const addFile = (req: Request, res: Response) => {
 
           user.usedStorage += fileSize;
           user.remainingStorage = 107374182400 - user.usedStorage;
-
           await user.save();
 
           const relativeLink = `/uploads/${req.file.filename}`;
+          const fullLink = `${baseURL}${relativeLink}`;
 
           const newFile = new FileModel({
-            name: req.file.filename,
+            originalName: req.file.originalname, // Store original file name
+            name: req.file.filename, // New unique name used for storage
             link: relativeLink,
+            fullLink: fullLink,
             size: formatFileSize(fileSize),
+            type: req.file.mimetype,
             tags: tags ? tags.split(",") : [],
             description: description || "",
             owner: userId,
@@ -61,5 +66,45 @@ export const getUserFiles = async (req: Request, res: Response) => {
     res.status(200).send(files);
   } catch (err: any) {
     res.status(500).send({ message: err.message });
+  }
+};
+
+// In your fileController.js
+export const renameFile = async (req: Request, res: Response) => {
+  const { fileId } = req.params;
+  const { newOriginalName } = req.body;
+
+  if (!newOriginalName) {
+    return res.status(400).send({ message: "New name must be provided." });
+  }
+
+  try {
+    const file = await FileModel.findById(fileId);
+    if (!file) {
+      return res.status(404).send({ message: "File not found." });
+    }
+
+    // Extract the extension from the original filename
+    const originalExtension = path.extname(file.originalName);
+
+    // Check if the new name has an extension
+    const hasExtension = path.extname(newOriginalName);
+
+    // If new name lacks an extension and the original name had one, append it
+    if (!hasExtension && originalExtension) {
+      file.originalName = `${newOriginalName}${originalExtension}`;
+    } else {
+      file.originalName = newOriginalName;
+    }
+
+    await file.save();
+
+    res.status(200).send({
+      message: "File renamed successfully.",
+      file: file,
+    });
+  } catch (err) {
+    console.error("Error updating file name:", err);
+    res.status(500).send({ message: "Internal server error." });
   }
 };

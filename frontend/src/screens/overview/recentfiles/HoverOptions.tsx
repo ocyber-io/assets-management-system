@@ -11,10 +11,10 @@ import { File } from "../../../Types"; // Assuming this is the type definition f
 
 interface HoverOptionsProps {
   file: File;
-  hoveredItemId: number | null;
-  renameHandler: (filename: string) => void;
+  hoveredItemId: string | null;
+  renameHandler: (filename: string, fileId: string) => void;
   deleteHandler: (fileId: string) => void; // Assuming you need the file ID for deletion
-  disableHandler: (fileId: number) => void;
+  disableHandler: (fileId: string) => void;
   shareHandler: () => void;
 }
 
@@ -29,7 +29,7 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
   return (
     <div
       className={`flex gap-x-1 xl:mt-2 md:mr-4 ${
-        hoveredItemId === file.id ? "visible" : "invisible"
+        hoveredItemId === file._id ? "visible" : "invisible"
       }`}
     >
       <img
@@ -43,20 +43,20 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
         src={renameIcon}
         className="ml-4 cursor-pointer"
         alt="Rename"
-        onClick={() => renameHandler(file.name)}
+        onClick={() => renameHandler(file.originalName, file._id)}
       />
       <img src={starredIcon} className="ml-4 cursor-pointer" alt="Star" />
       <img
         src={movetobinIcon}
         className="ml-4 cursor-pointer"
         alt="Move to bin"
-        onClick={() => deleteHandler(file.id.toString())} // Example of passing the file ID
+        onClick={() => deleteHandler(file._id)} // Example of passing the file ID
       />
       <img
         src={disableIcon}
         className="ml-4 cursor-pointer"
         alt="Disable"
-        onClick={() => disableHandler(file.id)}
+        onClick={() => disableHandler(file._id)}
       />
     </div>
   );

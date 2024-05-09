@@ -38,3 +38,21 @@ export const addFile = createAsyncThunk(
     }
   }
 );
+
+export const renameFile = createAsyncThunk(
+  "files/renameFile",
+  async (
+    { fileId, newOriginalName }: { fileId: string; newOriginalName: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/rename/${fileId}`,
+        { newOriginalName }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
