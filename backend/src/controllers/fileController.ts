@@ -6,7 +6,7 @@ import { formatFileSize, sizeToBytes } from "../utils/helpers";
 import path from "path";
 import fs from "fs";
 
-export const addFile = (req: Request, res: Response) => {
+export const addFile = async (req: Request, res: Response) => {
   upload(req, res, async (error) => {
     if (error) {
       res.status(500).send({ message: error.message });
@@ -24,28 +24,45 @@ export const addFile = (req: Request, res: Response) => {
             return res.status(404).send({ message: "User not found" });
           }
 
-          user.usedStorage += fileSize;
-          user.remainingStorage = 107374182400 - user.usedStorage;
-          await user.save();
+          const userDir = path.join(
+            __dirname,
+            "../../../frontend/public/uploads",
+            userId
+          );
+          fs.mkdirSync(userDir, { recursive: true }); // Ensure user directory exists
 
-          const relativeLink = `/uploads/${req.file.filename}`;
-          const fullLink = `${baseURL}${relativeLink}`;
+          const oldPath = req.file.path;
+          const newPath = path.join(userDir, req.file.filename);
 
-          const newFile = new FileModel({
-            originalName: req.file.originalname, // Store original file name
-            name: req.file.filename, // New unique name used for storage
-            link: relativeLink,
-            fullLink: fullLink,
-            size: formatFileSize(fileSize),
-            type: req.file.mimetype,
-            tags: tags ? tags.split(",") : [],
-            description: description || "",
-            owner: userId,
-            storageUsed: `${formatFileSize(user.usedStorage)}`,
+          fs.rename(oldPath, newPath, async (err) => {
+            if (err) throw err;
+
+            if (!req.file) {
+              return res.status(400).send({ message: "No file selected!" });
+            }
+
+            const relativeLink = `/uploads/${userId}/${req.file.filename}`;
+            const fullLink = `${baseURL}${relativeLink}`;
+
+            const newFile = new FileModel({
+              originalName: req.file.originalname,
+              name: req.file.filename,
+              link: relativeLink,
+              fullLink: fullLink,
+              size: formatFileSize(fileSize),
+              type: req.file.mimetype,
+              tags: tags ? tags.split(",") : [],
+              description: description || "",
+              owner: userId,
+              storageUsed: `${formatFileSize(user.usedStorage)}`,
+            });
+
+            user.usedStorage += fileSize;
+            user.remainingStorage = 107374182400 - user.usedStorage;
+            await user.save();
+            await newFile.save();
+            res.status(201).send(newFile);
           });
-
-          await newFile.save();
-          res.status(201).send(newFile);
         } catch (err: any) {
           res.status(500).send({ message: err.message });
         }
