@@ -1,24 +1,24 @@
 import React from "react";
-import deleteImage from "../../assets/images/delete-modal.svg"; // Correctly import delete image
-import NotificationModal from "./NotificationModal"; // Adjust path if needed
+import warningImage from "../../assets/images/warning-modal.svg";
+import NotificationModal from "./NotificationModal";
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import { toggleFileDisable } from "../../reducers/file/fileThunks";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../stores/store";
-import { showErrorToast, showSuccessToast } from "../../utils/toast";
-import { deleteFile } from "../../reducers/file/fileThunks";
 
-type DeleteModalProps = {
+type EnableModalProps = {
+  fileId: string | null;
   heading?: string;
   description?: string;
-  fetchAllFiles: () => void;
-  fileId: string | null;
   submitButtonText: string;
   onClose: () => void;
   isOpen: boolean;
+  fetchAllFiles: () => void;
 };
 
-const DeleteModal: React.FC<DeleteModalProps> = ({
-  heading = "Are you Sure?",
-  description = "Do you really want to delete this item? This process cannot be undone.",
+const EnableModal: React.FC<EnableModalProps> = ({
+  heading = "Warning!",
+  description = "There is something that needs your attention. Please take action or dismiss this warning.",
   submitButtonText,
   onClose,
   isOpen,
@@ -28,43 +28,43 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   const dispatch = useDispatch<AppDispatch>();
 
   const handleDismiss = () => {
+    console.log("Warning dismissed");
     onClose();
   };
 
-  const handleSubmit = async () => {
+  const enableHandler = async () => {
     if (!fileId) {
       showErrorToast("Invalid file identifier.");
       return;
     }
 
     try {
-      await dispatch(deleteFile(fileId)).unwrap();
-      showSuccessToast("File deleted successfully");
+      await dispatch(toggleFileDisable(fileId)).unwrap();
+      showSuccessToast("File disabled successfully");
       fetchAllFiles();
       onClose();
     } catch (error: any) {
-      showErrorToast(error || "An error occurred while deleting the file.");
+      showErrorToast(error || "An error occurred while disabling the file.");
     }
   };
 
   return (
     <NotificationModal
       isOpen={isOpen}
-      imageUrl={deleteImage}
+      imageUrl={warningImage}
       heading={heading}
       headingStyles="text-xl text-gray-600 font-extrabold mt-4"
       description={description}
       descriptionAndHeadingPosition="text-center"
       onCancel={handleDismiss}
-      onSubmit={handleSubmit}
+      onSubmit={enableHandler}
       cancelButtonText="Cancel"
       submitButtonText={submitButtonText}
       cancelButtonStyle="bg-white border border-gray-200 hover:bg-gray-50"
-      submitButtonStyle="hover:bg-red-600"
-      submitButtonExtraStyle="#FF6B50"
+      submitButtonStyle="bg-green-500 hover:bg-green-600"
       closeModal={onClose}
     />
   );
 };
 
-export default DeleteModal;
+export default EnableModal;

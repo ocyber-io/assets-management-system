@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
+import { selectFiles } from "../../reducers/file/fileSlice";
 
 type SubItem = {
   id: string;
@@ -10,6 +12,7 @@ type SubItem = {
   label: string;
   count?: number;
   subItems?: SubItem[];
+  countKey?: string;
 };
 
 type NavLinkProps = {
@@ -25,6 +28,8 @@ interface NavLinkItemProps {
 const NavLinkItem: React.FC<NavLinkItemProps> = ({ item }) => {
   const [hovered, setHovered] = useState<boolean>(false);
   const [showSubItems, setShowSubItems] = useState<boolean>(false);
+
+  const files = useSelector(selectFiles);
 
   const getNavLinkClass = ({ isActive }: NavLinkProps) => {
     let baseClass =
@@ -76,7 +81,7 @@ const NavLinkItem: React.FC<NavLinkItemProps> = ({ item }) => {
                   isActive ? "bg-white text-blue-500" : "bg-blue-500 text-white"
                 }`}
               >
-                {item.count}
+                {item.countKey === "recentFiles" ? files.length : 0}
               </span>
             )}
           </>

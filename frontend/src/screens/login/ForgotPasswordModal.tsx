@@ -32,6 +32,27 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
   const [displayTime, setDisplayTime] = useState("");
   const countdownRef = useRef(3600); // Ref to hold the countdown seconds
   const intervalRef = useRef<number | null>(null);
+  const buttonTimerRef = useRef(60);
+  const [buttonTimer, setButtonTimer] = useState(0);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  useEffect(() => {
+    let timerId: any;
+    if (buttonDisabled) {
+      timerId = setInterval(() => {
+        buttonTimerRef.current -= 1;
+        if (buttonTimerRef.current <= 0) {
+          clearInterval(timerId);
+          setButtonDisabled(false);
+          buttonTimerRef.current = 60;
+        }
+        setButtonTimer(buttonTimerRef.current);
+      }, 1000);
+    }
+    return () => {
+      if (timerId) clearInterval(timerId);
+    };
+  }, [buttonDisabled]);
 
   const { otpVerificationStatus, error } = useSelector(
     (state: RootState) => state.user
@@ -49,6 +70,10 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
 
   const handleNext = async () => {
     if (modalStage === 1) {
+      if (email === "") {
+        showErrorToast("Please enter a valid email address");
+        return;
+      }
       setModalStage(2);
       startTimer(); // Move to the OTP stage immediately.
       try {
@@ -77,7 +102,11 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
     } else if (modalStage === 3) {
       if (password !== confirmPassword) {
         showErrorToast("Passwords do not match");
-        return; // Stop the function if passwords do not match
+        return;
+      }
+      if (password === "" && confirmPassword === "") {
+        showErrorToast("Password cannot be empty");
+        return;
       }
       try {
         const resetAction = await dispatch(
@@ -157,6 +186,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
     }
     dispatch(forgotPassword(email));
     showSuccessToast("OTP resent successfully");
+    setButtonDisabled(true);
     startTimer();
   };
 
@@ -228,10 +258,15 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
           </div>
           <div className="w-full flex justify-end mt-2 gap-x-2">
             <button
-              className="text-xs text-blue-500 font-semibold underline"
+              className={`text-xs font-semibold underline ${
+                buttonDisabled ? "text-gray-400" : "text-blue-500"
+              }`}
               onClick={codeNotReceivedHandler}
+              disabled={buttonDisabled}
             >
-              Didn't Receive Code?
+              {buttonDisabled
+                ? `Please wait ${buttonTimer}s`
+                : "Didn't Receive Code?"}
             </button>
             <h5 className="md:mr-3 text-blue-500">{displayTime}</h5>
           </div>

@@ -23,6 +23,7 @@ type NavItem = {
   hoverIcon: string;
   count?: number;
   subItems?: NavItem[];
+  countKey?: string;
 };
 
 type NavSection = {
@@ -53,6 +54,7 @@ export const navSections: NavSection[] = [
         label: "Recent",
         icon: recentIcon,
         hoverIcon: recentHoverIcon,
+        countKey: "recentFiles",
         count: 34,
       },
       {
@@ -73,6 +75,7 @@ export const navSections: NavSection[] = [
         label: "Trash",
         icon: trashIcon,
         hoverIcon: trashHoverIcon,
+        countKey: "trash",
         count: 5,
       },
     ],

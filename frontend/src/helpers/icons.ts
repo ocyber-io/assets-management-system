@@ -11,6 +11,9 @@ import fileUploadIcon from "../assets/icons/file-upload.svg";
 import folderUploadIcon from "../assets/icons/folder-upload.svg";
 import downRightArrowIcon from "../assets/icons/downRightArrow.svg";
 import pdfSmallIcon from "../assets/icons/pdfSmall.svg";
+import nameFilterIcon from "../assets/icons/name-filter-arrow.svg";
+import upwardsArrowIcon from "../assets/icons/upwards-arrow.svg";
+import downwardsArrowIcon from "../assets/icons/downwards-arrow.svg";
 
 export {
   canEditIcon,
@@ -26,4 +29,7 @@ export {
   folderUploadIcon,
   downRightArrowIcon,
   pdfSmallIcon,
+  nameFilterIcon,
+  upwardsArrowIcon,
+  downwardsArrowIcon,
 };

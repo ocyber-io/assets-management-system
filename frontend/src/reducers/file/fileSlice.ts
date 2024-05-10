@@ -1,7 +1,13 @@
 // fileSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../stores/store";
-import { addFile, fetchFiles } from "./fileThunks";
+import {
+  addFile,
+  deleteFile,
+  fetchFiles,
+  renameFile,
+  toggleFileDisable,
+} from "./fileThunks";
 import { File } from "../../Types";
 
 export interface FileState {
@@ -47,6 +53,56 @@ const fileSlice = createSlice({
       .addCase(addFile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to add file";
+      })
+      .addCase(renameFile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(renameFile.fulfilled, (state, action: PayloadAction<File>) => {
+        state.loading = false;
+        const index = state.files.findIndex(
+          (file) => file._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.files[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(renameFile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to rename file";
+      })
+      .addCase(deleteFile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteFile.fulfilled, (state, action: PayloadAction<string>) => {
+        state.loading = false;
+        state.files = state.files.filter((file) => file._id !== action.payload);
+        state.error = null;
+      })
+      .addCase(deleteFile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to delete file";
+      })
+      .addCase(toggleFileDisable.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        toggleFileDisable.fulfilled,
+        (state, action: PayloadAction<File>) => {
+          state.loading = false;
+          const index = state.files.findIndex(
+            (file) => file._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.files[index].isDisabled = action.payload.isDisabled;
+          }
+          state.error = null;
+        }
+      )
+      .addCase(toggleFileDisable.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to toggle file disable state";
       });
   },
 });

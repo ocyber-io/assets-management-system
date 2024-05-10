@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import LinkModal from "../../../components/shared/LinkModal";
 import WarningModal from "../../../components/shared/WarningModal";
 import DeleteModal from "../../../components/shared/DeleteModal";
@@ -9,22 +9,26 @@ import ShareModal from "../../../components/shared/ShareModal";
 import ReplaceFileModal from "../../../components/shared/ReplaceFileModal";
 import ReplaceSuccessfullModal from "../../../components/shared/ReplaceSuccessfullModal";
 import { File } from "../../../Types";
+import EnableModal from "../../../components/shared/EnableModal";
 
 type RecentFilesModalsProps = {
+  fileId: string | null;
   showLinkModal: boolean;
   selectedLink: string | null;
   setShowLinkModal: (show: boolean) => void;
   showWarningModal: boolean;
+  showEnableModal: boolean;
   toggleDisableModal: () => void;
   handleWarningAction: () => void;
   showDeleteModal: boolean;
   toggleDeleteModal: () => void;
-  deleteHandler: () => void;
   showRenameModal: boolean;
   fileName: string | null;
+  fileLink: string;
   toggleRenameModal: () => void;
   handleOkAction: () => void;
   toggleFileInformationModal: () => void;
+  toggleEnableModal: () => void;
   showFileInformationModal: boolean;
   toggleShareModal: () => void;
   showShareModal: boolean;
@@ -35,23 +39,23 @@ type RecentFilesModalsProps = {
   toggleSuccessModal: () => void;
   handleReplaceSubmit: () => void;
   handleCancelReplace: () => void;
+
+  fetchAllFiles: () => void;
   selectedFileDetails: File | undefined;
 };
 
 const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
+  fileId,
   showLinkModal,
   selectedLink,
   setShowLinkModal,
   showWarningModal,
   toggleDisableModal,
-  handleWarningAction,
   showDeleteModal,
   toggleDeleteModal,
-  deleteHandler,
   showRenameModal,
   fileName,
   toggleRenameModal,
-  handleOkAction,
   toggleFileInformationModal,
   showFileInformationModal,
   toggleShareModal,
@@ -64,6 +68,10 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   handleReplaceSubmit,
   handleCancelReplace,
   selectedFileDetails,
+  fetchAllFiles,
+  showEnableModal,
+  toggleEnableModal,
+  fileLink,
 }) => {
   return (
     <>
@@ -78,30 +86,43 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
       {showWarningModal && (
         <WarningModal
           heading="Disable File?"
+          fileId={fileId}
           description="Disabling this file will render its link inactive. Any shared links to this file will no longer be accessible to recipients."
-          onSubmit={handleWarningAction}
           submitButtonText="Disable"
           onClose={toggleDisableModal}
           isOpen={showWarningModal}
+          fetchAllFiles={fetchAllFiles}
+        />
+      )}
+      {showEnableModal && (
+        <EnableModal
+          heading="Enable File?"
+          description="Enabling this file will reactivate its link. Any previously shared links to this file will once again be accessible to recipients."
+          submitButtonText="Enable"
+          fileId={fileId}
+          onClose={toggleEnableModal}
+          isOpen={showEnableModal}
+          fetchAllFiles={fetchAllFiles}
         />
       )}
       {showDeleteModal && (
         <DeleteModal
           heading="Delete File?"
           description="Are you sure you want to delete this file?"
-          onSubmit={deleteHandler}
           submitButtonText="Yes, Delete"
           onClose={toggleDeleteModal}
+          fileId={fileId}
           isOpen={showDeleteModal}
+          fetchAllFiles={fetchAllFiles}
         />
       )}
       {showRenameModal && fileName && (
         <RenameModal
           isOpen={showRenameModal}
           onClose={toggleRenameModal}
-          onSubmit={handleOkAction}
-          onCancel={toggleRenameModal}
-          filename={fileName}
+          fileId={fileId}
+          initialFilename={fileName}
+          fetchAllFiles={fetchAllFiles}
         />
       )}
       {showShareModal && (
@@ -109,7 +130,7 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
           isOpen={showShareModal}
           onClose={toggleShareModal}
           onSubmit={shareSubmitClickHandler}
-          onCancel={toggleShareModal}
+          fileLink={fileLink}
         />
       )}
       {showFileInformationModal && sampleFileDetailsData && (

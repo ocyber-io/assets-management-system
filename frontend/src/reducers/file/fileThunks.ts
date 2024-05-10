@@ -38,3 +38,49 @@ export const addFile = createAsyncThunk(
     }
   }
 );
+
+export const renameFile = createAsyncThunk(
+  "files/renameFile",
+  async (
+    { fileId, newOriginalName }: { fileId: string; newOriginalName: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/rename/${fileId}`,
+        { newOriginalName }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const deleteFile = createAsyncThunk(
+  "files/deleteFile",
+  async (fileId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${SERVER_URL}/api/files/delete/${fileId}`
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const toggleFileDisable = createAsyncThunk(
+  "files/toggleDisable",
+  async (fileId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/${fileId}/toggleDisable`
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);

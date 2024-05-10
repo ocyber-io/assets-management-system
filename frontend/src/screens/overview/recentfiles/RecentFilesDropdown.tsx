@@ -14,6 +14,7 @@ import {
   downloadIcon,
   renameIcon,
   disableIcon,
+  EnableIcon,
 } from "../../../helpers/dropdownIcons";
 import { File } from "../../../Types";
 
@@ -34,15 +35,17 @@ type MenuItem = {
 // Define props for the RecentDropdown component
 interface RecentDropdownProps {
   file: File;
-  hoveredItemId: number | null;
+  hoveredItemId: string | null;
   isOpen: boolean;
   toggleDropdown: () => void;
   fileInformationHandler: (fileDetails: File) => void;
-  shareHandler: () => void;
+  shareHandler: (fileLink: string) => void;
   replaceHandler: (fileDetails: File) => void;
-  deleteHandler: () => void;
-  renameHandler: (filename: string) => void;
-  disableHandler: (fileId: number) => void;
+  deleteHandler: (fileId: string) => void;
+  renameHandler: (filename: string, fileId: string) => void;
+  disableHandler: (fileId: string) => void;
+  enableHandler: (fileId: string) => void;
+  copyToClipboard: (link: string) => void;
 }
 
 const subItems: MenuItem[] = [
@@ -109,6 +112,8 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
   deleteHandler,
   renameHandler,
   disableHandler,
+  enableHandler,
+  copyToClipboard,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
@@ -140,6 +145,17 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
     setOpenSubMenu(openSubMenu === menuKey ? null : menuKey);
   };
 
+  const downloadHandler = () => {
+    if (file.link) {
+      const link = document.createElement("a");
+      link.href = file.link; // Assuming `file.link` is the URL to download the file
+      link.setAttribute("download", file.originalName); // This suggests a filename to save as
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <div ref={dropdownRef} className="relative">
       {!isDesktopOrLaptop ? (
@@ -152,34 +168,67 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
           <div className="flex">
             <img
               src={shareIcon}
-              className="ml-2 cursor-pointer"
+              className={`ml-6  ${
+                file.isDisabled ? "opacity-30" : "cursor-pointer"
+              }`}
               alt="Share"
-              onClick={() => shareHandler()}
+              onClick={() => {
+                if (!file.isDisabled) shareHandler(file.link);
+              }}
+            />
+
+            <img
+              src={renameIcon}
+              className={`ml-4 ${
+                file.isDisabled ? "opacity-30" : "cursor-pointer"
+              }`}
+              alt="Rename"
+              onClick={() => {
+                if (!file.isDisabled)
+                  renameHandler(file.originalName, file._id);
+              }}
             />
             <img
               src={downloadIcon}
-              className="ml-2.5 cursor-pointer"
+              className={`ml-4 ${
+                file.isDisabled ? "opacity-30" : "cursor-pointer"
+              }`}
               alt="Download"
+              onClick={() => {
+                if (!file.isDisabled) downloadHandler();
+              }}
             />
-            <img
-              src={renameIcon}
-              className="ml-2.5 cursor-pointer"
-              alt="Rename"
-              onClick={() => renameHandler(file.name)}
-            />
-            <img src={starredIcon} className="ml-4 cursor-pointer" alt="Star" />
             <img
               src={movetobinIcon}
-              className="ml-2.5 cursor-pointer"
+              className="ml-4 cursor-pointer"
               alt="Move to bin"
-              onClick={() => deleteHandler()} // Example of passing the file ID
+              onClick={() => {
+                deleteHandler(file._id);
+              }}
             />
-            <img
-              src={disableIcon}
-              className="ml-2.5 cursor-pointer"
-              alt="Disable"
-              onClick={() => disableHandler(file.id)}
-            />
+            {file.isDisabled ? (
+              <>
+                <img
+                  src={EnableIcon}
+                  className="ml-4 cursor-pointer"
+                  alt="Enable"
+                  onClick={() => {
+                    enableHandler(file._id);
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <img
+                  src={disableIcon}
+                  className="ml-4 cursor-pointer"
+                  alt="Disable"
+                  onClick={() => {
+                    if (!file.isDisabled) disableHandler(file._id);
+                  }}
+                />
+              </>
+            )}
           </div>
         </div>
       ) : (
@@ -208,11 +257,14 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                         toggleDropdown();
                       }
                       if (menu.key === "trash") {
-                        deleteHandler();
+                        deleteHandler(file._id);
                         toggleDropdown();
                       }
+                      if (menu.key === "download") {
+                        downloadHandler();
+                      }
                       if (menu.key === "rename") {
-                        renameHandler(file.name);
+                        renameHandler(file.originalName, file._id);
                         toggleDropdown();
                       }
                     }}
@@ -237,7 +289,11 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                                 toggleDropdown();
                               }
                               if (subItem.label === "Share") {
-                                shareHandler();
+                                shareHandler(file.link);
+                                toggleDropdown();
+                              }
+                              if (subItem.label === "Copy Link") {
+                                copyToClipboard(file.link);
                                 toggleDropdown();
                               }
                             }}
@@ -245,7 +301,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                             <img
                               src={subItem.icon}
                               alt=""
-                              className="mr-2 mt-"
+                              className="mr-2 mt-1"
                             />
                             {subItem.label}
                           </button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../stores/store";
 import { addFile } from "../reducers/file/fileThunks";
 import crossIcon from "../assets/icons/cross.svg";
@@ -9,6 +9,7 @@ import modalUploadIcon from "../assets/icons/modalUpload.svg";
 import { jwtDecode } from "jwt-decode";
 import { showErrorToast, showSuccessToast } from "../utils/toast";
 import { FaTimes } from "react-icons/fa";
+import { selectLoading } from "../reducers/file/fileSlice";
 
 type FileUploadModalProps = {
   isOpen: boolean;
@@ -26,6 +27,7 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [userId, setUserId] = useState<string | undefined>();
   const dispatch = useDispatch<AppDispatch>();
+  const loading = useSelector(selectLoading);
 
   const token = localStorage.getItem("token");
 
@@ -238,10 +240,13 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
             Close
           </button>
           <button
-            className="bg-blue-500 w-full hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
+            className="bg-blue-500 flex justify-center w-full hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out"
             onClick={handleFileUpload}
           >
             Import
+            {loading && (
+              <div className="ml-2 w-4 h-4 border-2 border-t-2 mt-1 border-white rounded-full animate-spin"></div>
+            )}
           </button>
         </div>
       </div>
