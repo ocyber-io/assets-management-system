@@ -6,6 +6,7 @@ import {
   renameIcon,
   shareIcon,
   starredIcon,
+  EnableIcon,
 } from "../../../helpers/dropdownIcons";
 import { File } from "../../../Types"; // Assuming this is the type definition for your files
 
@@ -28,36 +29,67 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
 }) => {
   return (
     <div
-      className={`flex gap-x-1 xl:mt-2 md:mr-4 ${
+      className={`flex gap-x-1 xl:mt-2 md:mr-8 ${
         hoveredItemId === file._id ? "visible" : "invisible"
       }`}
     >
       <img
         src={shareIcon}
-        className="ml-6 cursor-pointer"
+        className={`ml-6  ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
         alt="Share"
-        onClick={() => shareHandler()}
+        onClick={() => {
+          if (!file.isDisabled) shareHandler();
+        }}
       />
-      <img src={downloadIcon} className="ml-4 cursor-pointer" alt="Download" />
+      <img
+        src={downloadIcon}
+        className={`ml-4 ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
+        alt="Download"
+      />
       <img
         src={renameIcon}
-        className="ml-4 cursor-pointer"
+        className={`ml-4 ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
         alt="Rename"
-        onClick={() => renameHandler(file.originalName, file._id)}
+        onClick={() => {
+          if (!file.isDisabled) renameHandler(file.originalName, file._id);
+        }}
       />
-      <img src={starredIcon} className="ml-4 cursor-pointer" alt="Star" />
+      <img
+        src={starredIcon}
+        className={`ml-4 ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
+        alt="Star"
+      />
       <img
         src={movetobinIcon}
-        className="ml-4 cursor-pointer"
+        className={`ml-4 ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
         alt="Move to bin"
-        onClick={() => deleteHandler(file._id)} // Example of passing the file ID
+        onClick={() => {
+          if (!file.isDisabled) deleteHandler(file._id);
+        }}
       />
-      <img
-        src={disableIcon}
-        className="ml-4 cursor-pointer"
-        alt="Disable"
-        onClick={() => disableHandler(file._id)}
-      />
+      {file.isDisabled ? (
+        <>
+          <img
+            src={EnableIcon}
+            className="ml-4 cursor-pointer"
+            alt="Enable"
+            onClick={() => {
+              disableHandler(file._id);
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <img
+            src={disableIcon}
+            className="ml-4 cursor-pointer"
+            alt="Disable"
+            onClick={() => {
+              if (!file.isDisabled) disableHandler(file._id);
+            }}
+          />
+        </>
+      )}
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CgClose } from "react-icons/cg";
-import { RxCross2 } from "react-icons/rx";
 import { NavLink } from "react-router-dom";
 import BurgerMenu from "../../assets/icons/burger-menu.svg";
 import menuCrossIcon from "../../assets/icons/menuCross.svg";

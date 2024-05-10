@@ -8,12 +8,10 @@ export const formatDate = (dateString: string) => {
     minute: "2-digit", // "16"
     hour12: true, // AM/PM format
   });
-  console.log("Formatted Date:", formattedDate); // Check what is being returned
   return formattedDate;
 };
 
 export function formatFilename(filename: string, isMobile: boolean = false) {
-  // Determine how many characters to show based on the device
   const startChars = isMobile ? 8 : 15;
   const endChars = 5;
 

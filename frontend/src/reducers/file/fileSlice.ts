@@ -1,7 +1,13 @@
 // fileSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../stores/store";
-import { addFile, deleteFile, fetchFiles, renameFile } from "./fileThunks";
+import {
+  addFile,
+  deleteFile,
+  fetchFiles,
+  renameFile,
+  toggleFileDisable,
+} from "./fileThunks";
 import { File } from "../../Types";
 
 export interface FileState {
@@ -76,6 +82,27 @@ const fileSlice = createSlice({
       .addCase(deleteFile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to delete file";
+      })
+      .addCase(toggleFileDisable.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        toggleFileDisable.fulfilled,
+        (state, action: PayloadAction<File>) => {
+          state.loading = false;
+          const index = state.files.findIndex(
+            (file) => file._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.files[index].isDisabled = action.payload.isDisabled;
+          }
+          state.error = null;
+        }
+      )
+      .addCase(toggleFileDisable.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to toggle file disable state";
       });
   },
 });

@@ -70,3 +70,17 @@ export const deleteFile = createAsyncThunk(
     }
   }
 );
+
+export const toggleFileDisable = createAsyncThunk(
+  "files/toggleDisable",
+  async (fileId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/${fileId}/toggleDisable`
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);

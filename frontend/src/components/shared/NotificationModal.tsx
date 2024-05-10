@@ -1,5 +1,7 @@
 import React from "react";
 import { FaTimes } from "react-icons/fa"; // Ensure you have react-icons installed
+import { useSelector } from "react-redux";
+import { selectLoading } from "../../reducers/file/fileSlice";
 
 type NotificationModalProps = {
   isOpen: boolean;
@@ -39,6 +41,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   children,
 }) => {
   if (!isOpen) return null;
+  const loading = useSelector(selectLoading);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50 ">
@@ -83,13 +86,17 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             </button>
           )}
           <button
-            className={`w-full py-2 rounded ${
+            className={`w-full py-2 rounded flex justify-center ${
               submitButtonStyle || "bg-blue-500 hover:bg-blue-600"
             } text-white font-bold`}
             onClick={(e) => onSubmit(e)}
             style={{ backgroundColor: submitButtonExtraStyle }}
+            disabled={loading}
           >
             {submitButtonText}
+            {loading && (
+              <div className="ml-2 w-4 h-4 border-2 border-t-2 mt-1 border-white rounded-full animate-spin"></div>
+            )}
           </button>
         </div>
       </div>

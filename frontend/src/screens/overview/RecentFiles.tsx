@@ -14,11 +14,13 @@ import { showErrorToast, showSuccessToast } from "../../utils/toast";
 type RecentFilesProps = {
   fullScreenList?: boolean;
   filesPerPage?: number;
+  showFullLink?: boolean;
 };
 
 const RecentFiles: React.FC<RecentFilesProps> = ({
   fullScreenList = false,
   filesPerPage = 10,
+  showFullLink,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
@@ -226,8 +228,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           fileInformationHandler={fileInformationHandler}
           shareHandler={shareHandler}
           replaceHandler={replaceHandler}
+          showFullLink={showFullLink}
         />
-        {files.length > 10 && (
+        {files.length > filesPerPage && (
           <Pagination
             totalFiles={files.length}
             filesPerPage={filesPerPage}

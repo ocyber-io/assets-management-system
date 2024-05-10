@@ -6,6 +6,9 @@ import { formatFileSize, sizeToBytes } from "../utils/helpers";
 import path from "path";
 import fs from "fs";
 
+//---------------------------------------------------------------
+//Controller for Adding a file
+//---------------------------------------------------------------
 export const addFile = async (req: Request, res: Response) => {
   upload(req, res, async (error) => {
     if (error) {
@@ -71,6 +74,9 @@ export const addFile = async (req: Request, res: Response) => {
   });
 };
 
+//---------------------------------------------------------------
+//Controller for Getting user's files
+//---------------------------------------------------------------
 export const getUserFiles = async (req: Request, res: Response) => {
   const userId = req.params.userId;
 
@@ -87,7 +93,9 @@ export const getUserFiles = async (req: Request, res: Response) => {
   }
 };
 
-// In your fileController.js
+//---------------------------------------------------------------
+//Controller for Renaming a file
+//---------------------------------------------------------------
 export const renameFile = async (req: Request, res: Response) => {
   const { fileId } = req.params;
   const { newOriginalName } = req.body;
@@ -127,6 +135,9 @@ export const renameFile = async (req: Request, res: Response) => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for Deleting a file
+//---------------------------------------------------------------
 export const deleteFile = async (req: Request, res: Response) => {
   const { fileId } = req.params;
 
@@ -136,14 +147,19 @@ export const deleteFile = async (req: Request, res: Response) => {
       return res.status(404).send({ message: "File not found." });
     }
 
-    // Construct the file path relative to the backend directory
+    // Ensure that the file has an owner before attempting to delete
+    if (!file.owner) {
+      return res.status(400).send({ message: "File owner is undefined." });
+    }
+
+    // Construct the file path using the owner ID
     const filePath = path.resolve(
       __dirname,
       "../../../frontend/public/uploads",
+      file.owner.toString(), // Convert ObjectId to string
       file.name
     );
 
-    // Remove the physical file
     fs.unlink(filePath, async (err) => {
       if (err) {
         console.error("Failed to delete the physical file:", err);
@@ -167,6 +183,32 @@ export const deleteFile = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("Error deleting file:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+//---------------------------------------------------------------
+//Controller for Disabling or Enabling the file
+//---------------------------------------------------------------
+export const toggleFileDisable = async (req: Request, res: Response) => {
+  const { fileId } = req.params;
+
+  try {
+    const file = await FileModel.findById(fileId);
+    if (!file) {
+      return res.status(404).send({ message: "File not found." });
+    }
+
+    // Toggle the isDisabled property
+    file.isDisabled = !file.isDisabled;
+    await file.save();
+
+    res.status(200).send({
+      message: `File has been ${file.isDisabled ? "disabled" : "enabled"}.`,
+      file,
+    });
+  } catch (err) {
+    console.error("Error toggling file disable status:", err);
     res.status(500).send({ message: "Internal server error." });
   }
 };

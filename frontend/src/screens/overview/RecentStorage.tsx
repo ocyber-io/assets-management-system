@@ -2,20 +2,14 @@ import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useMemo, useState } from "react";
 import { MdMoreVert } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  selectError,
-  selectFiles,
-  selectLoading,
-} from "../../reducers/file/fileSlice";
+import { selectError, selectFiles } from "../../reducers/file/fileSlice";
 import { fetchFiles } from "../../reducers/file/fileThunks";
 import { AppDispatch } from "../../stores/store";
-import ImagesCard from "../../utils/ImagesCard";
-import { formatFilename } from "../../utils/helpers";
 import useIsMobile from "../../utils/IsMobile";
+import { formatFilename } from "../../utils/helpers";
 
 const RecentStorage: React.FC = () => {
   const files = useSelector(selectFiles);
-  const loading = useSelector(selectLoading);
   const error = useSelector(selectError);
   const dispatch = useDispatch<AppDispatch>();
   const [userId, setUserId] = useState<string>();
@@ -50,12 +44,12 @@ const RecentStorage: React.FC = () => {
   return (
     <div className="md:px-8 px-3 py-3">
       <h2 className="text-2xl font-bold mb-6">Recent Storage</h2>
-      {loading && <ImagesCard />}
+      {/* {loading && <ImagesCard />} */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 md:gap-8 gap-3">
         {recentFiles.map((file, index) => (
           <React.Fragment key={index}>
             <div
-              key={file.id}
+              key={file._id}
               className="bg-white rounded-lg border-2 border-gray-200 flex flex-col justify-between"
             >
               <div className="px-4 pt-4 flex justify-center items-center flex-grow">

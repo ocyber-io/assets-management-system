@@ -14,7 +14,7 @@ export interface IFile extends Document {
   size: string;
   tags: string[];
   description?: string;
-  isDisabled?: string;
+  isDisabled?: boolean;
 }
 
 const fileSchema: Schema = new Schema(
@@ -38,11 +38,10 @@ const fileSchema: Schema = new Schema(
     isDisabled: { type: Boolean, default: false },
   },
   {
-    timestamps: true, // Enable automatic timestamping
+    timestamps: true,
   }
 );
 
-// Creating the model from the schema
 const FileModel = mongoose.model<IFile>("File", fileSchema);
 
 export default FileModel;
