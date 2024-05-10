@@ -10,7 +10,7 @@ type NotificationModalProps = {
   headingStyles?: string;
   descriptionAndHeadingPosition?: string;
   description?: string;
-  onCancel?: (fileId: string) => void;
+  onCancel?: () => void;
   onSubmit: (event: React.FormEvent) => void;
   cancelButtonText?: string;
   cancelButtonIcon?: string;
@@ -72,7 +72,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               className={`w-full py-2 flex justify-center rounded ${
                 cancelButtonStyle || "bg-gray-300 hover:bg-gray-400"
               } text-gray-600`}
-              onClick={() => onCancel}
+              onClick={onCancel}
             >
               {cancelButtonIcon && (
                 <img

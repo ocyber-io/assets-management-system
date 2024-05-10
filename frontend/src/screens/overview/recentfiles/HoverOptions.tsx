@@ -17,7 +17,7 @@ interface HoverOptionsProps {
   deleteHandler: (fileId: string) => void; // Assuming you need the file ID for deletion
   disableHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
-  shareHandler: () => void;
+  shareHandler: (fileLink: string) => void;
 }
 
 const HoverOptions: React.FC<HoverOptionsProps> = ({
@@ -50,7 +50,7 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
         className={`ml-6  ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
         alt="Share"
         onClick={() => {
-          if (!file.isDisabled) shareHandler();
+          if (!file.isDisabled) shareHandler(file.link);
         }}
       />
       <img

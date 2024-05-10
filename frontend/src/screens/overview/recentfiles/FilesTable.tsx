@@ -24,7 +24,7 @@ type FilesTableProps = {
   deleteHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
   fileInformationHandler: (fileDetails: File) => void;
-  shareHandler: () => void;
+  shareHandler: (fileLink: string) => void;
   replaceHandler: (fileDetails: File) => void;
   disableHandler: (id: string) => void;
   showFullLink?: boolean;

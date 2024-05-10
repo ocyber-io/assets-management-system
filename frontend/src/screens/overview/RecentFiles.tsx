@@ -12,6 +12,7 @@ import SelectedFilesActions from "./recentfiles/SelectedFilesActions";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 
 type RecentFilesProps = {
+  tagFiles?: File[];
   fullScreenList?: boolean;
   filesPerPage?: number;
   showFullLink?: boolean;
@@ -21,6 +22,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   fullScreenList = false,
   filesPerPage = 10,
   showFullLink,
+  tagFiles,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
@@ -40,6 +42,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [selectedLink, setSelectedLink] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>("");
   const [fileId, setFileId] = useState<string | null>("");
+  const [fileLink, setFileLink] = useState<string>("");
   const [selectedFileDetails, setSelectedFileDetails] = useState<
     File | undefined
   >();
@@ -174,8 +177,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     toggleFileInformationModal();
   };
 
-  const shareHandler = () => {
+  const shareHandler = (fileLink: string) => {
     toggleShareModal();
+    setFileLink(fileLink);
   };
 
   const replaceHandler = (fileDetails: File) => {
@@ -219,7 +223,11 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
       )}
       <div className={`mx-2 ${fullScreenList ? "h-screen" : ""}`}>
         <FilesTable
-          files={files.slice(firstFileIndex, lastFileIndex)}
+          files={
+            tagFiles
+              ? tagFiles.slice(firstFileIndex, lastFileIndex)
+              : files.slice(firstFileIndex, lastFileIndex)
+          }
           selectedFiles={selectedFiles}
           toggleSelection={toggleSelection}
           hoveredItemId={hoveredItemId}
@@ -241,7 +249,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         />
         {files.length > filesPerPage && (
           <Pagination
-            totalFiles={files.length}
+            totalFiles={tagFiles ? tagFiles.length : files.length}
             filesPerPage={filesPerPage}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
@@ -277,6 +285,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         handleCancelReplace={handleCancelReplace}
         selectedFileDetails={selectedFileDetails}
         fetchAllFiles={fetchAllFiles}
+        fileLink={fileLink}
       />
     </div>
   );

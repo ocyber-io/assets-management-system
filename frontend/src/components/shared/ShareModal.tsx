@@ -10,20 +10,36 @@ import {
   viewIcon,
   copylinkIcon,
 } from "../../helpers/icons";
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
 
 type ShareProps = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: () => void;
-  onCancel: () => void;
+  fileLink: string;
 };
 
 const ShareModal: React.FC<ShareProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  onCancel,
+  fileLink,
 }) => {
+  const copyToClipboard = (link: string) => {
+    navigator.clipboard.writeText(link).then(
+      () => {
+        showSuccessToast("Link copied to clipboard!");
+      },
+      () => {
+        showErrorToast("Failed to copy the link.");
+      }
+    );
+  };
+
+  const cancelHandler = () => {
+    copyToClipboard(fileLink);
+  };
+
   const [permission, setPermission] = useState<string>("Can edit");
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
@@ -50,7 +66,7 @@ const ShareModal: React.FC<ShareProps> = ({
         cancelButtonIcon={copylinkIcon}
         isOpen={isOpen}
         onSubmit={onSubmit}
-        onCancel={onCancel}
+        onCancel={cancelHandler}
       >
         <div className="flex items-center border-2 border-gray-200 rounded mt-4 focus-within:border-2 focus-within:border-blue-500">
           <img src={userIcon} className="mx-2" />

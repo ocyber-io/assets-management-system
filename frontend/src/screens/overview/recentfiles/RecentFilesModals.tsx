@@ -24,6 +24,7 @@ type RecentFilesModalsProps = {
   toggleDeleteModal: () => void;
   showRenameModal: boolean;
   fileName: string | null;
+  fileLink: string;
   toggleRenameModal: () => void;
   handleOkAction: () => void;
   toggleFileInformationModal: () => void;
@@ -70,6 +71,7 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   fetchAllFiles,
   showEnableModal,
   toggleEnableModal,
+  fileLink,
 }) => {
   return (
     <>
@@ -128,7 +130,7 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
           isOpen={showShareModal}
           onClose={toggleShareModal}
           onSubmit={shareSubmitClickHandler}
-          onCancel={toggleShareModal}
+          fileLink={fileLink}
         />
       )}
       {showFileInformationModal && sampleFileDetailsData && (
