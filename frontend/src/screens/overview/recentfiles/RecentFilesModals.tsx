@@ -9,6 +9,7 @@ import ShareModal from "../../../components/shared/ShareModal";
 import ReplaceFileModal from "../../../components/shared/ReplaceFileModal";
 import ReplaceSuccessfullModal from "../../../components/shared/ReplaceSuccessfullModal";
 import { File } from "../../../Types";
+import EnableModal from "../../../components/shared/EnableModal";
 
 type RecentFilesModalsProps = {
   fileId: string | null;
@@ -16,6 +17,7 @@ type RecentFilesModalsProps = {
   selectedLink: string | null;
   setShowLinkModal: (show: boolean) => void;
   showWarningModal: boolean;
+  showEnableModal: boolean;
   toggleDisableModal: () => void;
   handleWarningAction: () => void;
   showDeleteModal: boolean;
@@ -25,6 +27,7 @@ type RecentFilesModalsProps = {
   toggleRenameModal: () => void;
   handleOkAction: () => void;
   toggleFileInformationModal: () => void;
+  toggleEnableModal: () => void;
   showFileInformationModal: boolean;
   toggleShareModal: () => void;
   showShareModal: boolean;
@@ -35,6 +38,7 @@ type RecentFilesModalsProps = {
   toggleSuccessModal: () => void;
   handleReplaceSubmit: () => void;
   handleCancelReplace: () => void;
+
   fetchAllFiles: () => void;
   selectedFileDetails: File | undefined;
 };
@@ -46,7 +50,6 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   setShowLinkModal,
   showWarningModal,
   toggleDisableModal,
-  handleWarningAction,
   showDeleteModal,
   toggleDeleteModal,
   showRenameModal,
@@ -65,6 +68,8 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   handleCancelReplace,
   selectedFileDetails,
   fetchAllFiles,
+  showEnableModal,
+  toggleEnableModal,
 }) => {
   return (
     <>
@@ -79,11 +84,23 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
       {showWarningModal && (
         <WarningModal
           heading="Disable File?"
+          fileId={fileId}
           description="Disabling this file will render its link inactive. Any shared links to this file will no longer be accessible to recipients."
-          onSubmit={handleWarningAction}
           submitButtonText="Disable"
           onClose={toggleDisableModal}
           isOpen={showWarningModal}
+          fetchAllFiles={fetchAllFiles}
+        />
+      )}
+      {showEnableModal && (
+        <EnableModal
+          heading="Enable File?"
+          description="Enabling this file will reactivate its link. Any previously shared links to this file will once again be accessible to recipients."
+          submitButtonText="Enable"
+          fileId={fileId}
+          onClose={toggleEnableModal}
+          isOpen={showEnableModal}
+          fetchAllFiles={fetchAllFiles}
         />
       )}
       {showDeleteModal && (

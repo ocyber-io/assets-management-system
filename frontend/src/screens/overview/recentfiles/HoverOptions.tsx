@@ -16,6 +16,7 @@ interface HoverOptionsProps {
   renameHandler: (filename: string, fileId: string) => void;
   deleteHandler: (fileId: string) => void; // Assuming you need the file ID for deletion
   disableHandler: (fileId: string) => void;
+  enableHandler: (fileId: string) => void;
   shareHandler: () => void;
 }
 
@@ -26,7 +27,18 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
   deleteHandler,
   disableHandler,
   shareHandler,
+  enableHandler,
 }) => {
+  const downloadHandler = () => {
+    if (file.link) {
+      const link = document.createElement("a");
+      link.href = file.link; // Assuming `file.link` is the URL to download the file
+      link.setAttribute("download", file.originalName); // This suggests a filename to save as
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
   return (
     <div
       className={`flex gap-x-1 xl:mt-2 md:mr-8 ${
@@ -45,6 +57,9 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
         src={downloadIcon}
         className={`ml-4 ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
         alt="Download"
+        onClick={() => {
+          if (!file.isDisabled) downloadHandler();
+        }}
       />
       <img
         src={renameIcon}
@@ -61,10 +76,10 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
       />
       <img
         src={movetobinIcon}
-        className={`ml-4 ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
+        className="ml-4 cursor-pointer"
         alt="Move to bin"
         onClick={() => {
-          if (!file.isDisabled) deleteHandler(file._id);
+          deleteHandler(file._id);
         }}
       />
       {file.isDisabled ? (
@@ -74,7 +89,7 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
             className="ml-4 cursor-pointer"
             alt="Enable"
             onClick={() => {
-              disableHandler(file._id);
+              enableHandler(file._id);
             }}
           />
         </>
@@ -85,7 +100,7 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
             className="ml-4 cursor-pointer"
             alt="Disable"
             onClick={() => {
-              if (!file.isDisabled) disableHandler(file._id);
+              disableHandler(file._id);
             }}
           />
         </>

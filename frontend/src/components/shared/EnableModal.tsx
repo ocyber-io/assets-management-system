@@ -1,12 +1,12 @@
 import React from "react";
 import warningImage from "../../assets/images/warning-modal.svg";
-import NotificationModal from "./NotificationModal"; // Ensure correct path to NotificationModal
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../stores/store";
+import NotificationModal from "./NotificationModal";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { toggleFileDisable } from "../../reducers/file/fileThunks";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../stores/store";
 
-type WarningModalProps = {
+type EnableModalProps = {
   fileId: string | null;
   heading?: string;
   description?: string;
@@ -16,7 +16,7 @@ type WarningModalProps = {
   fetchAllFiles: () => void;
 };
 
-const WarningModal: React.FC<WarningModalProps> = ({
+const EnableModal: React.FC<EnableModalProps> = ({
   heading = "Warning!",
   description = "There is something that needs your attention. Please take action or dismiss this warning.",
   submitButtonText,
@@ -32,7 +32,7 @@ const WarningModal: React.FC<WarningModalProps> = ({
     onClose();
   };
 
-  const disableHandler = async () => {
+  const enableHandler = async () => {
     if (!fileId) {
       showErrorToast("Invalid file identifier.");
       return;
@@ -47,6 +47,7 @@ const WarningModal: React.FC<WarningModalProps> = ({
       showErrorToast(error || "An error occurred while disabling the file.");
     }
   };
+
   return (
     <NotificationModal
       isOpen={isOpen}
@@ -56,14 +57,14 @@ const WarningModal: React.FC<WarningModalProps> = ({
       description={description}
       descriptionAndHeadingPosition="text-center"
       onCancel={handleDismiss}
-      onSubmit={disableHandler}
+      onSubmit={enableHandler}
       cancelButtonText="Cancel"
       submitButtonText={submitButtonText}
       cancelButtonStyle="bg-white border border-gray-200 hover:bg-gray-50"
-      submitButtonStyle="bg-blue-500 hover:bg-blue-600"
+      submitButtonStyle="bg-green-500 hover:bg-green-600"
       closeModal={onClose}
     />
   );
 };
 
-export default WarningModal;
+export default EnableModal;

@@ -22,6 +22,7 @@ type FilesTableProps = {
   fullLinkHandler: (link: string) => void;
   renameHandler: (filename: string, fileId: string) => void;
   deleteHandler: (fileId: string) => void;
+  enableHandler: (fileId: string) => void;
   fileInformationHandler: (fileDetails: File) => void;
   shareHandler: () => void;
   replaceHandler: (fileDetails: File) => void;
@@ -48,6 +49,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
   shareHandler,
   replaceHandler,
   showFullLink,
+  enableHandler,
 }) => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
@@ -222,6 +224,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
                         deleteHandler={deleteHandler}
                         disableHandler={disableHandler}
                         shareHandler={shareHandler}
+                        enableHandler={enableHandler}
                       />
                     </div>
                     <div className="">
@@ -248,6 +251,8 @@ const FilesTable: React.FC<FilesTableProps> = ({
                     deleteHandler={deleteHandler}
                     renameHandler={renameHandler}
                     disableHandler={disableHandler}
+                    enableHandler={enableHandler}
+                    copyToClipboard={copyToClipboard}
                   />
                 </td>
               </tr>

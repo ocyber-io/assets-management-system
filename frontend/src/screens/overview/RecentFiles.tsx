@@ -29,6 +29,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
   const [showWarningModal, setShowWarningModal] = useState<boolean>(false);
+  const [showEnableModal, setShowEnableModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [showFileInformationModal, setShowFileInformationModal] =
     useState<boolean>(false);
@@ -76,6 +77,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   };
   const toggleDeleteModal = () => {
     setShowDeleteModal(!showDeleteModal);
+  };
+  const toggleEnableModal = () => {
+    setShowEnableModal(!showEnableModal);
   };
   const toggleRenameModal = () => {
     setShowRenameModal(!showRenameModal);
@@ -145,9 +149,13 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     setShowLinkModal(true);
   };
 
-  const disableHandler = (id: string) => {
+  const disableHandler = (fileId: string) => {
     toggleDisableModal();
-    console.log(id);
+    setFileId(fileId);
+  };
+  const enableHandler = (fileId: string) => {
+    toggleEnableModal();
+    setFileId(fileId);
   };
 
   const deleteHandler = (fileId: string) => {
@@ -224,6 +232,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           fullLinkHandler={fullLinkHandler}
           renameHandler={renameHandler}
           deleteHandler={deleteHandler}
+          enableHandler={enableHandler}
           disableHandler={disableHandler}
           fileInformationHandler={fileInformationHandler}
           shareHandler={shareHandler}
@@ -260,8 +269,10 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         shareSubmitClickHandler={shareSubmitClickHandler}
         showReplaceModal={showReplaceModal}
         showSuccessModal={showSuccessModal}
+        showEnableModal={showEnableModal}
         toggleReplaceModal={toggleReplaceModal}
         toggleSuccessModal={toggleSuccessModal}
+        toggleEnableModal={toggleEnableModal}
         handleReplaceSubmit={handleReplaceSubmit}
         handleCancelReplace={handleCancelReplace}
         selectedFileDetails={selectedFileDetails}

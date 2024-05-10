@@ -44,6 +44,8 @@ interface RecentDropdownProps {
   deleteHandler: (fileId: string) => void;
   renameHandler: (filename: string, fileId: string) => void;
   disableHandler: (fileId: string) => void;
+  enableHandler: (fileId: string) => void;
+  copyToClipboard: (link: string) => void;
 }
 
 const subItems: MenuItem[] = [
@@ -110,6 +112,8 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
   deleteHandler,
   renameHandler,
   disableHandler,
+  enableHandler,
+  copyToClipboard,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
@@ -139,6 +143,17 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
 
   const toggleSubMenu = (menuKey: string) => {
     setOpenSubMenu(openSubMenu === menuKey ? null : menuKey);
+  };
+
+  const downloadHandler = () => {
+    if (file.link) {
+      const link = document.createElement("a");
+      link.href = file.link; // Assuming `file.link` is the URL to download the file
+      link.setAttribute("download", file.originalName); // This suggests a filename to save as
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (
@@ -174,20 +189,21 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
               }}
             />
             <img
-              src={starredIcon}
+              src={downloadIcon}
               className={`ml-4 ${
                 file.isDisabled ? "opacity-30" : "cursor-pointer"
               }`}
-              alt="Star"
+              alt="Download"
+              onClick={() => {
+                if (!file.isDisabled) downloadHandler();
+              }}
             />
             <img
               src={movetobinIcon}
-              className={`ml-4 ${
-                file.isDisabled ? "opacity-30" : "cursor-pointer"
-              }`}
+              className="ml-4 cursor-pointer"
               alt="Move to bin"
               onClick={() => {
-                if (!file.isDisabled) deleteHandler(file._id);
+                deleteHandler(file._id);
               }}
             />
             {file.isDisabled ? (
@@ -197,7 +213,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                   className="ml-4 cursor-pointer"
                   alt="Enable"
                   onClick={() => {
-                    disableHandler(file._id);
+                    enableHandler(file._id);
                   }}
                 />
               </>
@@ -244,6 +260,9 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                         deleteHandler(file._id);
                         toggleDropdown();
                       }
+                      if (menu.key === "download") {
+                        downloadHandler();
+                      }
                       if (menu.key === "rename") {
                         renameHandler(file.originalName, file._id);
                         toggleDropdown();
@@ -273,12 +292,16 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                                 shareHandler();
                                 toggleDropdown();
                               }
+                              if (subItem.label === "Copy Link") {
+                                copyToClipboard(file.link);
+                                toggleDropdown();
+                              }
                             }}
                           >
                             <img
                               src={subItem.icon}
                               alt=""
-                              className="mr-2 mt-"
+                              className="mr-2 mt-1"
                             />
                             {subItem.label}
                           </button>
