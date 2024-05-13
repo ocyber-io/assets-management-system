@@ -81,7 +81,9 @@ const NavLinkItem: React.FC<NavLinkItemProps> = ({ item }) => {
                   isActive ? "bg-white text-blue-500" : "bg-blue-500 text-white"
                 }`}
               >
-                {item.countKey === "recentFiles" ? files.length : 0}
+                {item.countKey === "recentFiles"
+                  ? files.filter((file) => !file.isDeleted).length
+                  : files.filter((file) => file.isDeleted).length}
               </span>
             )}
           </>

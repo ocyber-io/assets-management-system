@@ -16,4 +16,5 @@ export type File = {
   tags: string[];
   description?: string;
   isDisabled?: boolean;
+  isDeleted?: boolean;
 };

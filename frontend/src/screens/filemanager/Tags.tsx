@@ -1,40 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import noTagsImage from "../../assets/images/no-tags.svg";
+import { selectFiles } from "../../reducers/file/fileSlice";
 import RecentFiles from "../overview/RecentFiles";
 import TagBubbles from "./TagBubbles";
-import { selectFiles } from "../../reducers/file/fileSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../../stores/store";
-import { fetchFiles } from "../../reducers/file/fileThunks";
-import { jwtDecode } from "jwt-decode";
 
 const Tags: React.FC = () => {
   const files = useSelector(selectFiles);
-  const [userId, setUserId] = useState<string>();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const token = localStorage.getItem("token");
-  const dispatch = useDispatch<AppDispatch>();
 
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+  const undeletedFiles = files.filter((file) => !file.isDeleted);
 
-  useEffect(() => {
-    if (userId) dispatch(fetchFiles(userId));
-  }, [dispatch, userId]);
-
-  const allTags = Array.from(new Set(files.flatMap((file) => file.tags)));
+  const allTags = Array.from(
+    new Set(undeletedFiles.flatMap((file) => file.tags))
+  );
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -42,7 +21,7 @@ const Tags: React.FC = () => {
     );
   };
 
-  const filteredFiles = files.filter(
+  const filteredFiles = undeletedFiles.filter(
     (file) =>
       selectedTags.length === 0 ||
       file.tags.some((tag) => selectedTags.includes(tag))

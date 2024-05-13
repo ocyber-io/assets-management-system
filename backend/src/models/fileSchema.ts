@@ -15,6 +15,7 @@ export interface IFile extends Document {
   tags: string[];
   description?: string;
   isDisabled?: boolean;
+  isDeleted?: boolean;
 }
 
 const fileSchema: Schema = new Schema(
@@ -36,6 +37,7 @@ const fileSchema: Schema = new Schema(
     tags: { type: [String], required: true },
     description: { type: String },
     isDisabled: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

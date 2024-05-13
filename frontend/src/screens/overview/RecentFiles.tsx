@@ -12,10 +12,12 @@ import SelectedFilesActions from "./recentfiles/SelectedFilesActions";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 
 type RecentFilesProps = {
+  files?: File[] | undefined;
   tagFiles?: File[];
   fullScreenList?: boolean;
   filesPerPage?: number;
   showFullLink?: boolean;
+  fromTrash?: boolean;
 };
 
 const RecentFiles: React.FC<RecentFilesProps> = ({
@@ -23,6 +25,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   filesPerPage = 10,
   showFullLink,
   tagFiles,
+  files,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
@@ -46,7 +49,6 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [selectedFileDetails, setSelectedFileDetails] = useState<
     File | undefined
   >();
-  const files = useSelector(selectFiles);
   const error = useSelector(selectError);
   const dispatch = useDispatch<AppDispatch>();
   const [userId, setUserId] = useState<string>();
@@ -71,9 +73,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     if (userId) dispatch(fetchFiles(userId));
   };
 
-  useEffect(() => {
-    fetchAllFiles();
-  }, [dispatch, userId]);
+  // useEffect(() => {
+  //   fetchAllFiles();
+  // }, [dispatch, userId]);
 
   const toggleDisableModal = () => {
     setShowWarningModal(!showWarningModal);
@@ -130,7 +132,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     const lastFileIndex = currentPage * filesPerPage;
     const firstFileIndex = lastFileIndex - filesPerPage;
 
-    // Map only the files that are currently visible based on pagination
+    if (!files) {
+      return;
+    }
     setSelectedFiles(
       files.slice(firstFileIndex, lastFileIndex).map((file) => file._id)
     );
@@ -226,7 +230,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           files={
             tagFiles
               ? tagFiles.slice(firstFileIndex, lastFileIndex)
-              : files.slice(firstFileIndex, lastFileIndex)
+              : files?.slice(firstFileIndex, lastFileIndex)
           }
           selectedFiles={selectedFiles}
           toggleSelection={toggleSelection}
@@ -247,7 +251,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           replaceHandler={replaceHandler}
           showFullLink={showFullLink}
         />
-        {files.length > filesPerPage && (
+        {files && files.length > filesPerPage && (
           <Pagination
             totalFiles={tagFiles ? tagFiles.length : files.length}
             filesPerPage={filesPerPage}
