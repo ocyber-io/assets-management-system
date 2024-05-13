@@ -22,7 +22,7 @@ const FileDetailsModal: React.FC<FileDetailsModalProps> = ({
         className="fixed inset-0 bg-black bg-opacity-50 z-40"
         onClick={closeModal}
       ></div>
-      <div className="fixed right-0 bottom-0 w-64 h-full bg-white shadow-lg rounded z-50">
+      <div className="fixed right-0 bottom-0 w-64 h-full bg-white shadow-lg rounded z-50 overflow-y-auto">
         <div className="flex justify-between items-center p-4 border-b">
           <div className="flex items-center space-x-2">
             <MdInsertDriveFile className="text-2xl w-6 h-6" />
@@ -57,7 +57,7 @@ const FileDetailsModal: React.FC<FileDetailsModalProps> = ({
         {activeTab === "details" ? (
           <DetailsTab file={file && file} />
         ) : (
-          <ActivityTab />
+          <ActivityTab file={file && file} />
         )}
       </div>
     </>

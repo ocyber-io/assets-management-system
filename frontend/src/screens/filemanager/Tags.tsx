@@ -7,8 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../stores/store";
 import { fetchFiles } from "../../reducers/file/fileThunks";
 import { jwtDecode } from "jwt-decode";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 
 const Tags: React.FC = () => {
   const files = useSelector(selectFiles);

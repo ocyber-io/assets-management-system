@@ -29,7 +29,7 @@ const fileSchema: Schema = new Schema(
       ref: "User",
       required: true,
     },
-    downloadPermission: { type: Boolean, default: false },
+    downloadPermission: { type: Boolean, default: true },
     link: { type: String, required: true },
     fullLink: { type: String },
     size: { type: String, required: true },
