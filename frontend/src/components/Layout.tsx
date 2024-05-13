@@ -1,14 +1,14 @@
 // Layout Component
+import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
+import { fetchFiles } from "../reducers/file/fileThunks";
+import { AppDispatch } from "../stores/store";
+import FileUploadModal from "./FileUploadModal";
 import SideBar from "./Navbar/SideBar";
 import TopBar from "./Navbar/TopBar";
-import FileUploadModal from "./FileUploadModal";
 import NewFolderModal from "./shared/NewFolderModal";
-import { AppDispatch } from "../stores/store";
-import { useDispatch } from "react-redux";
-import { jwtDecode } from "jwt-decode";
-import { fetchFiles } from "../reducers/file/fileThunks";
 
 const Layout: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);

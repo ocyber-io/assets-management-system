@@ -15,7 +15,7 @@ const Dashboard: React.FC = () => {
         <OverviewTopBar heading="Overview" />
       </div>
       <div>
-        <OverviewStorage />
+        <OverviewStorage files={undeletedFiles} />
       </div>
       <div>
         <RecentStorage />

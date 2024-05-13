@@ -2,14 +2,14 @@ import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { File } from "../../Types";
-import { selectError, selectFiles } from "../../reducers/file/fileSlice";
+import { selectError } from "../../reducers/file/fileSlice";
 import { fetchFiles } from "../../reducers/file/fileThunks";
 import { AppDispatch } from "../../stores/store";
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import FilesTable from "./recentfiles/FilesTable";
 import Pagination from "./recentfiles/Pagination";
 import RecentFilesModals from "./recentfiles/RecentFilesModals";
 import SelectedFilesActions from "./recentfiles/SelectedFilesActions";
-import { showErrorToast, showSuccessToast } from "../../utils/toast";
 
 type RecentFilesProps = {
   files?: File[] | undefined;

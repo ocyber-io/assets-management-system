@@ -10,7 +10,9 @@ import {
   forgotPassword,
   verifyOtp,
   resetPassword,
+  getUserById,
 } from "./userThunks";
+import { RootState } from "../../stores/store";
 
 interface UserState {
   user: User | null;
@@ -135,9 +137,15 @@ const userSlice = createSlice({
       .addCase(resetPassword.rejected, (state, action: PayloadAction<any>) => {
         state.resetPasswordStatus = "failed";
         state.error = action.payload;
+      })
+      .addCase(getUserById.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.status = "idle";
       });
   },
 });
+
+export const selectUser = (state: RootState) => state.user.user;
 
 export const { logout } = userSlice.actions;
 
