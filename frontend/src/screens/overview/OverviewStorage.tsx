@@ -20,7 +20,6 @@ type StorageItem = {
   icon: string;
   fileType: string;
   itemCount: number;
-  usedSpace: string;
   usedGB: number;
   totalGB: number;
   progressBarColor: string;
@@ -42,10 +41,6 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
   console.log(user);
 
   const storageUsage = calculateStorageUsage(files);
-  console.log("Images:", storageUsage.storageTypes.images);
-  console.log("Videos:", storageUsage.storageTypes.videos);
-  console.log("Documents:", storageUsage.storageTypes.documents);
-  console.log("Others:", storageUsage.storageTypes.others);
 
   useEffect(() => {
     if (token) {
@@ -71,9 +66,8 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
       id: 1,
       icon: jpgIcon,
       fileType: "Images",
-      itemCount: storageUsage.storageTypes.images.count,
-      usedSpace: "50 GB of 100 GB",
-      usedGB: storageUsage.storageTypes.images.size,
+      itemCount: storageUsage.images.count,
+      usedGB: storageUsage.images.size,
       totalGB: 100,
       progressBarColor: "#FF6B50",
     },
@@ -81,9 +75,8 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
       id: 2,
       icon: videoIcon,
       fileType: "Videos",
-      itemCount: storageUsage.storageTypes.videos.count,
-      usedSpace: "75 GB of 100 GB",
-      usedGB: storageUsage.storageTypes.videos.size,
+      itemCount: storageUsage.videos.count,
+      usedGB: storageUsage.videos.size,
       totalGB: 100,
       progressBarColor: "#1FC5E4",
     },
@@ -91,9 +84,8 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
       id: 3,
       icon: docIcon,
       fileType: "Documents",
-      itemCount: storageUsage.storageTypes.documents.count,
-      usedSpace: "20 GB of 100 GB",
-      usedGB: storageUsage.storageTypes.documents.size,
+      itemCount: storageUsage.documents.count,
+      usedGB: storageUsage.documents.size,
       totalGB: 100,
       progressBarColor: "#57BF98",
     },
@@ -101,9 +93,8 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
       id: 4,
       icon: otherIcon,
       fileType: "Others",
-      itemCount: storageUsage.storageTypes.others.count,
-      usedSpace: "85 GB of 100 GB",
-      usedGB: storageUsage.storageTypes.others.size,
+      itemCount: storageUsage.others.count,
+      usedGB: storageUsage.others.size,
       totalGB: 100,
       progressBarColor: "#FFC21A",
     },
@@ -160,7 +151,7 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
                   ></div>
                 </div>
                 <p className="font-semibold mt-3 pb-5 text-gray-700">
-                  {item.usedSpace}
+                  {item.usedGB} KB of 100 GB
                 </p>
               </div>
             </div>

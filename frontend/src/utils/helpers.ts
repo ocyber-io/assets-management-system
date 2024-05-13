@@ -55,20 +55,6 @@ export const calculateStorageUsage = (files: any) => {
     }
   });
 
-  const allocatedSpace = {
-    images: 100 * 1024 * 1024, // 100 GB converted to KB
-    videos: 100 * 1024 * 1024,
-    documents: 100 * 1024 * 1024,
-    others: 100 * 1024 * 1024,
-  };
-
-  const usedStorage = {
-    images: allocatedSpace.images - storageTypes.images.size,
-    videos: allocatedSpace.videos - storageTypes.videos.size,
-    documents: allocatedSpace.documents - storageTypes.documents.size,
-    others: allocatedSpace.others - storageTypes.others.size,
-  };
-
   // Convert total sizes back to KB
   storageTypes.images.size = parseFloat(
     (storageTypes.images.size / 1024).toFixed(2)
@@ -83,5 +69,5 @@ export const calculateStorageUsage = (files: any) => {
     (storageTypes.others.size / 1024).toFixed(2)
   );
 
-  return { storageTypes, usedStorage };
+  return storageTypes;
 };
