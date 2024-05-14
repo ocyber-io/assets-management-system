@@ -9,6 +9,7 @@ import {
   forgotPassword,
   verifyOtp,
   resetPassword,
+  getUserById,
 } from "../controllers/userController";
 import { isAuthenticated } from "../middlewares/authMiddleware";
 
@@ -22,6 +23,7 @@ router.post("/forgot-password", forgotPassword);
 
 // Admin routes
 router.get("/", getAllUsers);
+router.get("/:id", getUserById);
 router.put("/:id", isAuthenticated, updateUser);
 router.delete("/:id", deleteUser);
 

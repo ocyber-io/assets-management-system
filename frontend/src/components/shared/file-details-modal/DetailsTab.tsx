@@ -1,6 +1,7 @@
 // DetailsTab.tsx
 import React from "react";
 import { File } from "../../../Types";
+import { formatDate } from "../../../utils/helpers";
 
 type DetailsTabProps = {
   file: File | undefined;
@@ -9,11 +10,7 @@ type DetailsTabProps = {
 export const DetailsTab: React.FC<DetailsTabProps> = ({ file }) => {
   return (
     <div className="p-2">
-      <img
-        src={file && file.image}
-        alt="File"
-        className="w-full h-24 object-cover"
-      />
+      <img src={file?.link} alt="File" className="w-full h-24 object-cover" />
       <h3 className="text-xs font-semibold mt-1.5">Who has access</h3>
       {/* Dummy for access visualization */}
       <div className="flex mt-1 items-center">
@@ -25,39 +22,41 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ file }) => {
       <div className="text-xs">
         <p className="mt-1.5">
           <span className="font-semibold">Type:</span>
-          <br /> {file && file.type}
+          <br /> {file?.type}
         </p>
         <p className="mt-1.5">
           <span className="font-semibold">Size:</span>
-          <br /> {file && file.size}
+          <br /> {file?.size}
         </p>
         <p className="mt-1.5">
           <span className="font-semibold">Storage Used:</span>
           <br />
-          {file && file.storageUsed}
+          {file?.storageUsed}
         </p>
         <p className="mt-1.5">
           <span className="font-semibold">Location:</span>
-          <br /> {file && file.location}
+          <br /> {file?.location}
         </p>
         <p className="mt-1.5">
           <span className="font-semibold">Owner:</span>
-          <br /> {file && file.owner}
+          <br /> {file?.owner}
         </p>
         <p className="mt-1.5">
           <span className="font-semibold">Modified:</span>
-          <br /> {file && file.lastModified}
+          <br /> {file && formatDate(file.updatedAt)}
         </p>
         <p className="mt-1.5">
           <span className="font-semibold">Created:</span>
-          <br /> {file && file.created}
+          <br /> {file && formatDate(file.createdAt)}
         </p>
         <p className="mt-1.5">
           <span className="font-semibold">Download Permissions:</span>
           <br />
-          {file && file.downloadPermission}
+          {file?.downloadPermission
+            ? "Viewers can download"
+            : "Unable to download"}
         </p>
-        <div className="mt-1">
+        <div className="mt-2">
           <label htmlFor="description" className="font-semibold text-xs">
             Description
           </label>{" "}
@@ -66,7 +65,9 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ file }) => {
             type="text"
             name="description"
             id="description"
+            value={file?.description}
             placeholder="Add Description"
+            disabled
             className=" bg-blue-50 text-xs px-1 w-full py-2 rounded mt-0.5 focus:border-blue-500 focus:outline-none focus:border"
           />
         </div>
@@ -79,7 +80,9 @@ export const DetailsTab: React.FC<DetailsTabProps> = ({ file }) => {
             type="text"
             name="tags"
             id="tags"
+            disabled
             placeholder="Add Tags"
+            value={file?.tags.join(", ")}
             className=" bg-blue-50 text-xs px-1 w-full py-2 rounded mt-0.5 focus:border-blue-500 focus:outline-none focus:border"
           />
         </div>

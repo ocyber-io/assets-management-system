@@ -7,7 +7,7 @@ export type File = {
   storageUsed?: string;
   location?: string;
   owner?: string;
-  created?: string;
+  createdAt: string;
   updatedAt: string;
   downloadPermission?: string;
   link: string;
@@ -16,4 +16,5 @@ export type File = {
   tags: string[];
   description?: string;
   isDisabled?: boolean;
+  isDeleted?: boolean;
 };

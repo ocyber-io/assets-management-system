@@ -147,6 +147,13 @@ export const deleteFile = async (req: Request, res: Response) => {
       return res.status(404).send({ message: "File not found." });
     }
 
+    // If the file is not already marked as deleted, mark it as deleted
+    if (!file.isDeleted) {
+      file.isDeleted = true;
+      await file.save();
+      return res.status(200).send({ message: "File marked as deleted." });
+    }
+
     // Ensure that the file has an owner before attempting to delete
     if (!file.owner) {
       return res.status(400).send({ message: "File owner is undefined." });

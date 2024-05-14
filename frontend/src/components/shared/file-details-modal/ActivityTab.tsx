@@ -1,35 +1,48 @@
-import React, { useState } from "react";
-import { FiChevronDown, FiFile } from "react-icons/fi";
+import { jwtDecode } from "jwt-decode";
+import React, { useEffect, useState } from "react";
+import { FiChevronDown } from "react-icons/fi";
+import { File } from "../../../Types";
 import { downRightArrowIcon, pdfSmallIcon } from "../../../helpers/icons";
 
 interface ActivityProps {
   timePeriod: string;
   activities?: Activity[];
+  userInitials: string; // Add userInitials to ActivityProps
 }
+
+type ActivityTabProps = {
+  file: File | undefined;
+};
 
 interface Activity {
   description: string;
   date: string;
 }
 
-const ActivityItem: React.FC<Activity> = ({ description, date }) => (
-  <div className="flex items-center space-x-3">
-    <img
-      src="https://via.placeholder.com/50"
-      alt="user"
-      className="w-10 h-10 rounded-full"
-    />
+type FilesArray = File[] | undefined;
+
+const ActivityItem: React.FC<Activity & { userInitials: string }> = (
+  { date, userInitials } // Add userInitials prop here
+) => (
+  <div className="flex items-center space-x-3 mt-4">
+    <button className="bg-yellow-400 text-white h-8 w-8 rounded-full text-sm">
+      {userInitials}
+    </button>
     <div>
-      <p>{description}</p>
+      <p>You uploaded an item</p>
       <p className="text-xs text-gray-500">{date}</p>
     </div>
   </div>
 );
 
-const CollapsibleSection: React.FC = () => {
+const CollapsibleSection: React.FC<{
+  activity: Activity & { userInitials: string };
+}> = ({ activity }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
+    // Add userInitials prop here
     <div className="">
+      <ActivityItem {...activity} />
       <button
         className="flex items-center space-x-2 text-sm bg-gray-50 rounded px-2 ml-12 mt-2 py-1 border-2"
         onClick={() => setIsOpen(!isOpen)}
@@ -43,11 +56,12 @@ const CollapsibleSection: React.FC = () => {
       </button>
       {isOpen && (
         <div className="pl-4 mt-2">
-          <button className="flex items-center space-x-2 ml-10">
+          {/* Include ActivityItem here */}
+          <button className="flex items-center space-x-2 ml-8">
             <img src={downRightArrowIcon} />
-            <div className="border-2  border-gray-200 text-sm bg-gray-50 flex px-2 py-1 rounded">
+            <div className="border-2 border-gray-200 text-sm bg-gray-50 flex px-2 py-1 rounded">
               <img src={pdfSmallIcon} className=" mr-2" />
-              <span>ExampleFile.docx</span>
+              <span>{activity.description}</span>
             </div>
           </button>
         </div>
@@ -55,10 +69,10 @@ const CollapsibleSection: React.FC = () => {
     </div>
   );
 };
-
 const TimePeriodActivities: React.FC<ActivityProps> = ({
   timePeriod,
   activities,
+  userInitials, // Receive userInitials here
 }) => {
   if (!activities || activities.length === 0) {
     return null;
@@ -68,35 +82,96 @@ const TimePeriodActivities: React.FC<ActivityProps> = ({
     <div className="mt-4">
       <h3 className="font-semibold">{timePeriod}</h3>
       {activities.map((activity, index) => (
-        <ActivityItem key={index} {...activity} />
+        <div key={index}>
+          <CollapsibleSection
+            activity={{
+              ...activity,
+              description: `${activity.description.slice(
+                0,
+                8
+              )}...${activity.description.slice(-5)}`,
+              userInitials: userInitials, // Pass userInitials to CollapsibleSection
+            }}
+          />
+        </div>
       ))}
-      <CollapsibleSection />
     </div>
   );
 };
 
-export const ActivityTab: React.FC = () => {
-  const activitiesData = {
-    lastYear: [
-      { description: "You uploaded an item", date: "December 25, 2022" },
-    ],
-    lastMonth: [],
-    lastWeek: [{ description: "You uploaded an item", date: "April 1, 2024" }],
-  };
+export const ActivityTab: React.FC<ActivityTabProps> = ({ file }) => {
+  const token = localStorage.getItem("token");
+  const today: Date = new Date();
+  const [userInitials, setUserInitials] = useState<string>(""); // Initialize userInitials state
+
+  useEffect(() => {
+    if (token && file) {
+      // Check if file is defined
+      try {
+        const decoded = jwtDecode<{
+          id: string;
+          firstname: string;
+          lastname: string;
+        }>(token);
+        if (decoded) {
+          const initials = `${decoded.firstname[0]}${decoded.lastname[0]}`;
+          setUserInitials(initials); // Set the user initials
+        }
+      } catch (error) {
+        console.error("Failed to decode JWT:", error);
+      }
+    }
+  }, [token, file]); // Add file to the dependency array
+
+  // Define arrays for last week, last month, and last year
+  const lastWeek: FilesArray = [];
+  const lastMonth: FilesArray = [];
+  const lastYear: FilesArray = [];
+  const currentMonth: number = today.getMonth() + 1; // January is 0, so adding 1
+
+  if (file) {
+    // Check if file is defined
+    const createdAt = new Date(file.createdAt);
+    const timeDiff: number = today.getTime() - createdAt.getTime();
+    const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+    if (daysDiff <= 7) {
+      lastWeek.push(file);
+    } else if (
+      createdAt.getFullYear() === today.getFullYear() && // Same year
+      createdAt.getMonth() + 1 === currentMonth - 1 // Previous month
+    ) {
+      lastMonth.push(file);
+    } else if (createdAt.getFullYear() === 2023) {
+      lastYear.push(file);
+    }
+  }
 
   return (
     <div className="p-1 mx-2">
       <TimePeriodActivities
         timePeriod="Last Year"
-        activities={activitiesData.lastYear}
+        activities={lastYear.map((file) => ({
+          description: file.originalName,
+          date: new Date(file.createdAt).toDateString(),
+        }))}
+        userInitials={userInitials} // Pass userInitials to TimePeriodActivities
       />
       <TimePeriodActivities
         timePeriod="Last Month"
-        activities={activitiesData.lastMonth}
+        activities={lastMonth.map((file) => ({
+          description: file.originalName,
+          date: new Date(file.createdAt).toDateString(),
+        }))}
+        userInitials={userInitials} // Pass userInitials to TimePeriodActivities
       />
       <TimePeriodActivities
         timePeriod="Last Week"
-        activities={activitiesData.lastWeek}
+        activities={lastWeek.map((file) => ({
+          description: file.originalName,
+          date: new Date(file.createdAt).toDateString(),
+        }))}
+        userInitials={userInitials} // Pass userInitials to TimePeriodActivities
       />
     </div>
   );

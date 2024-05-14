@@ -6,6 +6,11 @@ import { SERVER_URL } from "../../constants/constants";
 export interface User {
   userId: string;
   token: string;
+  firstname: string;
+  lastname: string;
+  remainingStorage: number;
+  totalStorage: string;
+  usedStorage: number;
 }
 
 interface VerifyOtpResponse {
@@ -198,6 +203,20 @@ export const resetPassword = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(
         error.response.data?.message || "Error resetting password"
+      );
+    }
+  }
+);
+
+export const getUserById = createAsyncThunk(
+  "user/getUserById",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${SERVER_URL}/api/users/${id}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error fetching user by ID"
       );
     }
   }

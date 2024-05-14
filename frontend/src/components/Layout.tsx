@@ -1,14 +1,40 @@
 // Layout Component
-import React, { useState } from "react";
+import { jwtDecode } from "jwt-decode";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
+import { fetchFiles } from "../reducers/file/fileThunks";
+import { AppDispatch } from "../stores/store";
+import FileUploadModal from "./FileUploadModal";
 import SideBar from "./Navbar/SideBar";
 import TopBar from "./Navbar/TopBar";
-import FileUploadModal from "./FileUploadModal";
 import NewFolderModal from "./shared/NewFolderModal";
 
 const Layout: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isNewFolderModalOpen, setIsNewFolderModalOpen] = useState(false);
+  const token = localStorage.getItem("token");
+  const dispatch = useDispatch<AppDispatch>();
+  const [userId, setUserId] = useState<string>();
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode<{
+          id: string;
+        }>(token);
+        if (decoded) {
+          setUserId(decoded.id);
+        }
+      } catch (error) {
+        console.error("Failed to decode JWT:", error);
+      }
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (userId) dispatch(fetchFiles(userId));
+  }, [dispatch, userId]);
 
   const NewFolderSubmitHandler = () => {
     setIsNewFolderModalOpen(false);
