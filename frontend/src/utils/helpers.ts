@@ -23,10 +23,10 @@ export function formatFilename(filename: string, isMobile: boolean = false) {
 
 export const calculateStorageUsage = (files: any) => {
   const storageTypes = {
-    images: { size: 0, count: 0 },
-    videos: { size: 0, count: 0 },
-    documents: { size: 0, count: 0 },
-    others: { size: 0, count: 0 },
+    images: { size: 0, count: 0, unit: "MB" },
+    videos: { size: 0, count: 0, unit: "MB" },
+    documents: { size: 0, count: 0, unit: "MB" },
+    others: { size: 0, count: 0, unit: "MB" },
   };
 
   // Define file extensions for different types
@@ -34,11 +34,28 @@ export const calculateStorageUsage = (files: any) => {
   const videoExtensions = [".mp4", ".avi", ".mov", ".mkv"];
   const documentExtensions = [".pdf", ".doc", ".docx", ".txt"];
 
+  // Helper function to convert size string to bytes
+  const convertSizeToBytes = (sizeStr: string) => {
+    const [value, unit] = sizeStr.split(" ");
+    const sizeValue = parseFloat(value);
+
+    switch (unit.toUpperCase()) {
+      case "BYTES":
+        return sizeValue;
+      case "KB":
+        return sizeValue * 1024;
+      case "MB":
+        return sizeValue * 1024 * 1024;
+      default:
+        return 0;
+    }
+  };
+
   files.forEach((file: any) => {
     const extension = file.name
       .substr(file.name.lastIndexOf("."))
       .toLowerCase();
-    const fileSizeInBytes = parseFloat(file.size) * 1024; // Convert from KB to bytes
+    const fileSizeInBytes = convertSizeToBytes(file.size);
 
     if (imageExtensions.includes(extension)) {
       storageTypes.images.size += fileSizeInBytes;
@@ -55,19 +72,44 @@ export const calculateStorageUsage = (files: any) => {
     }
   });
 
-  // Convert total sizes back to KB
-  storageTypes.images.size = parseFloat(
-    (storageTypes.images.size / 1024).toFixed(2)
+  // Helper function to convert bytes to appropriate unit
+  const convertBytesToAppropriateUnit = (sizeInBytes: number) => {
+    if (sizeInBytes >= 1000 * 1024 * 1024) {
+      return {
+        size: parseFloat((sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)),
+        unit: "GB",
+      };
+    }
+    return {
+      size: parseFloat((sizeInBytes / (1024 * 1024)).toFixed(2)),
+      unit: "MB",
+    };
+  };
+
+  // Convert total sizes to appropriate units
+  const convertedImages = convertBytesToAppropriateUnit(
+    storageTypes.images.size
   );
-  storageTypes.videos.size = parseFloat(
-    (storageTypes.videos.size / 1024).toFixed(2)
+  storageTypes.images.size = convertedImages.size;
+  storageTypes.images.unit = convertedImages.unit;
+
+  const convertedVideos = convertBytesToAppropriateUnit(
+    storageTypes.videos.size
   );
-  storageTypes.documents.size = parseFloat(
-    (storageTypes.documents.size / 1024).toFixed(2)
+  storageTypes.videos.size = convertedVideos.size;
+  storageTypes.videos.unit = convertedVideos.unit;
+
+  const convertedDocuments = convertBytesToAppropriateUnit(
+    storageTypes.documents.size
   );
-  storageTypes.others.size = parseFloat(
-    (storageTypes.others.size / 1024).toFixed(2)
+  storageTypes.documents.size = convertedDocuments.size;
+  storageTypes.documents.unit = convertedDocuments.unit;
+
+  const convertedOthers = convertBytesToAppropriateUnit(
+    storageTypes.others.size
   );
+  storageTypes.others.size = convertedOthers.size;
+  storageTypes.others.unit = convertedOthers.unit;
 
   return storageTypes;
 };

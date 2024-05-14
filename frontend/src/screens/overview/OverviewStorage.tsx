@@ -23,6 +23,7 @@ type StorageItem = {
   usedGB: number;
   totalGB: number;
   progressBarColor: string;
+  storageUnit?: string;
 };
 
 // Helper function to convert hex color to RGBA with desired opacity
@@ -61,6 +62,8 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
     if (userId) dispatch(getUserById(userId));
   }, [dispatch, userId]);
 
+  console.log(storageUsage.images.size);
+  console.log(storageUsage.images.unit);
   const storageItems: StorageItem[] = [
     {
       id: 1,
@@ -70,6 +73,7 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
       usedGB: storageUsage.images.size,
       totalGB: 100,
       progressBarColor: "#FF6B50",
+      storageUnit: storageUsage.images.unit,
     },
     {
       id: 2,
@@ -79,6 +83,7 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
       usedGB: storageUsage.videos.size,
       totalGB: 100,
       progressBarColor: "#1FC5E4",
+      storageUnit: storageUsage.videos.unit,
     },
     {
       id: 3,
@@ -88,6 +93,7 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
       usedGB: storageUsage.documents.size,
       totalGB: 100,
       progressBarColor: "#57BF98",
+      storageUnit: storageUsage.documents.unit,
     },
     {
       id: 4,
@@ -97,6 +103,7 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
       usedGB: storageUsage.others.size,
       totalGB: 100,
       progressBarColor: "#FFC21A",
+      storageUnit: storageUsage.others.unit,
     },
   ];
 
@@ -105,7 +112,12 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
       <h2 className="text-2xl font-bold mb-6">Overview Storage</h2>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 md:gap-x-8 gap-x-3 gap-y-4">
         {storageItems.map((item: StorageItem) => {
-          const progressPercentage = `${(item.usedGB / item.totalGB) * 100}%`;
+          const progressPercentage = `${
+            item.storageUnit === "MB"
+              ? (item.usedGB / (item.totalGB * 1024)) * 100
+              : (item.usedGB / item.totalGB) * 100
+          }%`;
+
           const cardBackgroundColor = hexToRGBA(item.progressBarColor, 0.1); // Convert color to RGBA with 10% opacity
           const progressBarBackgroundColor = hexToRGBA(
             item.progressBarColor,
@@ -151,7 +163,8 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
                   ></div>
                 </div>
                 <p className="font-semibold mt-3 pb-5 text-gray-700">
-                  {item.usedGB} KB of 100 GB
+                  {item.usedGB} {item.storageUnit === "MB" ? "MB" : "GB"} of 100
+                  GB
                 </p>
               </div>
             </div>
