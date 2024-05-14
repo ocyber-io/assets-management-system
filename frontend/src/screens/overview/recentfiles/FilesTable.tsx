@@ -22,6 +22,8 @@ type FilesTableProps = {
   fullLinkHandler: (link: string) => void;
   renameHandler: (filename: string, fileId: string) => void;
   deleteHandler: (fileId: string) => void;
+  deleteConfirmationHandler: (fileId: string) => void;
+  restoreHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
   fileInformationHandler: (fileDetails: File) => void;
   shareHandler: (fileLink: string) => void;
@@ -52,6 +54,8 @@ const FilesTable: React.FC<FilesTableProps> = ({
   showFullLink,
   enableHandler,
   fromTrash,
+  deleteConfirmationHandler,
+  restoreHandler,
 }) => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
@@ -238,6 +242,10 @@ const FilesTable: React.FC<FilesTableProps> = ({
                             disableHandler={disableHandler}
                             shareHandler={shareHandler}
                             enableHandler={enableHandler}
+                            deleteConfirmationHandler={
+                              deleteConfirmationHandler
+                            }
+                            restoreHandler={restoreHandler}
                             fromTrash={fromTrash}
                           />
                         </div>
@@ -268,6 +276,8 @@ const FilesTable: React.FC<FilesTableProps> = ({
                         enableHandler={enableHandler}
                         copyToClipboard={copyToClipboard}
                         fromTrash={fromTrash}
+                        deleteConfirmationHandler={deleteConfirmationHandler}
+                        restoreHandler={restoreHandler}
                       />
                     </td>
                   </tr>

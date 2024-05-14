@@ -107,3 +107,17 @@ export const replaceFile = createAsyncThunk(
     }
   }
 );
+
+export const restoreFile = createAsyncThunk(
+  "files/restoreFile",
+  async (fileId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/restore/${fileId}`
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);

@@ -5,7 +5,8 @@ import {
   renameFile,
   deleteFile,
   toggleFileDisable,
-  replaceFile, // Import the replaceFile controller function
+  replaceFile,
+  restoreFile, // Import the replaceFile controller function
 } from "../controllers/fileController";
 
 const router = express.Router();
@@ -19,5 +20,8 @@ router.patch("/:fileId/toggleDisable", toggleFileDisable); // PATCH endpoint for
 
 // Add the route for replacing a file
 router.patch("/replace/:fileId", replaceFile);
+
+// Add the route for restoring a file
+router.patch("/restore/:fileId", restoreFile);
 
 export default router;

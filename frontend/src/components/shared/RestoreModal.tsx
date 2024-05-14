@@ -1,12 +1,12 @@
 import React from "react";
-import deleteImage from "../../assets/images/delete-modal.svg"; // Correctly import delete image
-import NotificationModal from "./NotificationModal"; // Adjust path if needed
 import { useDispatch } from "react-redux";
+import restoreImage from "../../assets/images/restore-modal.svg"; // Correctly import delete image
+import { restoreFile } from "../../reducers/file/fileThunks";
 import { AppDispatch } from "../../stores/store";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
-import { deleteFile } from "../../reducers/file/fileThunks";
+import NotificationModal from "./NotificationModal"; // Adjust path if needed
 
-type DeleteModalProps = {
+type RestoreModalProps = {
   heading?: string;
   description?: string;
   fetchAllFiles: () => void;
@@ -16,9 +16,9 @@ type DeleteModalProps = {
   isOpen: boolean;
 };
 
-const DeleteModal: React.FC<DeleteModalProps> = ({
-  heading = "Move to bin?",
-  description = "Do you really want to move this item to the bin? You can restore it later if needed.",
+const RestoreModal: React.FC<RestoreModalProps> = ({
+  heading = "Restore File?",
+  description = "Do you really want to restore this item from the bin?",
   submitButtonText,
   onClose,
   isOpen,
@@ -38,19 +38,19 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
     }
 
     try {
-      await dispatch(deleteFile(fileId)).unwrap();
-      showSuccessToast("File moved to bin successfully");
+      await dispatch(restoreFile(fileId)).unwrap();
+      showSuccessToast("File restored successfully");
       fetchAllFiles();
       onClose();
     } catch (error: any) {
-      showErrorToast(error || "An error occurred while moving the file.");
+      showErrorToast(error || "An error occurred while restoring the file.");
     }
   };
 
   return (
     <NotificationModal
       isOpen={isOpen}
-      imageUrl={deleteImage}
+      imageUrl={restoreImage}
       heading={heading}
       headingStyles="text-xl text-gray-600 font-extrabold mt-4"
       description={description}
@@ -60,11 +60,11 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       cancelButtonText="Cancel"
       submitButtonText={submitButtonText}
       cancelButtonStyle="bg-white border border-gray-200 hover:bg-gray-50"
-      submitButtonStyle="hover:bg-red-600"
-      submitButtonExtraStyle="#FF6B50"
+      submitButtonStyle="hover:bg-blue-600"
+      submitButtonExtraStyle="#3b82f6"
       closeModal={onClose}
     />
   );
 };
 
-export default DeleteModal;
+export default RestoreModal;

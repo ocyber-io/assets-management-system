@@ -15,6 +15,7 @@ import {
   renameIcon,
   disableIcon,
   EnableIcon,
+  restoreIcon,
 } from "../../../helpers/dropdownIcons";
 import { File } from "../../../Types";
 
@@ -46,6 +47,8 @@ interface RecentDropdownProps {
   disableHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
   copyToClipboard: (link: string) => void;
+  deleteConfirmationHandler: (fileId: string) => void;
+  restoreHandler: (fileId: string) => void;
   fromTrash?: boolean;
 }
 
@@ -116,6 +119,8 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
   enableHandler,
   copyToClipboard,
   fromTrash,
+  deleteConfirmationHandler,
+  restoreHandler,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
@@ -165,7 +170,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
           className={`absolute z-50 ${
             isOpen ? "block" : "hidden"
           } divide-y divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md ${
-            !fromTrash ? "w-56" : "w-12"
+            !fromTrash ? "w-64" : "w-24"
           } dark:bg-gray-700`}
           style={{ right: "34px", bottom: "0" }}
         >
@@ -211,17 +216,48 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                     if (!file.isDisabled) downloadHandler();
                   }}
                 />
+                <img
+                  src={replaceIcon}
+                  className={`ml-4 ${
+                    file.isDisabled ? "opacity-30" : "cursor-pointer"
+                  }`}
+                  alt="Replace"
+                  onClick={() => {
+                    if (!file.isDisabled) replaceHandler(file);
+                  }}
+                />
               </>
             )}
 
-            <img
-              src={movetobinIcon}
-              className="ml-4 cursor-pointer"
-              alt="Move to bin"
-              onClick={() => {
-                deleteHandler(file._id);
-              }}
-            />
+            {fromTrash && (
+              <img
+                src={restoreIcon}
+                className="ml-4 cursor-pointer"
+                alt="Restore"
+                onClick={() => {
+                  restoreHandler(file._id);
+                }}
+              />
+            )}
+            {fromTrash ? (
+              <img
+                src={movetobinIcon}
+                className="ml-4 cursor-pointer"
+                alt="Move to bin"
+                onClick={() => {
+                  deleteConfirmationHandler(file._id);
+                }}
+              />
+            ) : (
+              <img
+                src={movetobinIcon}
+                className="ml-4 cursor-pointer"
+                alt="Move to bin"
+                onClick={() => {
+                  deleteHandler(file._id);
+                }}
+              />
+            )}
 
             {!fromTrash && (
               <>

@@ -2,21 +2,21 @@ import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDispatch } from "react-redux";
-import { replaceFile } from "../../reducers/file/fileThunks";
-import { AppDispatch } from "../../stores/store";
 import crossIcon from "../../assets/icons/cross.svg";
 import fileUploadIcon from "../../assets/icons/fileUpload.svg";
 import modalUploadIcon from "../../assets/icons/modalUpload.svg";
+import { replaceFile } from "../../reducers/file/fileThunks";
+import { AppDispatch } from "../../stores/store";
 import NotificationModal from "./NotificationModal";
 
+import dummyCompressed from "../../assets/images/compressedDummy.svg";
 import dummyImage from "../../assets/images/dummyDocument.svg";
 import dummyVideo from "../../assets/images/dummyVideo.svg";
-import dummyCompressed from "../../assets/images/compressedDummy.svg";
 import {
   saveNewFileDetails,
   saveOldFileDetails,
 } from "../../reducers/file/fileDetailsSlice";
-import { formatFilename } from "../../utils/helpers";
+import { formatFilenameInSuccessModal } from "../../utils/helpers";
 
 type ReplaceFileModalProps = {
   isOpen: boolean;
@@ -196,11 +196,12 @@ const ReplaceFileModal: React.FC<ReplaceFileModalProps> = ({
               )}
             </div>
           </div>
-          <div className="py-2 pl-3 mt-1">
+          <div className="md:py-2 pl-3 mt-1">
             <p>
               File Name:{" "}
               <span>
-                {fileDetails && formatFilename(fileDetails.originalName)}
+                {fileDetails &&
+                  formatFilenameInSuccessModal(fileDetails.originalName)}
               </span>
             </p>
             <p>

@@ -6,7 +6,7 @@ import { AppDispatch } from "../../stores/store";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import { deleteFile } from "../../reducers/file/fileThunks";
 
-type DeleteModalProps = {
+type DeleteConfirmationModalProps = {
   heading?: string;
   description?: string;
   fetchAllFiles: () => void;
@@ -16,9 +16,9 @@ type DeleteModalProps = {
   isOpen: boolean;
 };
 
-const DeleteModal: React.FC<DeleteModalProps> = ({
-  heading = "Move to bin?",
-  description = "Do you really want to move this item to the bin? You can restore it later if needed.",
+const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
+  heading = "Are you Sure?",
+  description = "Do you really want to delete this item? This process cannot be undone.",
   submitButtonText,
   onClose,
   isOpen,
@@ -39,11 +39,11 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
 
     try {
       await dispatch(deleteFile(fileId)).unwrap();
-      showSuccessToast("File moved to bin successfully");
+      showSuccessToast("File deleted successfully");
       fetchAllFiles();
       onClose();
     } catch (error: any) {
-      showErrorToast(error || "An error occurred while moving the file.");
+      showErrorToast(error || "An error occurred while deleting the file.");
     }
   };
 
@@ -67,4 +67,4 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   );
 };
 
-export default DeleteModal;
+export default DeleteConfirmationModal;

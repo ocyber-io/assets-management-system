@@ -7,6 +7,7 @@ import {
   fetchFiles,
   renameFile,
   replaceFile,
+  restoreFile,
   toggleFileDisable,
 } from "./fileThunks";
 import { File } from "../../Types";
@@ -121,6 +122,23 @@ const fileSlice = createSlice({
       .addCase(replaceFile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to replace file";
+      })
+      .addCase(restoreFile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(restoreFile.fulfilled, (state, action: PayloadAction<File>) => {
+        state.loading = false;
+        const index = state.files.findIndex(
+          (file) => file._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.files[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(restoreFile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to restore file";
       });
   },
 });

@@ -10,6 +10,8 @@ import ReplaceFileModal from "../../../components/shared/ReplaceFileModal";
 import ReplaceSuccessfullModal from "../../../components/shared/ReplaceSuccessfullModal";
 import { File } from "../../../Types";
 import EnableModal from "../../../components/shared/EnableModal";
+import DeleteConfirmationModal from "../../../components/shared/DeleteConfirmationModal";
+import RestoreModal from "../../../components/shared/RestoreModal";
 
 type RecentFilesModalsProps = {
   fileId: string | null;
@@ -32,11 +34,15 @@ type RecentFilesModalsProps = {
   showFileInformationModal: boolean;
   toggleShareModal: () => void;
   showShareModal: boolean;
+  showDeleteConfrimationModal: boolean;
+  showRestoreModal: boolean;
   shareSubmitClickHandler: () => void;
   showReplaceModal: boolean;
   showSuccessModal: boolean;
   toggleReplaceModal: () => void;
   toggleSuccessModal: () => void;
+  toggleDeleteConfirmationModal: () => void;
+  toggleRestoreModal: () => void;
   toggleReplaceSuccessModal: () => void;
 
   fetchAllFiles: () => void;
@@ -70,6 +76,10 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   toggleEnableModal,
   fileLink,
   toggleReplaceSuccessModal,
+  toggleDeleteConfirmationModal,
+  toggleRestoreModal,
+  showDeleteConfrimationModal,
+  showRestoreModal,
 }) => {
   return (
     <>
@@ -105,12 +115,34 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
       )}
       {showDeleteModal && (
         <DeleteModal
-          heading="Delete File?"
-          description="Are you sure you want to delete this file?"
-          submitButtonText="Yes, Delete"
+          heading="Move to bin?"
+          description="Do you really want to move this item to the bin? You can restore it later if needed."
+          submitButtonText="Yes, Move to bin"
           onClose={toggleDeleteModal}
           fileId={fileId}
           isOpen={showDeleteModal}
+          fetchAllFiles={fetchAllFiles}
+        />
+      )}
+      {showDeleteConfrimationModal && (
+        <DeleteConfirmationModal
+          heading="Delete File?"
+          description="Are you sure you want to delete this file? This process cannot be undone."
+          submitButtonText="Yes, Delete"
+          onClose={toggleDeleteConfirmationModal}
+          fileId={fileId}
+          isOpen={showDeleteConfrimationModal}
+          fetchAllFiles={fetchAllFiles}
+        />
+      )}
+      {showRestoreModal && (
+        <RestoreModal
+          heading="Restore File?"
+          description="Do you really want to restore this item from the bin?"
+          submitButtonText="Yes, Restore"
+          onClose={toggleRestoreModal}
+          fileId={fileId}
+          isOpen={showRestoreModal}
           fetchAllFiles={fetchAllFiles}
         />
       )}

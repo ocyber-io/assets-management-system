@@ -7,6 +7,7 @@ import {
   shareIcon,
   starredIcon,
   EnableIcon,
+  restoreIcon,
 } from "../../../helpers/dropdownIcons";
 import { File } from "../../../Types"; // Assuming this is the type definition for your files
 
@@ -18,6 +19,8 @@ interface HoverOptionsProps {
   disableHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
   shareHandler: (fileLink: string) => void;
+  deleteConfirmationHandler: (fileId: string) => void;
+  restoreHandler: (fileId: string) => void;
   fromTrash?: boolean;
 }
 
@@ -30,6 +33,8 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
   shareHandler,
   enableHandler,
   fromTrash,
+  deleteConfirmationHandler,
+  restoreHandler,
 }) => {
   const downloadHandler = () => {
     if (file.link) {
@@ -88,15 +93,36 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
           />
         </>
       )}
+      {fromTrash && (
+        <img
+          src={restoreIcon}
+          className="ml-4 cursor-pointer"
+          alt="Restore"
+          onClick={() => {
+            restoreHandler(file._id);
+          }}
+        />
+      )}
+      {fromTrash ? (
+        <img
+          src={movetobinIcon}
+          className="ml-4 cursor-pointer"
+          alt="Move to bin"
+          onClick={() => {
+            deleteConfirmationHandler(file._id);
+          }}
+        />
+      ) : (
+        <img
+          src={movetobinIcon}
+          className="ml-4 cursor-pointer"
+          alt="Move to bin"
+          onClick={() => {
+            deleteHandler(file._id);
+          }}
+        />
+      )}
 
-      <img
-        src={movetobinIcon}
-        className="ml-4 cursor-pointer"
-        alt="Move to bin"
-        onClick={() => {
-          deleteHandler(file._id);
-        }}
-      />
       {!fromTrash && (
         <>
           {file.isDisabled ? (

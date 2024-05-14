@@ -307,3 +307,38 @@ export const replaceFile = async (req: Request, res: Response) => {
     }
   });
 };
+
+export const restoreFile = async (req: Request, res: Response) => {
+  const { fileId } = req.params;
+
+  try {
+    const file = await FileModel.findById(fileId);
+    if (!file) {
+      return res.status(404).send({ message: "File not found." });
+    }
+
+    if (!file.isDeleted) {
+      return res
+        .status(400)
+        .send({ message: "File is not marked as deleted." });
+    }
+
+    // Restore the file by setting isDeleted to false
+    file.isDeleted = false;
+    await file.save();
+
+    // Update user's storage information
+    const user = await User.findById(file.owner);
+    if (user) {
+      const fileSizeInBytes = sizeToBytes(file.size);
+      user.usedStorage += fileSizeInBytes;
+      user.remainingStorage = 107374182400 - user.usedStorage; // Assuming total storage is a constant
+      await user.save();
+    }
+
+    res.status(200).send({ message: "File restored successfully.", file });
+  } catch (err) {
+    console.error("Error restoring file:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};

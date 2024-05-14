@@ -1,12 +1,15 @@
 import React from "react";
 import successfullReplaceImage from "../../assets/images/file-replacement-success.svg";
-import replaceFileImage from "../../assets/images/replace-file.svg";
-import replaceFileImage2 from "../../assets/images/replace-file2.svg";
 import NotificationModal from "./NotificationModal";
+
+import dummyCompressed from "../../assets/images/compressedDummy.svg";
+import dummyImage from "../../assets/images/dummyDocument.svg";
+import dummyVideo from "../../assets/images/dummyVideo.svg";
 
 import { useSelector } from "react-redux";
 import { File } from "../../Types";
 import { RootState } from "../../stores/store";
+import { formatFilenameInSuccessModal } from "../../utils/helpers";
 
 type ReplaceSuccessfullModalProps = {
   isOpen: boolean;
@@ -43,13 +46,46 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
         <div className="mt-5">
           <h1 className="font-medium">Old File</h1>
           <div className="flex mt-3">
-            <div className="p-1 border-2 border-gray-200 rounded">
-              <img src={replaceFileImage} alt="Old file" />
+            <div className=" rounded">
+              <div className=" p-2 flex border-2 border-gray-200 justify-center items-center w-36 h-24 overflow-hidden">
+                {oldFileDetails.type &&
+                oldFileDetails.type.startsWith("image/") ? (
+                  <img
+                    src={oldFileDetails.link}
+                    alt={oldFileDetails.originalName}
+                    className="max-h-24 w-full mt-3 object-cover "
+                  />
+                ) : oldFileDetails.type &&
+                  oldFileDetails.type.startsWith("video/") ? (
+                  <img
+                    src={dummyVideo} // Placeholder thumbnail for video files
+                    alt="Video Thumbnail"
+                    className="max-h-24 w-full mb-1 object-cover opacity-80"
+                  />
+                ) : oldFileDetails.type &&
+                  (oldFileDetails.type === "application/zip" ||
+                    oldFileDetails.type === "application/octet-stream") ? (
+                  <img
+                    src={dummyCompressed} // Placeholder for compressed files
+                    alt="Compressed File"
+                    className="max-h-24 w-full mb-1 object-cover opacity-80"
+                  />
+                ) : (
+                  <img
+                    src={dummyImage}
+                    alt="Dummy Image"
+                    className=" max-h-24 w-full mb-1 object-cover opacity-80"
+                  />
+                )}
+              </div>
             </div>
-            <div className="py-2 pl-3">
+            <div className="md:py-2 pl-3">
               <p>
                 File Name:{" "}
-                <span>{oldFileDetails && oldFileDetails.originalName}</span>
+                <span>
+                  {oldFileDetails &&
+                    formatFilenameInSuccessModal(oldFileDetails.originalName)}
+                </span>
               </p>
               <p>
                 File Type: <span>{oldFileDetails && oldFileDetails.type}</span>
@@ -66,13 +102,46 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
         <div className="mt-5">
           <h1 className="font-medium">New File</h1>
           <div className="flex mt-3">
-            <div className="p-1 border-2 border-gray-200 rounded">
-              <img src={replaceFileImage2} alt="Old file" />
+            <div className=" rounded">
+              <div className=" p-2 flex border-2 border-gray-200 justify-center items-center w-36 h-24 overflow-hidden">
+                {newFileDetails.type &&
+                newFileDetails.type.startsWith("image/") ? (
+                  <img
+                    src={newFileDetails.link}
+                    alt={newFileDetails.originalName}
+                    className="max-h-24 w-full mt-3 object-cover "
+                  />
+                ) : newFileDetails.type &&
+                  newFileDetails.type.startsWith("video/") ? (
+                  <img
+                    src={dummyVideo} // Placeholder thumbnail for video files
+                    alt="Video Thumbnail"
+                    className="max-h-24 w-full mb-1 object-cover opacity-80"
+                  />
+                ) : newFileDetails.type &&
+                  (newFileDetails.type === "application/zip" ||
+                    newFileDetails.type === "application/octet-stream") ? (
+                  <img
+                    src={dummyCompressed} // Placeholder for compressed files
+                    alt="Compressed File"
+                    className="max-h-24 w-full mb-1 object-cover opacity-80"
+                  />
+                ) : (
+                  <img
+                    src={dummyImage}
+                    alt="Dummy Image"
+                    className=" max-h-24 w-full mb-1 object-cover opacity-80"
+                  />
+                )}
+              </div>
             </div>
-            <div className="py-2 pl-3">
+            <div className="md:py-2 pl-3">
               <p>
                 File Name:{" "}
-                <span>{newFileDetails && newFileDetails.originalName}</span>
+                <span>
+                  {newFileDetails &&
+                    formatFilenameInSuccessModal(newFileDetails.originalName)}
+                </span>
               </p>
               <p>
                 File Type: <span>{newFileDetails && newFileDetails.type}</span>
