@@ -18,6 +18,7 @@ interface HoverOptionsProps {
   disableHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
   shareHandler: (fileLink: string) => void;
+  fromTrash?: boolean;
 }
 
 const HoverOptions: React.FC<HoverOptionsProps> = ({
@@ -28,6 +29,7 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
   disableHandler,
   shareHandler,
   enableHandler,
+  fromTrash,
 }) => {
   const downloadHandler = () => {
     if (file.link) {
@@ -45,35 +47,48 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
         hoveredItemId === file._id ? "visible" : "invisible"
       }`}
     >
-      <img
-        src={shareIcon}
-        className={`ml-6  ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
-        alt="Share"
-        onClick={() => {
-          if (!file.isDisabled) shareHandler(file.link);
-        }}
-      />
-      <img
-        src={downloadIcon}
-        className={`ml-4 ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
-        alt="Download"
-        onClick={() => {
-          if (!file.isDisabled) downloadHandler();
-        }}
-      />
-      <img
-        src={renameIcon}
-        className={`ml-4 ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
-        alt="Rename"
-        onClick={() => {
-          if (!file.isDisabled) renameHandler(file.originalName, file._id);
-        }}
-      />
-      <img
-        src={starredIcon}
-        className={`ml-4 ${file.isDisabled ? "opacity-30" : "cursor-pointer"}`}
-        alt="Star"
-      />
+      {!fromTrash && (
+        <>
+          <img
+            src={shareIcon}
+            className={`ml-6  ${
+              file.isDisabled ? "opacity-30" : "cursor-pointer"
+            }`}
+            alt="Share"
+            onClick={() => {
+              if (!file.isDisabled) shareHandler(file.link);
+            }}
+          />
+          <img
+            src={downloadIcon}
+            className={`ml-4 ${
+              file.isDisabled ? "opacity-30" : "cursor-pointer"
+            }`}
+            alt="Download"
+            onClick={() => {
+              if (!file.isDisabled) downloadHandler();
+            }}
+          />
+          <img
+            src={renameIcon}
+            className={`ml-4 ${
+              file.isDisabled ? "opacity-30" : "cursor-pointer"
+            }`}
+            alt="Rename"
+            onClick={() => {
+              if (!file.isDisabled) renameHandler(file.originalName, file._id);
+            }}
+          />
+          <img
+            src={starredIcon}
+            className={`ml-4 ${
+              file.isDisabled ? "opacity-30" : "cursor-pointer"
+            }`}
+            alt="Star"
+          />
+        </>
+      )}
+
       <img
         src={movetobinIcon}
         className="ml-4 cursor-pointer"
@@ -82,27 +97,31 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
           deleteHandler(file._id);
         }}
       />
-      {file.isDisabled ? (
+      {!fromTrash && (
         <>
-          <img
-            src={EnableIcon}
-            className="ml-4 cursor-pointer"
-            alt="Enable"
-            onClick={() => {
-              enableHandler(file._id);
-            }}
-          />
-        </>
-      ) : (
-        <>
-          <img
-            src={disableIcon}
-            className="ml-4 cursor-pointer"
-            alt="Disable"
-            onClick={() => {
-              disableHandler(file._id);
-            }}
-          />
+          {file.isDisabled ? (
+            <>
+              <img
+                src={EnableIcon}
+                className="ml-4 cursor-pointer"
+                alt="Enable"
+                onClick={() => {
+                  enableHandler(file._id);
+                }}
+              />
+            </>
+          ) : (
+            <>
+              <img
+                src={disableIcon}
+                className="ml-4 cursor-pointer"
+                alt="Disable"
+                onClick={() => {
+                  disableHandler(file._id);
+                }}
+              />
+            </>
+          )}
         </>
       )}
     </div>

@@ -26,6 +26,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   showFullLink,
   tagFiles,
   files,
+  fromTrash,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
@@ -203,17 +204,6 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     console.log("Action taken from Test component");
   };
 
-  const handleReplaceSubmit = () => {
-    console.log("Submit new file details");
-    toggleReplaceModal();
-    toggleSuccessModal();
-  };
-
-  const handleCancelReplace = () => {
-    console.log("Cancelled");
-    toggleReplaceModal();
-  };
-
   if (error) return <div>Error loading files: {error}</div>;
 
   return (
@@ -250,6 +240,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           shareHandler={shareHandler}
           replaceHandler={replaceHandler}
           showFullLink={showFullLink}
+          fromTrash={fromTrash}
         />
         {files && files.length > filesPerPage && (
           <Pagination
@@ -285,11 +276,10 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         toggleReplaceModal={toggleReplaceModal}
         toggleSuccessModal={toggleSuccessModal}
         toggleEnableModal={toggleEnableModal}
-        handleReplaceSubmit={handleReplaceSubmit}
-        handleCancelReplace={handleCancelReplace}
         selectedFileDetails={selectedFileDetails}
         fetchAllFiles={fetchAllFiles}
         fileLink={fileLink}
+        toggleReplaceSuccessModal={toggleSuccessModal}
       />
     </div>
   );

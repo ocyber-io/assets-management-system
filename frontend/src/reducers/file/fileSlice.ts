@@ -6,6 +6,7 @@ import {
   deleteFile,
   fetchFiles,
   renameFile,
+  replaceFile,
   toggleFileDisable,
 } from "./fileThunks";
 import { File } from "../../Types";
@@ -103,6 +104,23 @@ const fileSlice = createSlice({
         state.loading = false;
         state.error =
           action.error.message || "Failed to toggle file disable state";
+      })
+      .addCase(replaceFile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(replaceFile.fulfilled, (state, action: PayloadAction<File>) => {
+        state.loading = false;
+        const index = state.files.findIndex(
+          (file) => file._id === action.payload._id
+        );
+        if (index !== -1) {
+          state.files[index] = action.payload;
+        }
+        state.error = null;
+      })
+      .addCase(replaceFile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to replace file";
       });
   },
 });

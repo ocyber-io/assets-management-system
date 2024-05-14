@@ -37,8 +37,7 @@ type RecentFilesModalsProps = {
   showSuccessModal: boolean;
   toggleReplaceModal: () => void;
   toggleSuccessModal: () => void;
-  handleReplaceSubmit: () => void;
-  handleCancelReplace: () => void;
+  toggleReplaceSuccessModal: () => void;
 
   fetchAllFiles: () => void;
   selectedFileDetails: File | undefined;
@@ -65,13 +64,12 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   showSuccessModal,
   toggleReplaceModal,
   toggleSuccessModal,
-  handleReplaceSubmit,
-  handleCancelReplace,
   selectedFileDetails,
   fetchAllFiles,
   showEnableModal,
   toggleEnableModal,
   fileLink,
+  toggleReplaceSuccessModal,
 }) => {
   return (
     <>
@@ -143,9 +141,8 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
         <ReplaceFileModal
           isOpen={showReplaceModal}
           onClose={toggleReplaceModal}
-          onSubmit={handleReplaceSubmit}
-          onCancel={handleCancelReplace}
           fileDetails={selectedFileDetails}
+          toggleReplaceSuccessModal={toggleReplaceSuccessModal}
         />
       )}
       {showSuccessModal && (

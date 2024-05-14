@@ -1,10 +1,12 @@
 import React from "react";
+import successfullReplaceImage from "../../assets/images/file-replacement-success.svg";
 import replaceFileImage from "../../assets/images/replace-file.svg";
 import replaceFileImage2 from "../../assets/images/replace-file2.svg";
-import successfullReplaceImage from "../../assets/images/file-replacement-success.svg";
 import NotificationModal from "./NotificationModal";
 
+import { useSelector } from "react-redux";
 import { File } from "../../Types";
+import { RootState } from "../../stores/store";
 
 type ReplaceSuccessfullModalProps = {
   isOpen: boolean;
@@ -16,9 +18,14 @@ type ReplaceSuccessfullModalProps = {
 const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
   isOpen,
   onClose,
-  onSubmit,
-  fileDetails,
 }) => {
+  const oldFileDetails = useSelector(
+    (state: RootState) => state.fileDetails.oldFileDetails
+  );
+  const newFileDetails = useSelector(
+    (state: RootState) => state.fileDetails.newFileDetails
+  );
+
   return (
     <div>
       <NotificationModal
@@ -31,7 +38,7 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
         submitButtonText="Continue"
         submitButtonStyle="bg-blue-500 hover:bg-blue-600"
         isOpen={isOpen}
-        onSubmit={onSubmit}
+        onSubmit={onClose}
       >
         <div className="mt-5">
           <h1 className="font-medium">Old File</h1>
@@ -41,15 +48,16 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
             </div>
             <div className="py-2 pl-3">
               <p>
-                File Name: <span>{fileDetails && fileDetails.name}</span>
+                File Name:{" "}
+                <span>{oldFileDetails && oldFileDetails.originalName}</span>
               </p>
               <p>
-                File Type: <span>{fileDetails && fileDetails.type}</span>
+                File Type: <span>{oldFileDetails && oldFileDetails.type}</span>
               </p>
               <p>
                 File Size:{" "}
                 <span className="text-gray-400">
-                  {fileDetails && fileDetails.size}
+                  {oldFileDetails && oldFileDetails.size}
                 </span>
               </p>
             </div>
@@ -63,15 +71,16 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
             </div>
             <div className="py-2 pl-3">
               <p>
-                File Name: <span>{fileDetails && fileDetails.name}</span>
+                File Name:{" "}
+                <span>{newFileDetails && newFileDetails.originalName}</span>
               </p>
               <p>
-                File Type: <span>{fileDetails && fileDetails.type}</span>
+                File Type: <span>{newFileDetails && newFileDetails.type}</span>
               </p>
               <p>
                 File Size:{" "}
                 <span className="text-gray-400">
-                  {fileDetails && fileDetails.size}
+                  {newFileDetails && newFileDetails.size}
                 </span>
               </p>
             </div>

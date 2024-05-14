@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { File } from "../../Types";
-import { AppDispatch } from "../../stores/store";
-import { useDispatch, useSelector } from "react-redux";
-import { getUserById } from "../../reducers/user/userThunks";
 import { jwtDecode } from "jwt-decode";
-import { selectUser } from "../../reducers/user/userSlice";
-import { calculateStorageUsage } from "../../utils/helpers";
-import jpgIcon from "../../assets/icons/overview-storage/photo.svg";
-import videoIcon from "../../assets/icons/overview-storage/video.svg";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { File } from "../../Types";
 import docIcon from "../../assets/icons/overview-storage/doc.svg";
 import otherIcon from "../../assets/icons/overview-storage/other.svg";
+import jpgIcon from "../../assets/icons/overview-storage/photo.svg";
+import videoIcon from "../../assets/icons/overview-storage/video.svg";
+import { getUserById } from "../../reducers/user/userThunks";
+import { AppDispatch } from "../../stores/store";
+import { calculateStorageUsage } from "../../utils/helpers";
 
 type OverViewStorageProps = {
   files?: File[] | undefined;
@@ -35,11 +34,9 @@ const hexToRGBA = (hex: string, opacity: number): string => {
 };
 
 const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
-  const user = useSelector(selectUser);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch<AppDispatch>();
   const [userId, setUserId] = useState<string>();
-  console.log(user);
 
   const storageUsage = calculateStorageUsage(files);
 
@@ -62,8 +59,6 @@ const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
     if (userId) dispatch(getUserById(userId));
   }, [dispatch, userId]);
 
-  console.log(storageUsage.images.size);
-  console.log(storageUsage.images.unit);
   const storageItems: StorageItem[] = [
     {
       id: 1,

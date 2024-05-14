@@ -46,6 +46,7 @@ interface RecentDropdownProps {
   disableHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
   copyToClipboard: (link: string) => void;
+  fromTrash?: boolean;
 }
 
 const subItems: MenuItem[] = [
@@ -114,6 +115,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
   disableHandler,
   enableHandler,
   copyToClipboard,
+  fromTrash,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
@@ -162,42 +164,56 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
         <div
           className={`absolute z-50 ${
             isOpen ? "block" : "hidden"
-          } divide-y divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md w-44 dark:bg-gray-700`}
+          } divide-y divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md ${
+            !fromTrash ? "w-56" : "w-12"
+          } dark:bg-gray-700`}
           style={{ right: "34px", bottom: "0" }}
         >
           <div className="flex">
-            <img
-              src={shareIcon}
-              className={`ml-6  ${
-                file.isDisabled ? "opacity-30" : "cursor-pointer"
-              }`}
-              alt="Share"
-              onClick={() => {
-                if (!file.isDisabled) shareHandler(file.link);
-              }}
-            />
+            {!fromTrash && (
+              <>
+                <img
+                  src={shareIcon}
+                  className={`ml-6  ${
+                    file.isDisabled ? "opacity-30" : "cursor-pointer"
+                  }`}
+                  alt="Share"
+                  onClick={() => {
+                    if (!file.isDisabled) shareHandler(file.link);
+                  }}
+                />
 
-            <img
-              src={renameIcon}
-              className={`ml-4 ${
-                file.isDisabled ? "opacity-30" : "cursor-pointer"
-              }`}
-              alt="Rename"
-              onClick={() => {
-                if (!file.isDisabled)
-                  renameHandler(file.originalName, file._id);
-              }}
-            />
-            <img
-              src={downloadIcon}
-              className={`ml-4 ${
-                file.isDisabled ? "opacity-30" : "cursor-pointer"
-              }`}
-              alt="Download"
-              onClick={() => {
-                if (!file.isDisabled) downloadHandler();
-              }}
-            />
+                <img
+                  src={renameIcon}
+                  className={`ml-4 ${
+                    file.isDisabled ? "opacity-30" : "cursor-pointer"
+                  }`}
+                  alt="Rename"
+                  onClick={() => {
+                    if (!file.isDisabled)
+                      renameHandler(file.originalName, file._id);
+                  }}
+                />
+                <img
+                  src={starredIcon}
+                  className={`ml-4 ${
+                    file.isDisabled ? "opacity-30" : "cursor-pointer"
+                  }`}
+                  alt="Star"
+                />
+                <img
+                  src={downloadIcon}
+                  className={`ml-4 ${
+                    file.isDisabled ? "opacity-30" : "cursor-pointer"
+                  }`}
+                  alt="Download"
+                  onClick={() => {
+                    if (!file.isDisabled) downloadHandler();
+                  }}
+                />
+              </>
+            )}
+
             <img
               src={movetobinIcon}
               className="ml-4 cursor-pointer"
@@ -206,27 +222,32 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                 deleteHandler(file._id);
               }}
             />
-            {file.isDisabled ? (
+
+            {!fromTrash && (
               <>
-                <img
-                  src={EnableIcon}
-                  className="ml-4 cursor-pointer"
-                  alt="Enable"
-                  onClick={() => {
-                    enableHandler(file._id);
-                  }}
-                />
-              </>
-            ) : (
-              <>
-                <img
-                  src={disableIcon}
-                  className="ml-4 cursor-pointer"
-                  alt="Disable"
-                  onClick={() => {
-                    if (!file.isDisabled) disableHandler(file._id);
-                  }}
-                />
+                {file.isDisabled ? (
+                  <>
+                    <img
+                      src={EnableIcon}
+                      className="ml-4 cursor-pointer"
+                      alt="Enable"
+                      onClick={() => {
+                        enableHandler(file._id);
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <img
+                      src={disableIcon}
+                      className="ml-4 cursor-pointer"
+                      alt="Disable"
+                      onClick={() => {
+                        if (!file.isDisabled) disableHandler(file._id);
+                      }}
+                    />
+                  </>
+                )}
               </>
             )}
           </div>

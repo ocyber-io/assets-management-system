@@ -84,3 +84,26 @@ export const toggleFileDisable = createAsyncThunk(
     }
   }
 );
+
+export const replaceFile = createAsyncThunk(
+  "files/replaceFile",
+  async (
+    { fileId, fileData }: { fileId: string; fileData: FormData },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/replace/${fileId}`,
+        fileData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
