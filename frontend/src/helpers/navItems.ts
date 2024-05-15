@@ -84,11 +84,6 @@ export const navSections: NavSection[] = [
         hoverIcon: favoritesHoverIcon,
         countKey: "my-folders",
       },
-    ],
-  },
-  {
-    label: "Shared Files",
-    items: [
       {
         id: "trash",
         path: "/trash",

@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { SERVER_URL } from "../../constants/constants";
+import { File } from "../../Types";
 
 // Definition of user types should remain here or be moved to a types file
 export interface User {
@@ -11,6 +12,7 @@ export interface User {
   remainingStorage: number;
   totalStorage: string;
   usedStorage: number;
+  favoriteFiles: File[];
 }
 
 interface VerifyOtpResponse {

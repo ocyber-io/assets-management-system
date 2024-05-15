@@ -37,8 +37,8 @@ const Layout: React.FC = () => {
   }, [dispatch, userId]);
 
   return (
-    <div className="flex min-h-screen">
-      <div className="fixed lg:w-64 w-10 text-white h-full z-30">
+    <div className="flex">
+      <div className="fixed lg:w-64 w-10 text-white h-full z-30 ">
         <SideBar
           setModalOpen={setModalOpen}
           setNewFolderModalOpen={setIsNewFolderModalOpen}

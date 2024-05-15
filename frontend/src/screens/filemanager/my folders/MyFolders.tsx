@@ -1,12 +1,14 @@
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
-import { BsFillFolderFill, BsX } from "react-icons/bs"; // Import the delete (cross) icon
+import { BsFillFolderFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import binIcon from "../../../assets/icons/dropdown/movetobin.svg";
 import DeleteFolderModal from "../../../components/shared/DeleteFolderModal";
 import { selectFolders } from "../../../reducers/folder/folderSlice";
 import { getFoldersByUserId } from "../../../reducers/folder/folderThunk";
 import { AppDispatch } from "../../../stores/store";
+import { formatDate } from "../../../utils/helpers";
 
 const MyFolders: React.FC = () => {
   const navigate = useNavigate();
@@ -60,41 +62,72 @@ const MyFolders: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">My Folders</h1>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {folders &&
-          folders.map((folder) => (
-            <>
-              <div
-                key={folder._id}
-                className="relative" // Make the container relative to position the delete button
-              >
-                <button
-                  className="absolute top-1 right-1 p-1 rounded-full bg-transparent hover:bg-gray-200"
-                  onClick={() => deleteHandler(folder._id)}
-                  aria-label="Delete folder"
-                >
-                  <BsX size={18} color="#888" />
-                </button>
-                <div
-                  className="flex flex-col items-center p-6 border border-gray-200 rounded-lg  cursor-pointer"
-                  style={{ backgroundColor: `${folder.folderColor}10` }}
+    <div className="">
+      <h1 className="text-lg px-6 pt-4 font-bold mb-6 text-gray-800">
+        My Folders
+      </h1>
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+              Folder Name
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+              Created At
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+              Modified At
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+              Files
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4"></th>
+          </tr>
+        </thead>
+        <tbody className=" divide-y divide-gray-200">
+          {folders &&
+            folders.map((folder) => (
+              <tr key={folder._id}>
+                <td
+                  className="px-6 py-4 whitespace-nowrap cursor-pointer"
                   onClick={() => folderHandler(folder._id)}
                 >
-                  <BsFillFolderFill
-                    size={64}
-                    color={folder.folderColor}
-                    className="opacity-85"
-                  />
-                  <span className="mt-4 text-xl font-semibold text-gray-700">
-                    {folder.folderName}
-                  </span>
-                </div>
-              </div>
-            </>
-          ))}
-      </div>
+                  <div className="flex items-center">
+                    <div className="">
+                      <BsFillFolderFill
+                        size={24}
+                        color={folder.folderColor}
+                        className="opacity-85"
+                      />
+                    </div>
+                    <div className="ml-4">
+                      <div className="text-lg font-semibold text-gray-700">
+                        {folder.folderName}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {formatDate(folder.createdAt)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {formatDate(folder.updatedAt)}
+                </td>
+                <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {folder.files.length}
+                </td>
+                <td className="px-2 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    onClick={() => deleteHandler(folder._id)}
+                    aria-label="Delete folder"
+                  >
+                    <img src={binIcon} className="mr-2 mt-0.5" alt="bin icon" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
       {showDeleteFolderModal && (
         <DeleteFolderModal
           heading="Delete Folder?"

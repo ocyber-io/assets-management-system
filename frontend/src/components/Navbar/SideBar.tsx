@@ -68,11 +68,11 @@ const SideBar: React.FC<AddNewButtonProps> = ({
 
       <div
         ref={sidebarRef}
-        className={`fixed inset-y-0 left-0 w-64 transform ${
+        className={`fixed inset-y-0 left-0 w-64 transform  ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 ease-in-out z-40 lg:relative lg:translate-x-0`}
       >
-        <div className="w-full h-[99vh] bg-white text-gray-600 flex flex-col lg:m-2 rounded-r-2xl border-2 border-gray-200">
+        <div className="w-full h-screen overflow-y-scroll bg-white text-gray-600 flex flex-col lg:m-2 rounded-r-2xl border-2 border-gray-200">
           {isOpen && (
             <img
               src={menuCrossIcon}
