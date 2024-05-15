@@ -44,6 +44,7 @@ const RenameModal: React.FC<RenameProps> = ({
       ).unwrap();
       showSuccessToast("File successfully renamed");
       fetchAllFiles();
+      onClose();
     } catch (error: any) {
       showErrorToast(error || "An error occurred while renaming the file.");
     }

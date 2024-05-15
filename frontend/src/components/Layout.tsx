@@ -36,11 +36,6 @@ const Layout: React.FC = () => {
     if (userId) dispatch(fetchFiles(userId));
   }, [dispatch, userId]);
 
-  const NewFolderSubmitHandler = () => {
-    setIsNewFolderModalOpen(false);
-    console.log("submit");
-  };
-
   return (
     <div className="flex min-h-screen">
       <div className="fixed lg:w-64 w-10 text-white h-full z-30">
@@ -63,7 +58,6 @@ const Layout: React.FC = () => {
         isOpen={isNewFolderModalOpen}
         onCancel={() => setIsNewFolderModalOpen(false)}
         onClose={() => setIsNewFolderModalOpen(false)}
-        onSubmit={NewFolderSubmitHandler}
       />
     </div>
   );

@@ -1,21 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NotificationModal from "./NotificationModal";
+import { AppDispatch } from "../../stores/store";
+import { useDispatch } from "react-redux";
+import { addFolder } from "../../reducers/folder/folderThunk";
+import { jwtDecode } from "jwt-decode";
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
 
 type NewFolderProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: () => void;
   onCancel: () => void;
 };
 
 const NewFolderModal: React.FC<NewFolderProps> = ({
   isOpen,
   onClose,
-  onSubmit,
   onCancel,
 }) => {
   const [folderName, setFolderName] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
+  const token = localStorage.getItem("token");
+  const [userId, setUserId] = useState<string>();
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode<{
+          id: string;
+        }>(token);
+        if (decoded) {
+          setUserId(decoded.id);
+        }
+      } catch (error) {
+        console.error("Failed to decode JWT:", error);
+      }
+    }
+  }, [token]);
 
   const colors = [
     "#f44336",
@@ -48,6 +69,29 @@ const NewFolderModal: React.FC<NewFolderProps> = ({
     setSelectedColor(color);
   };
 
+  const submitHandler = async () => {
+    if (!userId) return;
+
+    if (folderName === "") {
+      showErrorToast("Please enter the folder name");
+      return;
+    }
+    let colorToSend = selectedColor || "#9e9e9e";
+    const folderData = {
+      folderName: folderName,
+      folderColor: colorToSend,
+      userId: userId,
+    };
+    try {
+      await dispatch(addFolder(folderData)).unwrap();
+      showSuccessToast("Folder created successfully");
+      setFolderName("");
+      setSelectedColor("");
+      onClose();
+    } catch (error: any) {
+      showErrorToast(error || "An error occurred while moving the file.");
+    }
+  };
   return (
     <div>
       <NotificationModal
@@ -59,7 +103,7 @@ const NewFolderModal: React.FC<NewFolderProps> = ({
         cancelButtonStyle=" bg-transparent border-2 border-gray-200 hover:bg-blue-50"
         cancelButtonText="Cancel"
         isOpen={isOpen}
-        onSubmit={() => onSubmit()} // Passing folder name and color to onSubmit
+        onSubmit={submitHandler} // Passing folder name and color to onSubmit
         onCancel={onCancel}
       >
         <div className="w-full mt-4">

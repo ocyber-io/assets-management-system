@@ -13,7 +13,10 @@ import profileIcon from "../assets/icons/settings/profile.svg";
 import profileHoverIcon from "../assets/icons/settings/profileHover.svg";
 import documentLinkIcon from "../assets/icons/settings/documentLink.svg";
 import documentLinkHoverIcon from "../assets/icons/settings/documentLinkHover.svg";
-
+import myFoldersIcon from "../assets/icons/my-folders.svg";
+import favoritesIcon from "../assets/icons/favorite.svg";
+import favoritesHoverIcon from "../assets/icons/favoriteHover.svg";
+import myFoldersHoverIcon from "../assets/icons/my-foldersHover.svg";
 // Interface definitions
 type NavItem = {
   id: string;
@@ -57,12 +60,29 @@ export const navSections: NavSection[] = [
         countKey: "recentFiles",
         count: 34,
       },
+
       {
         id: "tags",
         path: "/tags",
         label: "Tags",
         icon: tagsIcon,
         hoverIcon: tagsHoverIcon,
+      },
+      {
+        id: "folders",
+        path: "/folders",
+        label: "Folders",
+        icon: myFoldersIcon,
+        hoverIcon: myFoldersHoverIcon,
+        countKey: "my-folders",
+      },
+      {
+        id: "favorites",
+        path: "/favorites",
+        label: "Favorites",
+        icon: favoritesIcon,
+        hoverIcon: favoritesHoverIcon,
+        countKey: "my-folders",
       },
     ],
   },
