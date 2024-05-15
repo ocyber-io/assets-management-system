@@ -219,3 +219,126 @@ export const toggleFileDisable = async (req: Request, res: Response) => {
     res.status(500).send({ message: "Internal server error." });
   }
 };
+
+export const replaceFile = async (req: Request, res: Response) => {
+  upload(req, res, async (error) => {
+    if (error) {
+      return res.status(500).send({ message: error.message });
+    }
+    if (!req.file) {
+      return res.status(400).send({ message: "No file selected!" });
+    }
+
+    const fileId = req.params.fileId;
+    const { userId } = req.body;
+
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+
+      const file = await FileModel.findById(fileId);
+      if (!file) {
+        return res.status(404).send({ message: "File not found" });
+      }
+
+      const userDir = path.join(
+        __dirname,
+        "../../../frontend/public/uploads",
+        userId
+      );
+
+      // Compute the new file path with the new extension
+      const newExtension = path.extname(req.file.originalname);
+      const newFileName =
+        path.basename(file.name, path.extname(file.name)) + newExtension;
+      const newFilePath = path.join(userDir, newFileName);
+
+      // Remove the old file
+      fs.unlink(path.join(userDir, file.name), async (err) => {
+        if (err) {
+          console.error("Failed to delete the previous file:", err);
+          return res
+            .status(500)
+            .send({ message: "Failed to delete the previous file." });
+        }
+
+        // Asserting that req.file exists
+        const uploadedFile = req.file!;
+
+        // Rename the new file to replace the old one
+        fs.rename(uploadedFile.path, newFilePath, async (err) => {
+          if (err) {
+            console.error("Failed to replace the file:", err);
+            return res
+              .status(500)
+              .send({ message: "Failed to replace the file." });
+          }
+
+          // Update file details and save
+          const baseLink = file.link.substring(0, file.link.lastIndexOf("."));
+          const newLink = `${baseLink}${newExtension}`;
+          const baseFullLink = file.fullLink.substring(
+            0,
+            file.fullLink.lastIndexOf(".")
+          );
+          const newFullLink = `${baseFullLink}${newExtension}`;
+
+          file.originalName = uploadedFile.originalname;
+          file.name = newFileName;
+          file.size = formatFileSize(uploadedFile.size);
+          file.type =
+            uploadedFile.mimetype === "application/octet-stream"
+              ? uploadedFile.mimetype.replace("octet-stream", "jpeg")
+              : uploadedFile.mimetype;
+          file.description = req.body.description || file.description;
+          file.tags = req.body.tags ? req.body.tags.split(",") : file.tags;
+          file.link = newLink;
+          file.fullLink = newFullLink;
+
+          await file.save();
+
+          res.status(200).send(file);
+        });
+      });
+    } catch (err: any) {
+      res.status(500).send({ message: err.message });
+    }
+  });
+};
+
+export const restoreFile = async (req: Request, res: Response) => {
+  const { fileId } = req.params;
+
+  try {
+    const file = await FileModel.findById(fileId);
+    if (!file) {
+      return res.status(404).send({ message: "File not found." });
+    }
+
+    if (!file.isDeleted) {
+      return res
+        .status(400)
+        .send({ message: "File is not marked as deleted." });
+    }
+
+    // Restore the file by setting isDeleted to false
+    file.isDeleted = false;
+    await file.save();
+
+    // Update user's storage information
+    const user = await User.findById(file.owner);
+    if (user) {
+      const fileSizeInBytes = sizeToBytes(file.size);
+      user.usedStorage += fileSizeInBytes;
+      user.remainingStorage = 107374182400 - user.usedStorage; // Assuming total storage is a constant
+      await user.save();
+    }
+
+    res.status(200).send({ message: "File restored successfully.", file });
+  } catch (err) {
+    console.error("Error restoring file:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};

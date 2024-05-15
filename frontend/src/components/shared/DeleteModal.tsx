@@ -17,8 +17,8 @@ type DeleteModalProps = {
 };
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
-  heading = "Are you Sure?",
-  description = "Do you really want to delete this item? This process cannot be undone.",
+  heading = "Move to bin?",
+  description = "Do you really want to move this item to the bin? You can restore it later if needed.",
   submitButtonText,
   onClose,
   isOpen,
@@ -39,11 +39,11 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
 
     try {
       await dispatch(deleteFile(fileId)).unwrap();
-      showSuccessToast("File deleted successfully");
+      showSuccessToast("File moved to bin successfully");
       fetchAllFiles();
       onClose();
     } catch (error: any) {
-      showErrorToast(error || "An error occurred while deleting the file.");
+      showErrorToast(error || "An error occurred while moving the file.");
     }
   };
 

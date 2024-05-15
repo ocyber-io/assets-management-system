@@ -14,6 +14,7 @@ import moreIcon from "../assets/icons/dropdown/more.svg";
 import fullLinkIcon from "../assets/icons/fullLink.svg";
 import selectAllIcon from "../assets/icons/selectAll.svg";
 import EnableIcon from "../assets/icons/eneable.svg";
+import restoreIcon from "../assets/icons/restore.svg";
 
 export {
   replaceIcon,
@@ -32,4 +33,5 @@ export {
   fullLinkIcon,
   selectAllIcon,
   EnableIcon,
+  restoreIcon,
 };

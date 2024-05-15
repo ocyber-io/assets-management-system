@@ -22,12 +22,15 @@ type FilesTableProps = {
   fullLinkHandler: (link: string) => void;
   renameHandler: (filename: string, fileId: string) => void;
   deleteHandler: (fileId: string) => void;
+  deleteConfirmationHandler: (fileId: string) => void;
+  restoreHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
   fileInformationHandler: (fileDetails: File) => void;
   shareHandler: (fileLink: string) => void;
   replaceHandler: (fileDetails: File) => void;
   disableHandler: (id: string) => void;
   showFullLink?: boolean;
+  fromTrash?: boolean;
 };
 
 const FilesTable: React.FC<FilesTableProps> = ({
@@ -50,6 +53,9 @@ const FilesTable: React.FC<FilesTableProps> = ({
   replaceHandler,
   showFullLink,
   enableHandler,
+  fromTrash,
+  deleteConfirmationHandler,
+  restoreHandler,
 }) => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
@@ -223,7 +229,11 @@ const FilesTable: React.FC<FilesTableProps> = ({
                     </td>
                     <td className="py-3 text-center relative md:w-64 w-24">
                       <div className="flex justify-end">
-                        <div className="hidden lg:block md:mr-16">
+                        <div
+                          className={`hidden lg:block ${
+                            !fromTrash && "md:mr-16"
+                          } `}
+                        >
                           <HoverOptions
                             file={file}
                             hoveredItemId={hoveredItemId}
@@ -232,6 +242,11 @@ const FilesTable: React.FC<FilesTableProps> = ({
                             disableHandler={disableHandler}
                             shareHandler={shareHandler}
                             enableHandler={enableHandler}
+                            deleteConfirmationHandler={
+                              deleteConfirmationHandler
+                            }
+                            restoreHandler={restoreHandler}
+                            fromTrash={fromTrash}
                           />
                         </div>
                         <div className="">
@@ -260,6 +275,9 @@ const FilesTable: React.FC<FilesTableProps> = ({
                         disableHandler={disableHandler}
                         enableHandler={enableHandler}
                         copyToClipboard={copyToClipboard}
+                        fromTrash={fromTrash}
+                        deleteConfirmationHandler={deleteConfirmationHandler}
+                        restoreHandler={restoreHandler}
                       />
                     </td>
                   </tr>

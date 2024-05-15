@@ -26,6 +26,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   showFullLink,
   tagFiles,
   files,
+  fromTrash,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
@@ -36,6 +37,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [showWarningModal, setShowWarningModal] = useState<boolean>(false);
   const [showEnableModal, setShowEnableModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showDeleteConfrimationModal, setShowDeleteConfrimationModal] =
+    useState<boolean>(false);
+  const [showRestoreModal, setShowRestoreModal] = useState<boolean>(false);
   const [showFileInformationModal, setShowFileInformationModal] =
     useState<boolean>(false);
   const [showRenameModal, setShowRenameModal] = useState<boolean>(false);
@@ -82,6 +86,12 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   };
   const toggleDeleteModal = () => {
     setShowDeleteModal(!showDeleteModal);
+  };
+  const toggleDeleteConfrimationModal = () => {
+    setShowDeleteConfrimationModal(!showDeleteConfrimationModal);
+  };
+  const toggleRestoreModal = () => {
+    setShowRestoreModal(!showRestoreModal);
   };
   const toggleEnableModal = () => {
     setShowEnableModal(!showEnableModal);
@@ -169,6 +179,14 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     toggleDeleteModal();
     setFileId(fileId);
   };
+  const deleteConfirmationHandler = (fileId: string) => {
+    toggleDeleteConfrimationModal();
+    setFileId(fileId);
+  };
+  const restoreHandler = (fileId: string) => {
+    toggleRestoreModal();
+    setFileId(fileId);
+  };
 
   const renameHandler = (filename: string, fileId: string) => {
     toggleRenameModal();
@@ -203,17 +221,6 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     console.log("Action taken from Test component");
   };
 
-  const handleReplaceSubmit = () => {
-    console.log("Submit new file details");
-    toggleReplaceModal();
-    toggleSuccessModal();
-  };
-
-  const handleCancelReplace = () => {
-    console.log("Cancelled");
-    toggleReplaceModal();
-  };
-
   if (error) return <div>Error loading files: {error}</div>;
 
   return (
@@ -244,12 +251,15 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           fullLinkHandler={fullLinkHandler}
           renameHandler={renameHandler}
           deleteHandler={deleteHandler}
+          deleteConfirmationHandler={deleteConfirmationHandler}
+          restoreHandler={restoreHandler}
           enableHandler={enableHandler}
           disableHandler={disableHandler}
           fileInformationHandler={fileInformationHandler}
           shareHandler={shareHandler}
           replaceHandler={replaceHandler}
           showFullLink={showFullLink}
+          fromTrash={fromTrash}
         />
         {files && files.length > filesPerPage && (
           <Pagination
@@ -285,11 +295,14 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         toggleReplaceModal={toggleReplaceModal}
         toggleSuccessModal={toggleSuccessModal}
         toggleEnableModal={toggleEnableModal}
-        handleReplaceSubmit={handleReplaceSubmit}
-        handleCancelReplace={handleCancelReplace}
         selectedFileDetails={selectedFileDetails}
         fetchAllFiles={fetchAllFiles}
         fileLink={fileLink}
+        toggleReplaceSuccessModal={toggleSuccessModal}
+        showDeleteConfrimationModal={showDeleteConfrimationModal}
+        toggleDeleteConfirmationModal={toggleDeleteConfrimationModal}
+        showRestoreModal={showRestoreModal}
+        toggleRestoreModal={toggleRestoreModal}
       />
     </div>
   );

@@ -21,6 +21,19 @@ export function formatFilename(filename: string, isMobile: boolean = false) {
   return filename;
 }
 
+export function formatFilenameInSuccessModal(
+  filename: string,
+  isMobile: boolean = false
+) {
+  const startChars = isMobile ? 8 : 12;
+  const endChars = 5;
+
+  if (filename.length > startChars + endChars) {
+    return `${filename.slice(0, startChars)}...${filename.slice(-endChars)}`;
+  }
+  return filename;
+}
+
 export const calculateStorageUsage = (files: any) => {
   const storageTypes = {
     images: { size: 0, count: 0, unit: "MB" },
