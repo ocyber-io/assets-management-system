@@ -10,8 +10,6 @@ import {
   verifyOtp,
   resetPassword,
   getUserById,
-  addToFavorites,
-  removeFromFavorites,
 } from "../controllers/userController";
 import { isAuthenticated } from "../middlewares/authMiddleware";
 
@@ -31,10 +29,6 @@ router.delete("/:id", deleteUser);
 
 // Additional routes for password reset functionality
 router.post("/verify-otp", verifyOtp); // Route for verifying OTP sent for password reset
-router.post("/reset-password", resetPassword); // Route for resetting password using OTP
-
-// Routes for managing favorites
-router.post("/:userId/favorites/add", isAuthenticated, addToFavorites);
-router.post("/:userId/favorites/remove", isAuthenticated, removeFromFavorites);
+router.post("/reset-password", resetPassword); // Route for resetting password using OT
 
 export default router;

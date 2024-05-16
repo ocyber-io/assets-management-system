@@ -342,3 +342,28 @@ export const restoreFile = async (req: Request, res: Response) => {
     res.status(500).send({ message: "Internal server error." });
   }
 };
+
+export const toggleFileFavorite = async (req: Request, res: Response) => {
+  const { fileId } = req.params;
+
+  try {
+    const file = await FileModel.findById(fileId);
+    if (!file) {
+      return res.status(404).send({ message: "File not found." });
+    }
+
+    // Toggle the isFavorite property
+    file.isFavorite = !file.isFavorite;
+    await file.save();
+
+    res.status(200).send({
+      message: `File has been ${
+        file.isFavorite ? "favorited" : "unfavorited"
+      }.`,
+      file,
+    });
+  } catch (err) {
+    console.error("Error toggling file favorite status:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};

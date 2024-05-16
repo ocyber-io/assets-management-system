@@ -12,7 +12,6 @@ export type IUser = {
   totalStorage: string;
   usedStorage: number;
   remainingStorage: number;
-  favoriteFiles?: mongoose.Types.ObjectId[];
 };
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -55,7 +54,6 @@ const userSchema = new mongoose.Schema<IUser>({
   totalStorage: { type: String, default: "100GB" },
   usedStorage: { type: Number, default: 0 },
   remainingStorage: { type: Number, default: 107374182400 },
-  favoriteFiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "File" }],
 });
 
 const User = mongoose.model<IUser>("User", userSchema);

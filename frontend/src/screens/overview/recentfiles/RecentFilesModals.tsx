@@ -27,6 +27,7 @@ type RecentFilesModalsProps = {
   showRenameModal: boolean;
   fileName: string | null;
   fileLink: string;
+  fileSize: string | null;
   toggleRenameModal: () => void;
   handleOkAction: () => void;
   toggleFileInformationModal: () => void;
@@ -60,6 +61,7 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   toggleDeleteModal,
   showRenameModal,
   fileName,
+  fileSize,
   toggleRenameModal,
   toggleFileInformationModal,
   showFileInformationModal,
@@ -142,6 +144,8 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
           submitButtonText="Yes, Restore"
           onClose={toggleRestoreModal}
           fileId={fileId}
+          fileName={fileName}
+          fileSize={fileSize}
           isOpen={showRestoreModal}
           fetchAllFiles={fetchAllFiles}
         />

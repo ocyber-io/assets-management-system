@@ -305,69 +305,6 @@ const getUserById = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-const addToFavorites = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
-  const { userId } = req.params;
-  const { fileId } = req.body;
-
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (!user.favoriteFiles) {
-      return res.status(400).json({ message: "User does not have favorites" });
-    }
-
-    // Check if the file is already in favorites
-    if (user.favoriteFiles.includes(fileId)) {
-      return res.status(400).json({ message: "File is already in favorites" });
-    }
-
-    user.favoriteFiles.push(fileId);
-    await user.save();
-
-    return res.status(200).json({ message: "File added to favorites" });
-  } catch (error) {
-    return res.status(500).json({ message: "Error adding to favorites" });
-  }
-};
-
-const removeFromFavorites = async (
-  req: Request,
-  res: Response
-): Promise<Response> => {
-  const { userId } = req.params;
-  const { fileId } = req.body;
-
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (!user.favoriteFiles) {
-      return res.status(400).json({ message: "User does not have favorites" });
-    }
-
-    // Check if the file is in favorites
-    const index = user.favoriteFiles.indexOf(fileId);
-    if (index === -1) {
-      return res.status(400).json({ message: "File is not in favorites" });
-    }
-
-    user.favoriteFiles.splice(index, 1);
-    await user.save();
-
-    return res.status(200).json({ message: "File removed from favorites" });
-  } catch (error) {
-    return res.status(500).json({ message: "Error removing from favorites" });
-  }
-};
-
 export {
   signUp,
   googleSignUp,
@@ -379,6 +316,4 @@ export {
   verifyOtp,
   resetPassword,
   getUserById,
-  addToFavorites,
-  removeFromFavorites,
 };

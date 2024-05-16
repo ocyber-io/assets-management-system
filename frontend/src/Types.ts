@@ -17,4 +17,5 @@ export type File = {
   description?: string;
   isDisabled?: boolean;
   isDeleted?: boolean;
+  isFavorite?: boolean;
 };

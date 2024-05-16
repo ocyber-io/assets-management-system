@@ -121,3 +121,17 @@ export const restoreFile = createAsyncThunk(
     }
   }
 );
+
+export const toggleFileFavorite = createAsyncThunk(
+  "files/toggleFavorite",
+  async (fileId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/toggleFavorite/${fileId}`
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);

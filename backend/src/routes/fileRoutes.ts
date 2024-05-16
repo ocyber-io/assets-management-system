@@ -6,8 +6,9 @@ import {
   deleteFile,
   toggleFileDisable,
   replaceFile,
-  restoreFile, // Import the replaceFile controller function
-} from "../controllers/fileController";
+  restoreFile,
+  toggleFileFavorite, // Import the toggleFileFavorite controller function
+} from "../controllers/fileController"; // Ensure you import the toggleFileFavorite function
 
 const router = express.Router();
 
@@ -23,5 +24,8 @@ router.patch("/replace/:fileId", replaceFile);
 
 // Add the route for restoring a file
 router.patch("/restore/:fileId", restoreFile);
+
+// Add the route for toggling file favorite status
+router.patch("/toggleFavorite/:fileId", toggleFileFavorite);
 
 export default router;

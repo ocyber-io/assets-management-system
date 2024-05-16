@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { File } from "../../../Types";
 import fileIcon from "../../../assets/icons/file.svg";
@@ -7,6 +7,14 @@ import { formatDate } from "../../../utils/helpers";
 import HoverOptions from "./HoverOptions";
 import RecentFilesDropdown from "./RecentFilesDropdown";
 import NameFilter from "./NameFilter";
+import {
+  fetchFiles,
+  toggleFileFavorite,
+} from "../../../reducers/file/fileThunks";
+import { jwtDecode } from "jwt-decode";
+import { AppDispatch } from "../../../stores/store";
+import { useDispatch } from "react-redux";
+import { showErrorToast, showSuccessToast } from "../../../utils/toast";
 
 type FilesTableProps = {
   files: File[] | undefined;
@@ -23,7 +31,7 @@ type FilesTableProps = {
   renameHandler: (filename: string, fileId: string) => void;
   deleteHandler: (fileId: string) => void;
   deleteConfirmationHandler: (fileId: string) => void;
-  restoreHandler: (fileId: string) => void;
+  restoreHandler: (fileId: string, filename: string, filesize: string) => void;
   enableHandler: (fileId: string) => void;
   fileInformationHandler: (fileDetails: File) => void;
   shareHandler: (fileLink: string) => void;
@@ -31,6 +39,7 @@ type FilesTableProps = {
   disableHandler: (id: string) => void;
   showFullLink?: boolean;
   fromTrash?: boolean;
+  fromFavorites?: boolean;
 };
 
 const FilesTable: React.FC<FilesTableProps> = ({
@@ -54,11 +63,50 @@ const FilesTable: React.FC<FilesTableProps> = ({
   showFullLink,
   enableHandler,
   fromTrash,
+  fromFavorites,
   deleteConfirmationHandler,
   restoreHandler,
 }) => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+  const token = localStorage.getItem("token");
+  const dispatch = useDispatch<AppDispatch>();
+  const [userId, setUserId] = useState<string>();
 
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode<{
+          id: string;
+        }>(token);
+        if (decoded) {
+          setUserId(decoded.id);
+        }
+      } catch (error) {
+        console.error("Failed to decode JWT:", error);
+      }
+    }
+  }, [token]);
+
+  const fetchFileDetails = async () => {
+    if (userId) await dispatch(fetchFiles(userId));
+  };
+  const toggleFavoriteFiles = async (
+    fileId: string,
+    isFavorite: boolean | undefined
+  ) => {
+    try {
+      if (isFavorite) {
+        await dispatch(toggleFileFavorite(fileId)).unwrap();
+        showSuccessToast("File removed from Favorites successfully");
+      } else {
+        await dispatch(toggleFileFavorite(fileId)).unwrap();
+        showSuccessToast("File added to Favorites successfully");
+      }
+      fetchFileDetails();
+    } catch (error: any) {
+      showErrorToast(error || "An error occurred while toggling favorite.");
+    }
+  };
   const toggleSort = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
@@ -247,6 +295,8 @@ const FilesTable: React.FC<FilesTableProps> = ({
                             }
                             restoreHandler={restoreHandler}
                             fromTrash={fromTrash}
+                            fromFavorites={fromFavorites}
+                            toggleFavoriteFiles={toggleFavoriteFiles}
                           />
                         </div>
                         <div className="">
@@ -276,8 +326,10 @@ const FilesTable: React.FC<FilesTableProps> = ({
                         enableHandler={enableHandler}
                         copyToClipboard={copyToClipboard}
                         fromTrash={fromTrash}
+                        fromFavorites={fromFavorites}
                         deleteConfirmationHandler={deleteConfirmationHandler}
                         restoreHandler={restoreHandler}
+                        toggleFavoriteFiles={toggleFavoriteFiles}
                       />
                     </td>
                   </tr>

@@ -18,6 +18,7 @@ type RecentFilesProps = {
   filesPerPage?: number;
   showFullLink?: boolean;
   fromTrash?: boolean;
+  fromFavorites?: boolean;
 };
 
 const RecentFiles: React.FC<RecentFilesProps> = ({
@@ -27,6 +28,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   tagFiles,
   files,
   fromTrash,
+  fromFavorites,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
@@ -48,6 +50,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [showReplaceModal, setShowReplaceModal] = useState(false);
   const [selectedLink, setSelectedLink] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>("");
+  const [fileSize, setFileSize] = useState<string | null>("");
   const [fileId, setFileId] = useState<string | null>("");
   const [fileLink, setFileLink] = useState<string>("");
   const [selectedFileDetails, setSelectedFileDetails] = useState<
@@ -183,9 +186,15 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     toggleDeleteConfrimationModal();
     setFileId(fileId);
   };
-  const restoreHandler = (fileId: string) => {
+  const restoreHandler = (
+    fileId: string,
+    filename: string,
+    filesize: string
+  ) => {
     toggleRestoreModal();
     setFileId(fileId);
+    setFileName(filename);
+    setFileSize(filesize);
   };
 
   const renameHandler = (filename: string, fileId: string) => {
@@ -260,6 +269,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           replaceHandler={replaceHandler}
           showFullLink={showFullLink}
           fromTrash={fromTrash}
+          fromFavorites={fromFavorites}
         />
         {files && files.length > filesPerPage && (
           <Pagination
@@ -282,6 +292,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         showRenameModal={showRenameModal}
         fileName={fileName}
         fileId={fileId}
+        fileSize={fileSize}
         toggleRenameModal={toggleRenameModal}
         handleOkAction={handleOkAction}
         showFileInformationModal={showFileInformationModal}

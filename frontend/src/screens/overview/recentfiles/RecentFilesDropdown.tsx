@@ -16,6 +16,7 @@ import {
   disableIcon,
   EnableIcon,
   restoreIcon,
+  unstarIcon,
 } from "../../../helpers/dropdownIcons";
 import { File } from "../../../Types";
 
@@ -48,8 +49,13 @@ interface RecentDropdownProps {
   enableHandler: (fileId: string) => void;
   copyToClipboard: (link: string) => void;
   deleteConfirmationHandler: (fileId: string) => void;
-  restoreHandler: (fileId: string) => void;
+  restoreHandler: (fileId: string, filename: string, filesize: string) => void;
+  toggleFavoriteFiles: (
+    fileId: string,
+    isFavorite: boolean | undefined
+  ) => void;
   fromTrash?: boolean;
+  fromFavorites?: boolean;
 }
 
 const subItems: MenuItem[] = [
@@ -121,6 +127,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
   fromTrash,
   deleteConfirmationHandler,
   restoreHandler,
+  toggleFavoriteFiles,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
@@ -199,13 +206,29 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                       renameHandler(file.originalName, file._id);
                   }}
                 />
-                <img
-                  src={starredIcon}
-                  className={`ml-4 ${
-                    file.isDisabled ? "opacity-30" : "cursor-pointer"
-                  }`}
-                  alt="Star"
-                />
+                {!file.isFavorite ? (
+                  <img
+                    src={starredIcon}
+                    className={`ml-4 ${
+                      file.isDisabled ? "opacity-30" : "cursor-pointer"
+                    }`}
+                    alt="Star"
+                    onClick={() =>
+                      toggleFavoriteFiles(file._id, file.isFavorite)
+                    }
+                  />
+                ) : (
+                  <img
+                    src={unstarIcon}
+                    className={`ml-4 ${
+                      file.isDisabled ? "opacity-30" : "cursor-pointer"
+                    }`}
+                    alt="Star"
+                    onClick={() =>
+                      toggleFavoriteFiles(file._id, file.isFavorite)
+                    }
+                  />
+                )}
                 <img
                   src={downloadIcon}
                   className={`ml-4 ${
@@ -235,7 +258,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                 className="ml-4 cursor-pointer"
                 alt="Restore"
                 onClick={() => {
-                  restoreHandler(file._id);
+                  restoreHandler(file._id, file.originalName, file.size);
                 }}
               />
             )}
@@ -351,6 +374,10 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                               }
                               if (subItem.label === "Copy Link") {
                                 copyToClipboard(file.link);
+                                toggleDropdown();
+                              }
+                              if (subItem.label === "Add to Starred") {
+                                toggleFavoriteFiles(file._id, file.isFavorite);
                                 toggleDropdown();
                               }
                             }}

@@ -9,6 +9,7 @@ import {
   replaceFile,
   restoreFile,
   toggleFileDisable,
+  toggleFileFavorite,
 } from "./fileThunks";
 import { File } from "../../Types";
 
@@ -139,6 +140,27 @@ const fileSlice = createSlice({
       .addCase(restoreFile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to restore file";
+      })
+      .addCase(toggleFileFavorite.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        toggleFileFavorite.fulfilled,
+        (state, action: PayloadAction<File>) => {
+          state.loading = false;
+          const index = state.files.findIndex(
+            (file) => file._id === action.payload._id
+          );
+          if (index !== -1) {
+            state.files[index].isFavorite = action.payload.isFavorite;
+          }
+          state.error = null;
+        }
+      )
+      .addCase(toggleFileFavorite.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to toggle file favorite state";
       });
   },
 });
