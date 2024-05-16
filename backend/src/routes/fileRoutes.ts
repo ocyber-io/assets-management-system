@@ -7,8 +7,9 @@ import {
   toggleFileDisable,
   replaceFile,
   restoreFile,
-  toggleFileFavorite, // Import the toggleFileFavorite controller function
-} from "../controllers/fileController"; // Ensure you import the toggleFileFavorite function
+  toggleFileFavorite,
+  toggleMultipleFilesFavorite, // Import the toggleMultipleFilesFavorite controller function
+} from "../controllers/fileController"; // Ensure you import the toggleMultipleFilesFavorite function
 
 const router = express.Router();
 
@@ -27,5 +28,8 @@ router.patch("/restore/:fileId", restoreFile);
 
 // Add the route for toggling file favorite status
 router.patch("/toggleFavorite/:fileId", toggleFileFavorite);
+
+// Add the route for toggling multiple files to favorites
+router.patch("/toggleMultipleFavorite", toggleMultipleFilesFavorite);
 
 export default router;

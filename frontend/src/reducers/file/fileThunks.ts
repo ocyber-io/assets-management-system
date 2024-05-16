@@ -135,3 +135,20 @@ export const toggleFileFavorite = createAsyncThunk(
     }
   }
 );
+
+export const toggleMultipleFilesFavorite = createAsyncThunk(
+  "files/toggleMultipleFilesFavorite",
+  async (fileIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/toggleMultipleFavorite`,
+        {
+          fileIds,
+        }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);

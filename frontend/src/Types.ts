@@ -19,3 +19,10 @@ export type File = {
   isDeleted?: boolean;
   isFavorite?: boolean;
 };
+
+export type SelectedFile = {
+  id: string;
+  originalName: string;
+  link: string;
+  isFavorite: boolean | undefined;
+};

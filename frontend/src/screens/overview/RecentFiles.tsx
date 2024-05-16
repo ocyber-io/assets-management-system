@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { File } from "../../Types";
+import { File, SelectedFile } from "../../Types";
 import { selectError } from "../../reducers/file/fileSlice";
 import { fetchFiles } from "../../reducers/file/fileThunks";
 import { AppDispatch } from "../../stores/store";
@@ -32,7 +32,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
-  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
@@ -128,14 +128,33 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  const toggleSelection = (id: string) => {
-    setSelectedFiles(
-      selectedFiles.includes(id)
-        ? selectedFiles.filter((selectedId) => selectedId !== id)
-        : [...selectedFiles, id]
-    );
-  };
+  const toggleSelection = (
+    id: string,
+    fileName: string,
+    fileLink: string,
+    isFavorite: boolean | undefined
+  ) => {
+    // Create an array to represent the selected file
+    const selectedFile: SelectedFile = {
+      id,
+      originalName: fileName,
+      link: fileLink,
+      isFavorite: isFavorite,
+    };
 
+    setSelectedFiles((prevSelectedFiles) => {
+      // Check if the selected file is already in the selectedFiles array
+      const isSelected = prevSelectedFiles.some((file) => file.id === id);
+
+      if (isSelected) {
+        // If the file is already selected, remove it from selectedFiles
+        return prevSelectedFiles.filter((file) => file.id !== id);
+      } else {
+        // If the file is not selected, add it to selectedFiles
+        return [...prevSelectedFiles, selectedFile];
+      }
+    });
+  };
   const deselectAll = () => {
     setSelectedFiles([]);
   };
@@ -148,9 +167,19 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     if (!files) {
       return;
     }
-    setSelectedFiles(
-      files.slice(firstFileIndex, lastFileIndex).map((file) => file._id)
-    );
+
+    // Map each file to a SelectedFile object
+    const selectedFilesData: SelectedFile[] = files
+      .slice(firstFileIndex, lastFileIndex)
+      .map((file) => ({
+        id: file._id,
+        originalName: file.originalName,
+        link: file.link,
+        isFavorite: file.isFavorite,
+      }));
+
+    // Update the selectedFiles state with the new array of SelectedFile objects
+    setSelectedFiles(selectedFilesData);
   };
 
   const copyToClipboard = (link: string) => {
@@ -237,8 +266,10 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
       {selectedFiles.length > 0 && (
         <SelectedFilesActions
           selectedFilesCount={selectedFiles.length}
+          selectedFiles={selectedFiles}
           deselectAll={deselectAll}
           selectAll={selectAll}
+          fromFavorites={fromFavorites}
         />
       )}
       <div className={`mx-2 ${fullScreenList ? "h-screen" : ""}`}>

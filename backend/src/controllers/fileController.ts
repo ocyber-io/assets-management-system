@@ -149,6 +149,9 @@ export const deleteFile = async (req: Request, res: Response) => {
 
     // If the file is not already marked as deleted, mark it as deleted
     if (!file.isDeleted) {
+      if (file.isFavorite) {
+        file.isFavorite = false;
+      }
       file.isDeleted = true;
       await file.save();
       return res.status(200).send({ message: "File marked as deleted." });
@@ -220,6 +223,9 @@ export const toggleFileDisable = async (req: Request, res: Response) => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for Replacing the file
+//---------------------------------------------------------------
 export const replaceFile = async (req: Request, res: Response) => {
   upload(req, res, async (error) => {
     if (error) {
@@ -308,6 +314,9 @@ export const replaceFile = async (req: Request, res: Response) => {
   });
 };
 
+//---------------------------------------------------------------
+//Controller for Restoring the file
+//---------------------------------------------------------------
 export const restoreFile = async (req: Request, res: Response) => {
   const { fileId } = req.params;
 
@@ -343,6 +352,9 @@ export const restoreFile = async (req: Request, res: Response) => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for Adding or removing the file from Favorites
+//---------------------------------------------------------------
 export const toggleFileFavorite = async (req: Request, res: Response) => {
   const { fileId } = req.params;
 
@@ -364,6 +376,42 @@ export const toggleFileFavorite = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("Error toggling file favorite status:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+//---------------------------------------------------------------
+//Controller for Toggling Multiple Files to Favorites
+//---------------------------------------------------------------
+export const toggleMultipleFilesFavorite = async (
+  req: Request,
+  res: Response
+) => {
+  const { fileIds } = req.body;
+
+  try {
+    // Find all files with the given fileIds
+    const files = await FileModel.find({ _id: { $in: fileIds } });
+    if (!files || files.length === 0) {
+      return res
+        .status(404)
+        .send({ message: "No files found with the provided IDs." });
+    }
+
+    // Toggle the isFavorite property for each file
+    for (const file of files) {
+      file.isFavorite = !file.isFavorite;
+      await file.save();
+    }
+
+    res.status(200).send({
+      message: `Toggled ${files.length} files to ${
+        files[0].isFavorite ? "favorited" : "unfavorited"
+      }.`,
+      files,
+    });
+  } catch (err) {
+    console.error("Error toggling multiple files favorite status:", err);
     res.status(500).send({ message: "Internal server error." });
   }
 };

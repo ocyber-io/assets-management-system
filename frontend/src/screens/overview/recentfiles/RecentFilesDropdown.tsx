@@ -92,7 +92,7 @@ const subItems: MenuItem[] = [
     icon: organizeIcon,
     subItems: [
       { label: "Move", icon: moveIcon },
-      { label: "Add to Starred", icon: starredIcon },
+      { label: "Add to Favorites", icon: starredIcon },
     ],
   },
   {
@@ -357,37 +357,51 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                     )}
                   </button>
                   {openSubMenu === menu.key && (
-                    <ul className="absolute right-full top-0 mt-0 mr-1 bg-white rounded-md shadow-lg w-40 z-20">
+                    <ul className="absolute right-full top-0 mt-0 mr-1 bg-white rounded-md shadow-lg w-48 z-20">
                       {menu.subItems.map((subItem: SubMenuItem) => (
                         <li key={subItem.label}>
                           <button
                             className="flex w-full p-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
                             onClick={() => {
-                              // Trigger the handler when "Details" is clicked under "File information"
                               if (subItem.label === "Details") {
                                 fileInformationHandler(file);
                                 toggleDropdown();
-                              }
-                              if (subItem.label === "Share") {
+                              } else if (subItem.label === "Share") {
                                 shareHandler(file.link);
                                 toggleDropdown();
-                              }
-                              if (subItem.label === "Copy Link") {
+                              } else if (subItem.label === "Copy Link") {
                                 copyToClipboard(file.link);
                                 toggleDropdown();
-                              }
-                              if (subItem.label === "Add to Starred") {
+                              } else if (subItem.label === "Add to Favorites") {
                                 toggleFavoriteFiles(file._id, file.isFavorite);
                                 toggleDropdown();
+                              } else {
+                                // For other subItems, directly execute their actions
+                                if (subItem.label === "Remove from Favorites") {
+                                  toggleFavoriteFiles(
+                                    file._id,
+                                    file.isFavorite
+                                  );
+                                  toggleDropdown();
+                                }
+                                // Add conditions for other subItems here if needed
                               }
                             }}
                           >
                             <img
-                              src={subItem.icon}
+                              src={
+                                subItem.label === "Add to Favorites" &&
+                                file.isFavorite
+                                  ? unstarIcon
+                                  : subItem.icon
+                              }
                               alt=""
                               className="mr-2 mt-1"
                             />
-                            {subItem.label}
+                            {subItem.label === "Add to Favorites" &&
+                            file.isFavorite
+                              ? "Remove from Favorites"
+                              : subItem.label}
                           </button>
                         </li>
                       ))}

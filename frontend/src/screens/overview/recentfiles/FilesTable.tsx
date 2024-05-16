@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { File } from "../../../Types";
+import { File, SelectedFile } from "../../../Types";
 import fileIcon from "../../../assets/icons/file.svg";
 import { copylinkIcon, fullLinkIcon } from "../../../helpers/dropdownIcons";
 import { formatDate } from "../../../utils/helpers";
@@ -18,8 +18,13 @@ import { showErrorToast, showSuccessToast } from "../../../utils/toast";
 
 type FilesTableProps = {
   files: File[] | undefined;
-  selectedFiles: string[];
-  toggleSelection: (id: string) => void;
+  selectedFiles: SelectedFile[];
+  toggleSelection: (
+    id: string,
+    fileName: string,
+    fileLink: string,
+    isFavorite: boolean | undefined
+  ) => void;
   hoveredItemId: string | null;
   setHoveredItemId: (id: string | null) => void;
   hoverLinkId: string | null;
@@ -163,8 +168,17 @@ const FilesTable: React.FC<FilesTableProps> = ({
                     <td className="md:px-4 px-1 py-3">
                       <input
                         type="checkbox"
-                        checked={selectedFiles.includes(file._id)}
-                        onChange={() => toggleSelection(file._id)}
+                        checked={selectedFiles.some(
+                          (selectedFile) => selectedFile.id === file._id
+                        )}
+                        onChange={() =>
+                          toggleSelection(
+                            file._id,
+                            file.originalName,
+                            file.link,
+                            file.isFavorite
+                          )
+                        }
                         disabled={file.isDisabled}
                       />
                     </td>
@@ -282,22 +296,24 @@ const FilesTable: React.FC<FilesTableProps> = ({
                             !fromTrash && "md:mr-16"
                           } `}
                         >
-                          <HoverOptions
-                            file={file}
-                            hoveredItemId={hoveredItemId}
-                            renameHandler={renameHandler}
-                            deleteHandler={deleteHandler}
-                            disableHandler={disableHandler}
-                            shareHandler={shareHandler}
-                            enableHandler={enableHandler}
-                            deleteConfirmationHandler={
-                              deleteConfirmationHandler
-                            }
-                            restoreHandler={restoreHandler}
-                            fromTrash={fromTrash}
-                            fromFavorites={fromFavorites}
-                            toggleFavoriteFiles={toggleFavoriteFiles}
-                          />
+                          {selectedFiles.length === 0 && (
+                            <HoverOptions
+                              file={file}
+                              hoveredItemId={hoveredItemId}
+                              renameHandler={renameHandler}
+                              deleteHandler={deleteHandler}
+                              disableHandler={disableHandler}
+                              shareHandler={shareHandler}
+                              enableHandler={enableHandler}
+                              deleteConfirmationHandler={
+                                deleteConfirmationHandler
+                              }
+                              restoreHandler={restoreHandler}
+                              fromTrash={fromTrash}
+                              fromFavorites={fromFavorites}
+                              toggleFavoriteFiles={toggleFavoriteFiles}
+                            />
+                          )}
                         </div>
                         <div className="">
                           <button
@@ -312,25 +328,27 @@ const FilesTable: React.FC<FilesTableProps> = ({
                           </button>
                         </div>
                       </div>
-                      <RecentFilesDropdown
-                        file={file}
-                        hoveredItemId={hoveredItemId}
-                        isOpen={openDropdownId === file._id}
-                        toggleDropdown={() => toggleDropdown(file._id)}
-                        fileInformationHandler={fileInformationHandler}
-                        shareHandler={shareHandler}
-                        replaceHandler={replaceHandler}
-                        deleteHandler={deleteHandler}
-                        renameHandler={renameHandler}
-                        disableHandler={disableHandler}
-                        enableHandler={enableHandler}
-                        copyToClipboard={copyToClipboard}
-                        fromTrash={fromTrash}
-                        fromFavorites={fromFavorites}
-                        deleteConfirmationHandler={deleteConfirmationHandler}
-                        restoreHandler={restoreHandler}
-                        toggleFavoriteFiles={toggleFavoriteFiles}
-                      />
+                      {selectedFiles.length === 0 && (
+                        <RecentFilesDropdown
+                          file={file}
+                          hoveredItemId={hoveredItemId}
+                          isOpen={openDropdownId === file._id}
+                          toggleDropdown={() => toggleDropdown(file._id)}
+                          fileInformationHandler={fileInformationHandler}
+                          shareHandler={shareHandler}
+                          replaceHandler={replaceHandler}
+                          deleteHandler={deleteHandler}
+                          renameHandler={renameHandler}
+                          disableHandler={disableHandler}
+                          enableHandler={enableHandler}
+                          copyToClipboard={copyToClipboard}
+                          fromTrash={fromTrash}
+                          fromFavorites={fromFavorites}
+                          deleteConfirmationHandler={deleteConfirmationHandler}
+                          restoreHandler={restoreHandler}
+                          toggleFavoriteFiles={toggleFavoriteFiles}
+                        />
+                      )}
                     </td>
                   </tr>
                 </React.Fragment>

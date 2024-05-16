@@ -10,6 +10,7 @@ import {
   restoreFile,
   toggleFileDisable,
   toggleFileFavorite,
+  toggleMultipleFilesFavorite,
 } from "./fileThunks";
 import { File } from "../../Types";
 
@@ -161,6 +162,21 @@ const fileSlice = createSlice({
         state.loading = false;
         state.error =
           action.error.message || "Failed to toggle file favorite state";
+      })
+      .addCase(toggleMultipleFilesFavorite.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        toggleMultipleFilesFavorite.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = null;
+        }
+      )
+      .addCase(toggleMultipleFilesFavorite.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to toggle favorite status";
       });
   },
 });
