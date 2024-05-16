@@ -109,21 +109,12 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
 
   const handleRemoveMultipleFavorites = async (files: SelectedFile[]) => {
     try {
-      // Filter files where isFavorite is not already true, then extract their IDs
-      const fileIds = files.map((file) => file.id); // Extract the IDs of remaining files
-
-      // if (fileIds.length === 0 && files.length === 0) {
-      //   showErrorToast("No Files were selcted");
-      //   return;
-      // } else if (files.length > 0 && fileIds.length === 0) {
-      //   showErrorToast("Files already added to favorites");
-      //   return;
-      // }
+      const fileIds = files.map((file) => file.id);
       await dispatch(toggleMultipleFilesFavorite(fileIds)).unwrap();
       showSuccessToast(
         `${fileIds.length} file${
           fileIds.length > 1 ? "s" : ""
-        } removed removed favorites`
+        } removed from favorites`
       );
       fetchFileDetails();
       deselectAll();

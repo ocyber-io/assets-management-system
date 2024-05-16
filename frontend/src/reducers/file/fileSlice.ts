@@ -166,13 +166,10 @@ const fileSlice = createSlice({
       .addCase(toggleMultipleFilesFavorite.pending, (state) => {
         state.loading = true;
       })
-      .addCase(
-        toggleMultipleFilesFavorite.fulfilled,
-        (state, action: PayloadAction<any>) => {
-          state.loading = false;
-          state.error = null;
-        }
-      )
+      .addCase(toggleMultipleFilesFavorite.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
       .addCase(toggleMultipleFilesFavorite.rejected, (state, action) => {
         state.loading = false;
         state.error =
