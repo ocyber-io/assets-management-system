@@ -270,6 +270,8 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           deselectAll={deselectAll}
           selectAll={selectAll}
           fromFavorites={fromFavorites}
+          fromTrash={fromTrash}
+          fetchAllFiles={fetchAllFiles}
         />
       )}
       <div className={`mx-2 ${fullScreenList ? "h-screen" : ""}`}>

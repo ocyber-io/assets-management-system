@@ -4,10 +4,13 @@ import { RootState } from "../../stores/store";
 import {
   addFile,
   deleteFile,
+  deleteMultipleFiles,
+  disableMultipleFiles,
   fetchFiles,
   renameFile,
   replaceFile,
   restoreFile,
+  restoreMultipleFiles,
   toggleFileDisable,
   toggleFileFavorite,
   toggleMultipleFilesFavorite,
@@ -174,6 +177,54 @@ const fileSlice = createSlice({
         state.loading = false;
         state.error =
           action.error.message || "Failed to toggle favorite status";
+      })
+      .addCase(deleteMultipleFiles.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        deleteMultipleFiles.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          const deletedIds = action.payload.summary
+            .filter(
+              (result: any) =>
+                result.status === "deleted" ||
+                result.status === "marked as deleted"
+            )
+            .map((result: any) => result.fileId);
+          state.files = state.files.filter(
+            (file) => !deletedIds.includes(file._id)
+          );
+          state.error = null;
+        }
+      )
+      .addCase(deleteMultipleFiles.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to delete multiple files";
+      })
+      .addCase(restoreMultipleFiles.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(restoreMultipleFiles.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(restoreMultipleFiles.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to restore multiple files";
+      })
+      .addCase(disableMultipleFiles.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(disableMultipleFiles.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(disableMultipleFiles.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to disable multiple files";
       });
   },
 });

@@ -198,6 +198,95 @@ export const deleteFile = async (req: Request, res: Response) => {
 };
 
 //---------------------------------------------------------------
+//Controller for Deleting multiple files
+//---------------------------------------------------------------
+export const deleteMultipleFiles = async (req: Request, res: Response) => {
+  const { fileIds } = req.body; // Expect an array of file IDs in the request body
+
+  if (!Array.isArray(fileIds) || fileIds.length === 0) {
+    return res.status(400).send({ message: "No file IDs provided." });
+  }
+
+  try {
+    const deletionPromises = fileIds.map(async (fileId) => {
+      const file = await FileModel.findById(fileId);
+      if (!file) {
+        return { fileId, status: "not found" };
+      }
+
+      // Mark the file as deleted if not already marked
+      if (!file.isDeleted) {
+        if (file.isFavorite) {
+          file.isFavorite = false;
+        }
+        file.isDeleted = true;
+        await file.save();
+        return { fileId, status: "marked as deleted" };
+      }
+
+      // Ensure that the file has an owner before attempting to delete
+      if (!file.owner) {
+        return { fileId, status: "owner undefined" };
+      }
+
+      // Construct the file path using the owner ID
+      const filePath = path.resolve(
+        __dirname,
+        "../../../frontend/public/uploads",
+        file.owner.toString(), // Convert ObjectId to string
+        file.name
+      );
+
+      return new Promise<{ fileId: string; status: string; error?: string }>(
+        (resolve, reject) => {
+          fs.unlink(filePath, async (err) => {
+            if (err) {
+              console.error("Failed to delete the physical file:", err);
+              return resolve({
+                fileId,
+                status: "error",
+                error: "Failed to delete the physical file.",
+              });
+            }
+
+            // Update user storage usage
+            const user = await User.findById(file.owner);
+            if (user) {
+              const fileSizeInBytes = sizeToBytes(file.size); // Ensure size is converted from string to bytes
+              user.usedStorage -= fileSizeInBytes;
+              user.remainingStorage = 107374182400 - user.usedStorage; // Assuming total storage is a constant
+              await user.save();
+            }
+
+            // Delete the file record
+            await FileModel.findByIdAndDelete(fileId);
+            resolve({ fileId, status: "deleted" });
+          });
+        }
+      );
+    });
+
+    const results = await Promise.allSettled(deletionPromises);
+
+    // Create a response summary
+    const summary = results.map((result) => {
+      if (result.status === "fulfilled") {
+        return result.value;
+      } else {
+        return { fileId: "", status: "error", error: result.reason.message };
+      }
+    });
+
+    res
+      .status(200)
+      .send({ message: "Files deletion process completed.", summary });
+  } catch (err) {
+    console.error("Error deleting multiple files:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+//---------------------------------------------------------------
 //Controller for Disabling or Enabling the file
 //---------------------------------------------------------------
 export const toggleFileDisable = async (req: Request, res: Response) => {
@@ -219,6 +308,46 @@ export const toggleFileDisable = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("Error toggling file disable status:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+//---------------------------------------------------------------
+// Controller for Disabling Multiple Files
+//---------------------------------------------------------------
+export const disableMultipleFiles = async (req: Request, res: Response) => {
+  const { fileIds } = req.body;
+
+  try {
+    // Find all files with the given fileIds
+    const files = await FileModel.find({ _id: { $in: fileIds } });
+    if (!files || files.length === 0) {
+      return res
+        .status(404)
+        .send({ message: "No files found with the provided IDs." });
+    }
+
+    // Disable each file
+    const disablePromises = files.map(async (file) => {
+      // Skip if the file is already disabled
+      if (file.isDisabled) {
+        return { fileId: file._id, status: "already disabled" };
+      }
+
+      // Disable the file by setting isDisabled to true
+      file.isDisabled = true;
+      await file.save();
+      return { fileId: file._id, status: "disabled" };
+    });
+
+    const results = await Promise.all(disablePromises);
+
+    res.status(200).send({
+      message: "Disabling process completed.",
+      results,
+    });
+  } catch (err) {
+    console.error("Error disabling multiple files:", err);
     res.status(500).send({ message: "Internal server error." });
   }
 };
@@ -348,6 +477,46 @@ export const restoreFile = async (req: Request, res: Response) => {
     res.status(200).send({ message: "File restored successfully.", file });
   } catch (err) {
     console.error("Error restoring file:", err);
+    res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+//---------------------------------------------------------------
+// Controller for Restoring Multiple Files
+//---------------------------------------------------------------
+export const restoreMultipleFiles = async (req: Request, res: Response) => {
+  const { fileIds } = req.body;
+
+  try {
+    // Find all files with the given fileIds
+    const files = await FileModel.find({ _id: { $in: fileIds } });
+    if (!files || files.length === 0) {
+      return res
+        .status(404)
+        .send({ message: "No files found with the provided IDs." });
+    }
+
+    // Restore each file
+    const restorationPromises = files.map(async (file) => {
+      // Skip if the file is already restored
+      if (!file.isDeleted) {
+        return { fileId: file._id, status: "already restored" };
+      }
+
+      // Restore the file by setting isDeleted to false
+      file.isDeleted = false;
+      await file.save();
+      return { fileId: file._id, status: "restored" };
+    });
+
+    const results = await Promise.all(restorationPromises);
+
+    res.status(200).send({
+      message: "Restoration process completed.",
+      results,
+    });
+  } catch (err) {
+    console.error("Error restoring multiple files:", err);
     res.status(500).send({ message: "Internal server error." });
   }
 };

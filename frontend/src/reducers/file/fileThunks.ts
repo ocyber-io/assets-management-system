@@ -152,3 +152,48 @@ export const toggleMultipleFilesFavorite = createAsyncThunk(
     }
   }
 );
+
+export const deleteMultipleFiles = createAsyncThunk(
+  "files/deleteMultipleFiles",
+  async (fileIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${SERVER_URL}/api/files/deleteMultiple`,
+        { data: { fileIds } }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const restoreMultipleFiles = createAsyncThunk(
+  "files/restoreMultipleFiles",
+  async (fileIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/restoreMultiple`,
+        { fileIds }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const disableMultipleFiles = createAsyncThunk(
+  "files/disableMultipleFiles",
+  async (fileIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/disableMultiple`,
+        { fileIds }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);

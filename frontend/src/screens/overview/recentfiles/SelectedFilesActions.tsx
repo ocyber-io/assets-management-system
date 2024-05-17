@@ -1,25 +1,30 @@
+import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { RxCross1 } from "react-icons/rx";
+import { useDispatch } from "react-redux";
+import { SelectedFile } from "../../../Types";
+import MultipleDeleteModal from "../../../components/shared/MultipleDeleteModal";
 import {
   disableIcon,
   downloadIcon,
   moreIcon,
   movetobinIcon,
   renameIcon,
+  restoreIcon,
   selectAllIcon,
   shareIcon,
   starredIcon,
   unstarIcon,
 } from "../../../helpers/dropdownIcons";
-import { SelectedFile } from "../../../Types";
-import { AppDispatch } from "../../../stores/store";
-import { useDispatch } from "react-redux";
 import {
   fetchFiles,
   toggleMultipleFilesFavorite,
 } from "../../../reducers/file/fileThunks";
+import { AppDispatch } from "../../../stores/store";
 import { showErrorToast, showSuccessToast } from "../../../utils/toast";
-import { jwtDecode } from "jwt-decode";
+import MultipleDeleteConfirmationModal from "../../../components/shared/MultipleDeleteConfirmationModa";
+import MultipleRestoreModal from "../../../components/shared/MultipleRestoreModal";
+import MultipleDisableModal from "../../../components/shared/MultipleDisableModal";
 
 interface SelectedFilesActionsProps {
   selectedFilesCount: number;
@@ -27,6 +32,8 @@ interface SelectedFilesActionsProps {
   selectAll: () => void;
   selectedFiles: SelectedFile[];
   fromFavorites?: boolean;
+  fromTrash?: boolean;
+  fetchAllFiles: () => void;
 }
 
 const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
@@ -35,11 +42,38 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
   selectAll,
   selectedFiles,
   fromFavorites,
+  fetchAllFiles,
+  fromTrash,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const token = localStorage.getItem("token");
   const [userId, setUserId] = useState<string>();
+  const [filesIds, setFileIds] = useState<string[]>();
+  const [showMultipleDeleteModal, setShowMultipleDeleteModal] =
+    useState<boolean>(false);
+  const [
+    showMultipleDeleteConfirmationModal,
+    setShowMultipleDeleteConfirmationModal,
+  ] = useState<boolean>(false);
+  const [showMultipleRestoreModal, setShowMultipleRestoreModal] =
+    useState<boolean>(false);
+  const [showMultipleDisableModal, setShowMultipleDisableModal] =
+    useState<boolean>(false);
 
+  const toggleMultipleDeleteModal = () => {
+    setShowMultipleDeleteModal(!showMultipleDeleteModal);
+  };
+  const toggleMultipleDeleteConfirmationModal = () => {
+    setShowMultipleDeleteConfirmationModal(
+      !showMultipleDeleteConfirmationModal
+    );
+  };
+  const toggleMultipleRestoreModal = () => {
+    setShowMultipleRestoreModal(!showMultipleRestoreModal);
+  };
+  const toggleMultipleDisableModal = () => {
+    setShowMultipleDisableModal(!showMultipleDisableModal);
+  };
   useEffect(() => {
     if (token) {
       try {
@@ -123,89 +157,198 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
     }
   };
 
+  const handleDeleteModal = (files: SelectedFile[]) => {
+    const fileIds = files.map((file) => file.id);
+    setFileIds(fileIds);
+    toggleMultipleDeleteModal();
+  };
+  const handleDeleteConfirmationModal = (files: SelectedFile[]) => {
+    const fileIds = files.map((file) => file.id);
+    setFileIds(fileIds);
+    toggleMultipleDeleteConfirmationModal();
+  };
+  const handleMultipleRestoreModal = (files: SelectedFile[]) => {
+    const fileIds = files.map((file) => file.id);
+    setFileIds(fileIds);
+    toggleMultipleRestoreModal();
+  };
+  const handleDisableModal = (files: SelectedFile[]) => {
+    const fileIds = files.map((file) => file.id);
+    setFileIds(fileIds);
+    toggleMultipleDisableModal();
+  };
+
   return (
-    <div className="flex bg-blue-50 p-2 rounded w-full">
-      <div className="flex w-full">
-        <div className="p-1">
-          <RxCross1
-            onClick={deselectAll}
-            className="cursor-pointer ml-2 mr-4 mt-1 md:h-4 h-3 md:w-4 w-3"
-          />
-        </div>
-        <span className="ml-1 md:mt-0.5 mt-1 font-semibold md:text-base text-xs whitespace-nowrap">
-          {selectedFilesCount} Selected
-        </span>
-        <img
-          src={shareIcon}
-          className={`ml-6  ${
-            selectedFilesCount > 1 ? "hidden" : "cursor-pointer"
-          }`}
-          alt="Share"
-          onClick={
-            selectedFilesCount === 1 ? () => console.log("Share") : undefined
-          }
-        />
-        <img
-          src={downloadIcon}
-          className="ml-4 cursor-pointer"
-          alt="Download"
-          onClick={() => {
-            downloadHandler(selectedFiles);
-          }}
-        />
-        <img
-          src={renameIcon}
-          className={`ml-4  ${
-            selectedFilesCount > 1 ? "hidden" : "cursor-pointer"
-          }`}
-          alt="Rename"
-          onClick={
-            selectedFilesCount === 1 ? () => console.log("Rename") : undefined
-          }
-        />
-        <div className="md:visible flex invisible">
-          {fromFavorites ? (
-            <img
-              src={unstarIcon}
-              className="ml-4 cursor-pointer"
-              alt="Star"
-              onClick={() => handleRemoveMultipleFavorites(selectedFiles)}
+    <>
+      <div className="flex bg-blue-50 p-2 rounded w-full">
+        <div className="flex w-full">
+          <div className="p-1">
+            <RxCross1
+              onClick={deselectAll}
+              className="cursor-pointer ml-2 mr-4 mt-1 md:h-4 h-3 md:w-4 w-3"
             />
-          ) : (
-            <img
-              src={starredIcon}
-              className="ml-4 cursor-pointer"
-              alt="Star"
-              onClick={() => handleMultipleFavorites(selectedFiles)}
-            />
+          </div>
+          <span className="ml-1 md:mt-0.5 mt-1 font-semibold md:text-base text-xs whitespace-nowrap">
+            {selectedFilesCount} Selected
+          </span>
+          {!fromTrash && (
+            <>
+              <img
+                src={shareIcon}
+                className={`ml-6  ${
+                  selectedFilesCount > 1 ? "hidden" : "cursor-pointer"
+                }`}
+                alt="Share"
+                onClick={
+                  selectedFilesCount === 1
+                    ? () => console.log("Share")
+                    : undefined
+                }
+              />
+              <img
+                src={downloadIcon}
+                className="ml-4 cursor-pointer"
+                alt="Download"
+                onClick={() => {
+                  downloadHandler(selectedFiles);
+                }}
+              />
+              <img
+                src={renameIcon}
+                className={`ml-4  ${
+                  selectedFilesCount > 1 ? "hidden" : "cursor-pointer"
+                }`}
+                alt="Rename"
+                onClick={
+                  selectedFilesCount === 1
+                    ? () => console.log("Rename")
+                    : undefined
+                }
+              />
+            </>
           )}
 
+          <div className="md:visible flex invisible">
+            {!fromTrash && (
+              <>
+                {fromFavorites ? (
+                  <img
+                    src={unstarIcon}
+                    className="ml-4 cursor-pointer"
+                    alt="Star"
+                    onClick={() => handleRemoveMultipleFavorites(selectedFiles)}
+                  />
+                ) : (
+                  <img
+                    src={starredIcon}
+                    className="ml-4 cursor-pointer"
+                    alt="Star"
+                    onClick={() => handleMultipleFavorites(selectedFiles)}
+                  />
+                )}
+              </>
+            )}
+
+            {fromTrash && (
+              <img
+                src={restoreIcon}
+                className="ml-4 cursor-pointer"
+                alt="Restore"
+                onClick={() => {
+                  handleMultipleRestoreModal(selectedFiles);
+                }}
+              />
+            )}
+            {fromTrash ? (
+              <img
+                src={movetobinIcon}
+                className="ml-4 cursor-pointer"
+                alt="Move to bin"
+                onClick={() => handleDeleteConfirmationModal(selectedFiles)}
+              />
+            ) : (
+              <img
+                src={movetobinIcon}
+                className="ml-4 cursor-pointer"
+                alt="Move to bin"
+                onClick={() => handleDeleteModal(selectedFiles)}
+              />
+            )}
+            {!fromTrash && (
+              <img
+                src={disableIcon}
+                className="ml-4 cursor-pointer"
+                alt="Disable"
+                onClick={() => handleDisableModal(selectedFiles)}
+              />
+            )}
+          </div>
+        </div>
+        <div className="flex">
           <img
-            src={movetobinIcon}
-            className="ml-4 cursor-pointer"
-            alt="Move to bin"
+            src={selectAllIcon}
+            className="md:ml-4 mx-2 cursor-pointer"
+            alt="Select All"
+            onClick={selectAll} // Add onClick handler here
           />
           <img
-            src={disableIcon}
-            className="ml-4 cursor-pointer"
-            alt="Disable"
+            src={moreIcon}
+            className="md:ml-4 mx-2 cursor-pointer"
+            alt="More"
           />
         </div>
       </div>
-      <div className="flex">
-        <img
-          src={selectAllIcon}
-          className="md:ml-4 mx-2 cursor-pointer"
-          alt="Select All"
-          onClick={selectAll} // Add onClick handler here
+      {showMultipleDeleteModal && (
+        <MultipleDeleteModal
+          heading="Move to bin?"
+          description={`Do you really want to move these ${filesIds?.length} files to the bin? You can restore them later if needed.`}
+          submitButtonText="Yes, Move to bin"
+          onClose={toggleMultipleDeleteModal}
+          isOpen={showMultipleDeleteModal}
+          fetchAllFiles={fetchAllFiles}
+          filesIds={filesIds}
+          deselectAll={deselectAll}
         />
-        <img
-          src={moreIcon}
-          className="md:ml-4 mx-2 cursor-pointer"
-          alt="More"
+      )}
+      {showMultipleDeleteConfirmationModal && (
+        <MultipleDeleteConfirmationModal
+          heading="Delete files?"
+          description={`Do you really want to delete these ${filesIds?.length} files? This process cannot be undone.`}
+          submitButtonText="Yes, Move to bin"
+          onClose={toggleMultipleDeleteConfirmationModal}
+          isOpen={showMultipleDeleteConfirmationModal}
+          fetchAllFiles={fetchAllFiles}
+          filesIds={filesIds}
+          deselectAll={deselectAll}
         />
-      </div>
-    </div>
+      )}
+      {showMultipleRestoreModal && (
+        <MultipleRestoreModal
+          heading="Restore files?"
+          description={`Do you really want to restore these ${filesIds?.length} item(s) from the bin?`}
+          submitButtonText="Yes, Restore"
+          onClose={toggleMultipleRestoreModal}
+          isOpen={showMultipleRestoreModal}
+          fetchAllFiles={fetchAllFiles}
+          filesIds={filesIds}
+          deselectAll={deselectAll}
+        />
+      )}
+      {showMultipleDisableModal && (
+        <MultipleDisableModal
+          heading="Disable files?"
+          description={`Do you really want to disable ${
+            filesIds && filesIds?.length > 1 ? "these" : "this"
+          } ${filesIds?.length} file(s)?`}
+          submitButtonText="Yes, Disbale"
+          onClose={toggleMultipleDisableModal}
+          isOpen={showMultipleDisableModal}
+          fetchAllFiles={fetchAllFiles}
+          filesIds={filesIds}
+          deselectAll={deselectAll}
+        />
+      )}
+    </>
   );
 };
 
