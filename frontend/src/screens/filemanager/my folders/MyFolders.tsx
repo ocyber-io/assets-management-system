@@ -18,6 +18,7 @@ import { formatDate } from "../../../utils/helpers";
 import FoldersDropdown from "./FoldersDropDown";
 import SelectedFolderActions from "./SelectedFolderActions";
 import RenameFolderModal from "../../../components/shared/folder-modals/RenameFolder";
+import ChangeColorModal from "../../../components/shared/folder-modals/ChangeColorModal";
 
 const MyFolders: React.FC = () => {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ const MyFolders: React.FC = () => {
     useState<boolean>(false);
   const [showRenameFolderModal, setShowRenameFolderModal] =
     useState<boolean>(false);
+  const [showChangeFolderColorModal, setShowChangeFolderColorModal] =
+    useState<boolean>(false);
   const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
@@ -40,6 +43,9 @@ const MyFolders: React.FC = () => {
   };
   const toggleRenameFolderModal = () => {
     setShowRenameFolderModal(!showRenameFolderModal);
+  };
+  const toggleChangeFolderColorModal = () => {
+    setShowChangeFolderColorModal(!showChangeFolderColorModal);
   };
 
   const deleteHandler = (folderId: string) => {
@@ -51,6 +57,10 @@ const MyFolders: React.FC = () => {
     toggleRenameFolderModal();
     setFolderId(folderId);
     setFolderName(folderName);
+  };
+  const changeColorHandler = (folderId: string) => {
+    toggleChangeFolderColorModal();
+    setFolderId(folderId);
   };
 
   useEffect(() => {
@@ -216,7 +226,11 @@ const MyFolders: React.FC = () => {
                           alt="Rename"
                         />
                       </button>
-                      <button aria-label="Change folder color" className="mr-2">
+                      <button
+                        aria-label="Change folder color"
+                        className="mr-2"
+                        onClick={() => changeColorHandler(folder._id)}
+                      >
                         <img
                           src={folderColorIcon}
                           className="ml-2"
@@ -254,6 +268,9 @@ const MyFolders: React.FC = () => {
                       hoveredItemId={hoveredItemId}
                       onDeleteFolder={deleteHandler}
                       folderId={folder._id}
+                      folderName={folder.folderName}
+                      renameHandler={RenameHandler}
+                      changeColorHandler={changeColorHandler}
                     />
                   )}
                 </td>
@@ -277,6 +294,14 @@ const MyFolders: React.FC = () => {
           onClose={toggleRenameFolderModal}
           folderId={folderId}
           initialFoldername={folderName}
+        />
+      )}
+      {showChangeFolderColorModal && (
+        <ChangeColorModal
+          isOpen={showChangeFolderColorModal}
+          onClose={toggleChangeFolderColorModal}
+          onCancel={toggleChangeFolderColorModal}
+          folderId={folderId}
         />
       )}
     </div>

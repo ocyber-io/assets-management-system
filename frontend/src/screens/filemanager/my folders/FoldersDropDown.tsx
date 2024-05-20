@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 import {
-  EnableIcon,
   disableIcon,
   downloadIcon,
   moveIcon,
@@ -23,7 +22,10 @@ interface FolderDropdownProps {
   isOpen: boolean;
   toggleDropdown: () => void;
   onDeleteFolder: (folderId: string) => void;
+  renameHandler: (folderId: string, fileName: string) => void;
+  changeColorHandler: (folderId: string) => void;
   folderId: string;
+  folderName: string | null;
 }
 
 const menuItems: MenuItem[] = [
@@ -59,6 +61,9 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
   toggleDropdown,
   onDeleteFolder,
   folderId,
+  folderName,
+  renameHandler,
+  changeColorHandler,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isDesktopOrLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
@@ -95,19 +100,24 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
         >
           <div className="flex">
             <img src={shareIcon} className="ml-6" alt="Share" />
-            <img src={renameIcon} className="ml-4" alt="Rename" />
+            <img
+              src={renameIcon}
+              className="ml-4"
+              alt="Rename"
+              onClick={() => {
+                if (!folderName) return;
+                renameHandler(folderId, folderName);
+              }} // Rename handler
+            />
             <img src={starredIcon} className="ml-4" alt="Star" />
             <img src={downloadIcon} className="ml-4" alt="Download" />
             <img
               src={movetobinIcon}
               className="ml-4 cursor-pointer"
               alt="Move to bin"
+              onClick={() => onDeleteFolder(folderId)}
             />
-            <img
-              src={EnableIcon}
-              className="ml-4 cursor-pointer"
-              alt="Enable"
-            />
+
             <img
               src={disableIcon}
               className="ml-4 cursor-pointer"
@@ -125,10 +135,10 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
           <ul className="py-2 text-sm text-gray-700 text-left dark:text-gray-200">
             {menuItems.map((menu: MenuItem) => (
               <li key={menu.key} className="relative">
-                {menu.key === "trash" ? ( // Check if the menu item is for deleting
+                {menu.key === "trash" ? (
                   <button
                     className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
-                    onClick={() => onDeleteFolder(folderId)} // Call onDeleteFolder with folderId
+                    onClick={() => onDeleteFolder(folderId)}
                   >
                     <img src={menu.icon} alt="" className="mr-2" />
                     {menu.label}
@@ -136,7 +146,15 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
                 ) : (
                   <button
                     className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
-                    onClick={toggleDropdown}
+                    onClick={
+                      menu.key === "rename"
+                        ? () => {
+                            console.log({ folderName });
+                            if (!folderName) return;
+                            renameHandler(folderId, folderName);
+                          } // Rename handler
+                        : () => changeColorHandler(folderId) // Change color handler
+                    }
                   >
                     <img src={menu.icon} alt="" className="mr-2" />
                     {menu.label}

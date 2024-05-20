@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
-import NotificationModal from "./NotificationModal";
-import { AppDispatch } from "../../stores/store";
 import { useDispatch } from "react-redux";
-import { addFolder } from "../../reducers/folder/folderThunk";
+import { AppDispatch } from "../../../stores/store";
 import { jwtDecode } from "jwt-decode";
-import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import { showErrorToast, showSuccessToast } from "../../../utils/toast";
+import NotificationModal from "../NotificationModal";
+import { updateFolder } from "../../../reducers/folder/folderThunk"; // Import the updateFolder thunk
 
-type NewFolderProps = {
+type ChangeColorProps = {
   isOpen: boolean;
   onClose: () => void;
   onCancel: () => void;
+  folderId: string | null;
 };
 
-const NewFolderModal: React.FC<NewFolderProps> = ({
+const ChangeColorModal: React.FC<ChangeColorProps> = ({
   isOpen,
   onClose,
   onCancel,
+  folderId,
 }) => {
-  const [folderName, setFolderName] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const token = localStorage.getItem("token");
@@ -72,54 +73,41 @@ const NewFolderModal: React.FC<NewFolderProps> = ({
   const submitHandler = async () => {
     if (!userId) return;
 
-    if (folderName === "") {
-      showErrorToast("Please enter the folder name");
+    if (selectedColor === "") {
+      showErrorToast("Please select a color");
       return;
     }
-    let colorToSend = selectedColor || "#9e9e9e";
-    const folderData = {
-      folderName: folderName,
-      folderColor: colorToSend,
-      userId: userId,
-    };
+
     try {
-      await dispatch(addFolder(folderData)).unwrap();
-      showSuccessToast("Folder created successfully");
-      setFolderName("");
+      if (!folderId) return;
+      await dispatch(
+        updateFolder({ folderId, updates: { folderColor: selectedColor } })
+      ).unwrap();
+      showSuccessToast("Folder color updated successfully");
       setSelectedColor("");
       onClose();
     } catch (error: any) {
-      showErrorToast(error || "An error occurred while moving the file.");
+      showErrorToast(
+        error || "An error occurred while updating the folder color."
+      );
     }
   };
   return (
     <div>
       <NotificationModal
-        heading="Create a Folder"
+        heading="Change Folder Color"
         headingStyles="font-semibold text-xl"
         closeModal={onClose}
-        submitButtonText="Create Folder"
+        submitButtonText="Change Color"
         submitButtonStyle="bg-blue-500 hover:bg-blue-600"
         cancelButtonStyle=" bg-transparent border-2 border-gray-200 hover:bg-blue-50"
         cancelButtonText="Cancel"
         isOpen={isOpen}
-        onSubmit={submitHandler} // Passing folder name and color to onSubmit
+        onSubmit={submitHandler} // Passing folder ID and selected color to onSubmit
         onCancel={onCancel}
       >
-        <div className="w-full mt-4">
-          <label htmlFor="foldername" className="font-semibold">
-            Folder Name
-          </label>
-          <input
-            id="foldername"
-            value={folderName}
-            onChange={(e) => setFolderName(e.target.value)}
-            className="resize-none rounded border-2 mt-1 border-gray-200 w-full focus:outline-blue-500 p-2"
-            placeholder="Enter your folder name"
-          />
-        </div>
         <div className="mt-4">
-          <h1 className="mb-1 font-semibold">Folder Color</h1>
+          <h1 className="mb-1 font-semibold">Select Color</h1>
           <div className="flex flex-wrap -mx-1">
             {colors.map((color) => (
               <div key={color} className={`w-1/12 p-1 mt-1`}>
@@ -142,4 +130,4 @@ const NewFolderModal: React.FC<NewFolderProps> = ({
   );
 };
 
-export default NewFolderModal;
+export default ChangeColorModal;
