@@ -26,3 +26,11 @@ export type SelectedFile = {
   link: string;
   isFavorite: boolean | undefined;
 };
+
+export type UserInfo = {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  googleId: string;
+};

@@ -14,6 +14,10 @@ import pdfSmallIcon from "../assets/icons/pdfSmall.svg";
 import nameFilterIcon from "../assets/icons/name-filter-arrow.svg";
 import upwardsArrowIcon from "../assets/icons/upwards-arrow.svg";
 import downwardsArrowIcon from "../assets/icons/downwards-arrow.svg";
+import emailIcon from "../assets/icons/edit_profile/emailIcon.svg";
+import editIcon from "../assets/icons/edit_profile/editProfileIcon.svg";
+import changePasswordIcon from "../assets/icons/edit_profile/changePassword.svg";
+import logoutIcon from "../assets/icons/edit_profile/logout.svg";
 
 export {
   canEditIcon,
@@ -32,4 +36,8 @@ export {
   nameFilterIcon,
   upwardsArrowIcon,
   downwardsArrowIcon,
+  emailIcon,
+  editIcon,
+  changePasswordIcon,
+  logoutIcon,
 };

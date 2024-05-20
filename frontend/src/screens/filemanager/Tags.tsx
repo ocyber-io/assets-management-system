@@ -48,7 +48,11 @@ const Tags: React.FC = () => {
               selectedTags={selectedTags}
               onTagClick={toggleTag}
             />
-            <RecentFiles tagFiles={filteredFiles} />
+            <RecentFiles
+              tagFiles={filteredFiles}
+              files={filteredFiles}
+              filesPerPage={8}
+            />
           </>
         )}
       </div>

@@ -30,7 +30,12 @@ const Favorites: React.FC = () => {
           </div>
         ) : (
           <>
-            <RecentFiles tagFiles={favoriteFiles} fromFavorites={true} />
+            <RecentFiles
+              tagFiles={favoriteFiles}
+              fromFavorites={true}
+              files={favoriteFiles}
+              filesPerPage={8}
+            />
           </>
         )}
       </div>
