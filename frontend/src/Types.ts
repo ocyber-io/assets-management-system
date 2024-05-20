@@ -33,4 +33,5 @@ export type UserInfo = {
   lastname: string;
   email: string;
   googleId: string;
+  profilePicture: string;
 };

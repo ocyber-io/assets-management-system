@@ -5,6 +5,9 @@ import { Request, Response } from "express";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import { generateOTP } from "../utils/generateOTP";
+import upload from "../utils/upload";
+import path from "path";
+import fs from "fs";
 
 declare global {
   namespace NodeJS {
@@ -23,6 +26,7 @@ const generateToken = (user: IUser): string => {
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
+      profilePicture: user.profilePicture,
       googleId: user.googleId,
     },
     secret,
@@ -30,6 +34,9 @@ const generateToken = (user: IUser): string => {
   );
 };
 
+//---------------------------------------------------------------
+//Controller for Signup
+//---------------------------------------------------------------
 const signUp = async (req: Request, res: Response): Promise<Response> => {
   const { firstname, lastname, email, password } = req.body;
 
@@ -58,6 +65,9 @@ const signUp = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for Google Signup
+//---------------------------------------------------------------
 const googleSignUp = async (req: Request, res: Response): Promise<Response> => {
   const { email, given_name, family_name, googleId } = req.body;
 
@@ -81,6 +91,9 @@ const googleSignUp = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for Login
+//---------------------------------------------------------------
 const login = async (req: Request, res: Response): Promise<Response> => {
   const { email, password } = req.body;
 
@@ -109,6 +122,9 @@ const login = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for getting all the users
+//---------------------------------------------------------------
 const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
   try {
     const users = await User.find({});
@@ -118,6 +134,9 @@ const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for updating users
+//---------------------------------------------------------------
 const updateUser = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
   const updates = req.body;
@@ -154,6 +173,53 @@ const updateUser = async (req: Request, res: Response): Promise<Response> => {
       });
     }
 
+    // Handle profile picture update
+    await new Promise<void>((resolve, reject) => {
+      upload(req, res, (error) => {
+        if (error) {
+          reject(res.status(500).json({ message: error.message }));
+        }
+
+        if (req.file) {
+          const userDir = path.join(
+            __dirname,
+            "../../../frontend/public/uploads",
+            id
+          );
+          fs.mkdirSync(userDir, { recursive: true });
+
+          if (user.profilePicture) {
+            // Delete the old profile picture
+            const oldProfilePicturePath = path.join(
+              userDir,
+              user.profilePicture
+            );
+            fs.unlink(oldProfilePicturePath, (err) => {
+              if (err) {
+                console.error("Failed to delete the old profile picture:", err);
+              }
+            });
+          }
+
+          // Save the new profile picture
+          const newProfilePicturePath = path.join(userDir, req.file.filename);
+          fs.rename(req.file.path, newProfilePicturePath, (err) => {
+            if (err) {
+              reject(
+                res
+                  .status(500)
+                  .json({ message: "Failed to save the new profile picture" })
+              );
+            }
+          });
+
+          updates.profilePicture = req.file.filename;
+        }
+
+        resolve();
+      });
+    });
+
     // Apply updates to the user object
     const updatedUser = await User.findByIdAndUpdate(id, updates, {
       new: true,
@@ -174,6 +240,9 @@ const updateUser = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for deleting a user
+//---------------------------------------------------------------
 const deleteUser = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
 
@@ -188,6 +257,9 @@ const deleteUser = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for forgot Password
+//---------------------------------------------------------------
 const forgotPassword = async (
   req: Request,
   res: Response
@@ -244,6 +316,9 @@ const forgotPassword = async (
   }
 };
 
+//---------------------------------------------------------------
+//Controller for verifying otp
+//---------------------------------------------------------------
 const verifyOtp = async (req: Request, res: Response): Promise<Response> => {
   const { email, otp } = req.body;
   try {
@@ -267,6 +342,9 @@ const verifyOtp = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
+//---------------------------------------------------------------
+//Controller for resetting the password
+//---------------------------------------------------------------
 const resetPassword = async (
   req: Request,
   res: Response
@@ -290,6 +368,9 @@ const resetPassword = async (
   }
 };
 
+//---------------------------------------------------------------
+//Controller for getting the user by Id
+//---------------------------------------------------------------
 const getUserById = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
 

@@ -5,14 +5,7 @@ import EditProfileModal from "./EditProfileModal";
 import EditProfileDetailsModal from "./EditProfileDetailsModal";
 import EditPasswordModal from "./EditPasswordModal";
 import ChangePasswordSuccessModal from "./ChangePasswordSuccessModal";
-
-type UserInfo = {
-  id: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-  googleId: string;
-};
+import { UserInfo } from "../../../Types";
 
 const ProfileDashboard: React.FC = () => {
   const token = localStorage.getItem("token");
@@ -63,6 +56,7 @@ const ProfileDashboard: React.FC = () => {
           firstname: string;
           lastname: string;
           email: string;
+          profilePicture: string;
           googleId: string;
         }>(token);
         setUserInfo(decoded);
@@ -79,10 +73,24 @@ const ProfileDashboard: React.FC = () => {
       <div className="p-4">
         <h1 className="text-xl font-bold mb-4">Profile</h1>
         <div className="w-full border border-gray-200 rounded-lg p-4 flex items-center">
-          <button className="bg-yellow-400 cursor-auto text-lg text-white font-bold w-16 h-16 rounded-full mr-4">
-            {userInitials}
-          </button>
-          <div className="flex-1">
+          {userInfo &&
+          userInfo.profilePicture !== "" &&
+          userInfo.profilePicture !== undefined ? (
+            <div className="w-16 h-16 rounded-full cursor-pointer">
+              <img
+                src={
+                  userInfo &&
+                  `/uploads/${userInfo.id}/${userInfo.profilePicture}`
+                }
+                className="w-16 h-16 rounded-full object-cover"
+              />
+            </div>
+          ) : (
+            <button className="bg-yellow-400 text-white w-16 h-16 rounded-full text-sm">
+              {userInitials}
+            </button>
+          )}
+          <div className="flex-1 ml-4">
             <div className="font-semibold">
               {userInfo?.firstname} {userInfo?.lastname}
             </div>

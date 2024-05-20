@@ -1,33 +1,23 @@
-import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { UserInfo } from "../../Types";
 import downArrowIcon from "../../assets/icons/arrow-down-profile.svg";
 import bellIcon from "../../assets/icons/bell.svg";
 import searchIcon from "../../assets/icons/search.svg";
 import { logout } from "../../reducers/user/userSlice";
-import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../stores/store";
 
-const TopBar: React.FC = () => {
+type UserInfoProps = {
+  userInfo: UserInfo;
+  userInitials: string;
+};
+const TopBar: React.FC<UserInfoProps> = ({ userInfo, userInitials }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [userInitials, setUserInitials] = useState("SM");
   const dispatch = useDispatch<AppDispatch>();
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{ firstname: string; lastname: string }>(
-          token
-        );
-        const initials = `${decoded.firstname[0]}${decoded.lastname[0]}`;
-        setUserInitials(initials.toUpperCase());
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
-
+  console.log({ userInfo });
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
@@ -46,7 +36,7 @@ const TopBar: React.FC = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [token]);
 
   const logoutHandler = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -56,15 +46,28 @@ const TopBar: React.FC = () => {
     dispatch(logout());
   };
 
+  console.log(userInfo.profilePicture);
+
   return (
     <div className="bg-white h-28 md:h-16 fixed top-0 left-0 right-0 z-20 p-4 md:relative flex md:items-center flex-col md:flex-row justify-between md:shadow-md md:px-4 rounded-lg">
       <div className="w-full md:w-auto flex justify-end md:hidden  pr-2.5">
-        <button
-          className="bg-yellow-400 text-white h-10 w-10 rounded-full text-sm"
-          onClick={toggleDropdown}
-        >
-          {userInitials}
-        </button>
+        {userInfo.profilePicture !== undefined &&
+        userInfo.profilePicture !== "" ? (
+          <div className="h-10 w-10 rounded-full" onClick={toggleDropdown}>
+            <img
+              src={`/uploads/${userInfo.id}/${userInfo.profilePicture}`}
+              alt="Hey"
+              className="h-10 w-10 rounded-full object-cover"
+            />
+          </div>
+        ) : (
+          <button
+            className="bg-yellow-400 text-white h-10 w-10 rounded-full text-sm"
+            onClick={toggleDropdown}
+          >
+            {userInitials}
+          </button>
+        )}
       </div>
       <div className="flex items-center md:justify-end justify-between md:space-x-4 space-x-1 flex-grow w-full mt-2 md:mt-0">
         <div className="flex items-center rounded-lg w-10/12 md:w-1/4 border-2 md:mr-4">
@@ -83,12 +86,26 @@ const TopBar: React.FC = () => {
         <div ref={dropdownRef} className="md:w-auto md:static md:mr-0 ">
           <div className="md:block hidden">
             <div className="flex gap-x-2 items-center">
-              <button
-                className="bg-yellow-400 h-10 w-10 text-white rounded-full text-sm"
-                onClick={toggleDropdown}
-              >
-                {userInitials}
-              </button>
+              {userInfo.profilePicture !== undefined &&
+              userInfo.profilePicture !== "" ? (
+                <div
+                  className="h-10 w-10 rounded-full"
+                  onClick={toggleDropdown}
+                >
+                  <img
+                    src={`/uploads/${userInfo.id}/${userInfo.profilePicture}`}
+                    alt="Hey"
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                </div>
+              ) : (
+                <button
+                  className="bg-yellow-400 text-white h-10 w-10 rounded-full text-sm"
+                  onClick={toggleDropdown}
+                >
+                  {userInitials}
+                </button>
+              )}
               <img
                 className="cursor-pointer"
                 onClick={toggleDropdown}

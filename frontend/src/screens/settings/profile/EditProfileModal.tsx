@@ -59,9 +59,23 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <div className="h-32 rounded-t-2xl">
               <img src={editProfileCover} alt="Cover" />
             </div>
-            <button className="bg-yellow-400 cursor-auto text-4xl text-white rounded-lg font-bold w-24 h-24 border-2 border-white absolute left-9 -bottom-12">
-              {userInitials}
-            </button>
+            {userInfo &&
+            userInfo.profilePicture !== "" &&
+            userInfo.profilePicture !== undefined ? (
+              <div className="w-24 h-24 rounded-lg border-2 border-white mr-4 cursor-pointer absolute left-9 -bottom-12">
+                <img
+                  src={
+                    userInfo &&
+                    `/uploads/${userInfo.id}/${userInfo.profilePicture}`
+                  }
+                  className="w-24 h-24 rounded-lg object-cover"
+                />
+              </div>
+            ) : (
+              <button className="bg-yellow-400 cursor-auto text-4xl text-white rounded-lg font-bold w-24 h-24 border-2 border-white absolute left-9 -bottom-12">
+                {userInitials}
+              </button>
+            )}
           </div>
           <div className="p-6">
             <div className="mt-10 ml-4">
