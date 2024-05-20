@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
-import FolderModel, { IFolder } from "../models/folderSchema";
 import FileModel from "../models/fileSchema";
+import FolderModel from "../models/folderSchema";
+import mongoose from "mongoose";
 
 // Add a new folder
 export const addFolder = async (req: Request, res: Response) => {
@@ -15,8 +15,9 @@ export const addFolder = async (req: Request, res: Response) => {
       files: [],
     });
 
-    const savedFolder = await newFolder.save();
-    res.status(201).json(savedFolder);
+    await newFolder.save();
+
+    res.status(201).json(newFolder);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -104,6 +105,26 @@ export const getFoldersByUserId = async (req: Request, res: Response) => {
     }
 
     res.status(200).json(folders);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update a folder
+export const updateFolder = async (req: Request, res: Response) => {
+  try {
+    const { folderId } = req.params;
+    const updates = req.body;
+
+    const folder = await FolderModel.findByIdAndUpdate(folderId, updates, {
+      new: true,
+    });
+
+    if (!folder) {
+      return res.status(404).json({ message: "Folder not found" });
+    }
+
+    res.status(200).json(folder);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

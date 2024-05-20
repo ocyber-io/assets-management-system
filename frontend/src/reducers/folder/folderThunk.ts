@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { SERVER_URL } from "../../constants/constants";
+import { Folder } from "../../Types";
 
 export const addFolder = createAsyncThunk(
   "folders/addFolder",
@@ -88,6 +89,26 @@ export const getFoldersByUserId = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Error fetching folders by user ID"
+      );
+    }
+  }
+);
+
+export const updateFolder = createAsyncThunk(
+  "folders/updateFolder",
+  async (
+    { folderId, updates }: { folderId: string; updates: Partial<Folder> },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.put(
+        `${SERVER_URL}/api/folders/${folderId}`,
+        updates
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error updating folder"
       );
     }
   }

@@ -1,24 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "../../stores/store";
+import { File, Folder } from "../../Types";
 import {
   addFileToFolder,
   addFolder,
   deleteFileFromFolder,
   deleteFolder,
   getFoldersByUserId,
+  updateFolder,
 } from "./folderThunk";
-import { File } from "../../Types";
-
-interface Folder {
-  _id: string;
-  folderName: string;
-  folderColor: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-  files: File[]; // Assuming file IDs are stored as strings
-}
 
 interface FolderState {
   folders: Folder[];
@@ -73,13 +64,10 @@ const folderSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(
-        addFileToFolder.fulfilled,
-        (state, action: PayloadAction<Folder>) => {
-          // Update folder state accordingly if needed
-          state.status = "idle";
-        }
-      )
+      .addCase(addFileToFolder.fulfilled, (state) => {
+        // Update folder state accordingly if needed
+        state.status = "idle";
+      })
       .addCase(addFileToFolder.rejected, (state, action) => {
         state.error = action.payload as string;
         state.status = "failed";
@@ -88,13 +76,10 @@ const folderSlice = createSlice({
         state.status = "loading";
         state.error = null;
       })
-      .addCase(
-        deleteFileFromFolder.fulfilled,
-        (state, action: PayloadAction<Folder>) => {
-          // Update folder state accordingly if needed
-          state.status = "idle";
-        }
-      )
+      .addCase(deleteFileFromFolder.fulfilled, (state) => {
+        // Update folder state accordingly if needed
+        state.status = "idle";
+      })
       .addCase(deleteFileFromFolder.rejected, (state, action) => {
         state.error = action.payload as string;
         state.status = "failed";
@@ -116,6 +101,26 @@ const folderSlice = createSlice({
         }
       )
       .addCase(getFoldersByUserId.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.status = "failed";
+      })
+      .addCase(updateFolder.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(
+        updateFolder.fulfilled,
+        (state, action: PayloadAction<Folder>) => {
+          const updatedFolderIndex = state.folders.findIndex(
+            (folder) => folder._id === action.payload._id
+          );
+          if (updatedFolderIndex !== -1) {
+            state.folders[updatedFolderIndex] = action.payload;
+          }
+          state.status = "idle";
+        }
+      )
+      .addCase(updateFolder.rejected, (state, action) => {
         state.error = action.payload as string;
         state.status = "failed";
       });

@@ -18,6 +18,8 @@ import emailIcon from "../assets/icons/edit_profile/emailIcon.svg";
 import editIcon from "../assets/icons/edit_profile/editProfileIcon.svg";
 import changePasswordIcon from "../assets/icons/edit_profile/changePassword.svg";
 import logoutIcon from "../assets/icons/edit_profile/logout.svg";
+import folderColorIcon from "../assets/icons/folderColor.svg";
+import renameFolderIcon from "../assets/icons/renameFolder.svg";
 
 export {
   canEditIcon,
@@ -40,4 +42,6 @@ export {
   editIcon,
   changePasswordIcon,
   logoutIcon,
+  folderColorIcon,
+  renameFolderIcon,
 };

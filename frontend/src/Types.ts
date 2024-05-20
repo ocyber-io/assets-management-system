@@ -35,3 +35,13 @@ export type UserInfo = {
   googleId: string;
   profilePicture: string;
 };
+
+export type Folder = {
+  _id: string;
+  folderName: string;
+  folderColor: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  files: File[]; // Assuming file IDs are stored as strings
+};
