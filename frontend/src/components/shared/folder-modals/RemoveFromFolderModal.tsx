@@ -8,7 +8,7 @@ import { deleteFileFromFolder } from "../../../reducers/folder/folderThunk";
 
 type RemoveFromFolderModalProps = {
   fileId: string | null;
-  folderId: string | undefined; // Add folderId prop
+  folderId: string | undefined;
   heading?: string;
   description?: string;
   submitButtonText: string;

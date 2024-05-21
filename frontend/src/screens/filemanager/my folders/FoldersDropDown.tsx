@@ -5,9 +5,6 @@ import {
   downloadIcon,
   moveIcon,
   movetobinIcon,
-  renameIcon,
-  shareIcon,
-  starredIcon,
 } from "../../../helpers/dropdownIcons";
 import { folderColorIcon, renameFolderIcon } from "../../../helpers/icons";
 
@@ -95,13 +92,14 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
         <div
           className={`absolute z-50 ${
             isOpen ? "block" : "hidden"
-          } divide-y divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md dark:bg-gray-700`}
-          style={{ right: "34px", bottom: "0" }}
+          } divide-y w-44 mb-[-4px] divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md dark:bg-gray-700`}
+          style={{ right: "50px", bottom: "0" }}
         >
           <div className="flex">
-            <img src={shareIcon} className="ml-6" alt="Share" />
+            <img src={downloadIcon} className="ml-4" alt="Download" />
+
             <img
-              src={renameIcon}
+              src={renameFolderIcon}
               className="ml-4"
               alt="Rename"
               onClick={() => {
@@ -109,8 +107,12 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
                 renameHandler(folderId, folderName);
               }} // Rename handler
             />
-            <img src={starredIcon} className="ml-4" alt="Star" />
-            <img src={downloadIcon} className="ml-4" alt="Download" />
+            <img
+              src={folderColorIcon}
+              className="ml-4 cursor-pointer"
+              alt="Change folder color"
+              onClick={() => changeColorHandler(folderId)}
+            />
             <img
               src={movetobinIcon}
               className="ml-4 cursor-pointer"

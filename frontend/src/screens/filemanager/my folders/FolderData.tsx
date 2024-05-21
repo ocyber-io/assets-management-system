@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectFilesByFolderId } from "../../../reducers/folder/folderSlice";
+import {
+  selectFilesByFolderId,
+  selectFolder,
+} from "../../../reducers/folder/folderSlice";
 import { AppDispatch, RootState } from "../../../stores/store"; // Import the RootState type
 import RecentFiles from "../../overview/RecentFiles";
-import { getFoldersByUserId } from "../../../reducers/folder/folderThunk";
+import {
+  getFolderById,
+  getFoldersByUserId,
+} from "../../../reducers/folder/folderThunk";
 import { jwtDecode } from "jwt-decode";
+import FolderBreadcrumb from "./FolderBreadcrumb";
 
 const FolderData: React.FC = () => {
   const { folderId } = useParams();
   const dispatch = useDispatch<AppDispatch>();
-
   const token = localStorage.getItem("token");
   const [userId, setUserId] = useState<string>();
 
@@ -39,15 +45,23 @@ const FolderData: React.FC = () => {
     }
   };
 
+  const fetchFolder = async () => {
+    if (folderId) {
+      await dispatch(getFolderById(folderId));
+    }
+  };
+
   useEffect(() => {
     fetchFolders();
-  }, [dispatch, userId]);
+    fetchFolder();
+  }, [dispatch, userId, folderId]);
 
   const files = useSelector((state: RootState) => {
     // Specify RootState type
     if (folderId) return selectFilesByFolderId(folderId)(state);
     return []; // Return an empty array if folderId is not defined
   });
+  const folder = useSelector(selectFolder);
 
   useEffect(() => {
     // Log the files to the console
@@ -55,9 +69,14 @@ const FolderData: React.FC = () => {
   }, [files]); // Add files as a dependency to useEffect if needed
 
   const undeletedFiles = files.filter((file) => !file.isDeleted);
+  const breadcrumbItems = [
+    { name: "Folders", path: "/folders" },
+    { name: folder?.folderName || "Loading...", path: `/folders/${folderId}` },
+  ];
 
   return (
     <div className="mt-6">
+      <FolderBreadcrumb items={breadcrumbItems} />
       <RecentFiles
         tagFiles={undeletedFiles}
         fromFolders={true}

@@ -129,3 +129,19 @@ export const updateFolder = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+//get folder details by ID
+export const getFolderById = async (req: Request, res: Response) => {
+  try {
+    const { folderId } = req.params;
+
+    const folder = await FolderModel.findById(folderId).populate("files");
+    if (!folder) {
+      return res.status(404).json({ message: "Folder not found" });
+    }
+
+    res.status(200).json(folder);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};

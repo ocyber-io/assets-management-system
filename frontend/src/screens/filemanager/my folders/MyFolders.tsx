@@ -139,146 +139,152 @@ const MyFolders: React.FC = () => {
         selectAll={selectAll}
         selectedFolders={selectedFolders}
       />
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="">
-          <tr>
-            <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2 pl-4 ml-4"></th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
-              Folder Name
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
-              Last Modified
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
-              Created At
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
-              Files
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5"></th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6"></th>
-          </tr>
-        </thead>
-        <tbody className=" divide-y divide-gray-200">
-          {folders &&
-            folders.map((folder, index) => (
-              <tr
-                key={folder._id}
-                onMouseEnter={() => handleItemHover(folder._id)}
-                onMouseLeave={handleItemLeave}
-                className={index % 2 === 0 ? "bg-white" : "bg-blue-50"}
-              >
-                <td className="w-2 pl-4 ml-4">
-                  <input
-                    type="checkbox"
-                    checked={isSelected(folder._id)}
-                    onChange={() => toggleFolderSelection(folder._id)}
-                  />
-                </td>
-                <td
-                  className="px-6 py-4 whitespace-nowrap cursor-pointer"
-                  onClick={() => folderHandler(folder._id)}
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="">
+            <tr>
+              <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2 pl-4 ml-4"></th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider xl:w-1/4">
+                Folder Name
+              </th>
+              <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider xl:w-1/6">
+                Last Modified
+              </th>
+              <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider xl:w-1/4">
+                Created At
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider xl:w-1/6">
+                Files
+              </th>
+              <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider xl:w-1/5"></th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider xl:w-1/6"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {folders &&
+              folders.map((folder, index) => (
+                <tr
+                  key={folder._id}
+                  onMouseEnter={() => handleItemHover(folder._id)}
+                  onMouseLeave={handleItemLeave}
+                  className={index % 2 === 0 ? "bg-white" : "bg-blue-50"}
                 >
-                  <div className="flex items-center">
-                    <div className="">
-                      <BsFillFolderFill
-                        size={24}
-                        color={folder.folderColor}
-                        className="opacity-85"
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-lg font-semibold text-gray-700">
-                        {folder.folderName}
+                  <td className="w-2 pl-4 ml-4">
+                    <input
+                      type="checkbox"
+                      checked={isSelected(folder._id)}
+                      onChange={() => toggleFolderSelection(folder._id)}
+                    />
+                  </td>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => folderHandler(folder._id)}
+                  >
+                    <div className="flex items-center">
+                      <div className="">
+                        <BsFillFolderFill
+                          size={24}
+                          color={folder.folderColor}
+                          className="opacity-85"
+                        />
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-lg font-semibold text-gray-700">
+                          {folder.folderName}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(folder.updatedAt)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(folder.createdAt)}
-                </td>
-                <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {folder.files.length}
-                </td>
-                <td>
-                  {hoveredItemId === folder._id && (
-                    <div className="flex justify-end">
-                      <button aria-label="Download folder" className="mr-2">
-                        <img
-                          src={downloadIcon}
-                          className="ml-2"
-                          alt="Download"
-                        />
-                      </button>
-                      <button
-                        aria-label="Rename folder"
-                        className="mr-2"
-                        onClick={() =>
-                          RenameHandler(folder._id, folder.folderName)
-                        }
-                      >
-                        <img
-                          src={renameFolderIcon}
-                          className="ml-2"
-                          alt="Rename"
-                        />
-                      </button>
+                  </td>
+                  <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatDate(folder.updatedAt)}
+                  </td>
+                  <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatDate(folder.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {folder.files.length}
+                  </td>
+                  <td className="hidden lg:table-cell">
+                    {hoveredItemId === folder._id && (
+                      <div className="flex justify-end">
+                        <button aria-label="Download folder" className="mr-2">
+                          <img
+                            src={downloadIcon}
+                            className="ml-2"
+                            alt="Download"
+                          />
+                        </button>
+                        <button
+                          aria-label="Rename folder"
+                          className="mr-2"
+                          onClick={() =>
+                            RenameHandler(folder._id, folder.folderName)
+                          }
+                        >
+                          <img
+                            src={renameFolderIcon}
+                            className="ml-2"
+                            alt="Rename"
+                          />
+                        </button>
 
-                      <button
-                        aria-label="Change folder color"
-                        className="mr-2"
-                        onClick={() => changeColorHandler(folder._id)}
-                      >
-                        <img
-                          src={folderColorIcon}
-                          className="ml-2"
-                          alt="Change color"
-                        />
-                      </button>
-                      <button
-                        aria-label="Move to bin folder"
-                        className="mr-3"
-                        onClick={() => deleteHandler(folder._id)}
-                      >
-                        <img
-                          src={movetobinIcon}
-                          className="ml-2"
-                          alt="Move to bin"
-                        />
-                      </button>
-                      <button aria-label="Disable folder" className="mr-2">
-                        <img src={disableIcon} className="ml-2" alt="Disable" />
-                      </button>
-                    </div>
-                  )}
-                </td>
-                <td className="whitespace-nowrap text-right text-sm font-medium relative">
-                  <img
-                    src={moreIcon}
-                    className="mr-4 pr-2 mx-2 cursor-pointer"
-                    alt="More"
-                    onClick={() => toggleDropdown(folder._id)}
-                  />
-                  {openDropdownId === folder._id && (
-                    <FoldersDropdown
-                      isOpen={true}
-                      toggleDropdown={() => toggleDropdown(folder._id)}
-                      hoveredItemId={hoveredItemId}
-                      onDeleteFolder={deleteHandler}
-                      folderId={folder._id}
-                      folderName={folder.folderName}
-                      renameHandler={RenameHandler}
-                      changeColorHandler={changeColorHandler}
+                        <button
+                          aria-label="Change folder color"
+                          className="mr-2"
+                          onClick={() => changeColorHandler(folder._id)}
+                        >
+                          <img
+                            src={folderColorIcon}
+                            className="ml-2"
+                            alt="Change color"
+                          />
+                        </button>
+                        <button
+                          aria-label="Move to bin folder"
+                          className="mr-3"
+                          onClick={() => deleteHandler(folder._id)}
+                        >
+                          <img
+                            src={movetobinIcon}
+                            className="ml-2"
+                            alt="Move to bin"
+                          />
+                        </button>
+                        <button aria-label="Disable folder" className="mr-2">
+                          <img
+                            src={disableIcon}
+                            className="ml-2"
+                            alt="Disable"
+                          />
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap text-right text-sm font-medium relative">
+                    <img
+                      src={moreIcon}
+                      className="mr-4 pr-2 mx-2 cursor-pointer"
+                      alt="More"
+                      onClick={() => toggleDropdown(folder._id)}
                     />
-                  )}
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+                    {openDropdownId === folder._id && (
+                      <FoldersDropdown
+                        isOpen={true}
+                        toggleDropdown={() => toggleDropdown(folder._id)}
+                        hoveredItemId={hoveredItemId}
+                        onDeleteFolder={deleteHandler}
+                        folderId={folder._id}
+                        folderName={folder.folderName}
+                        renameHandler={RenameHandler}
+                        changeColorHandler={changeColorHandler}
+                      />
+                    )}
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
       {showDeleteFolderModal && (
         <DeleteFolderModal
           heading="Delete Folder?"

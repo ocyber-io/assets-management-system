@@ -7,20 +7,23 @@ import {
   addFolder,
   deleteFileFromFolder,
   deleteFolder,
+  getFolderById,
   getFoldersByUserId,
   updateFolder,
 } from "./folderThunk";
 
 interface FolderState {
   folders: Folder[];
-  files: { [folderId: string]: File[] }; // Changed to an object to store files by folder ID
+  folder: Folder | null;
+  files: { [folderId: string]: File[] };
   status: "idle" | "loading" | "failed";
   error: string | null;
 }
 
 const initialState: FolderState = {
   folders: [],
-  files: {}, // Initialize as an empty object
+  folder: null, // Initialize as null
+  files: {},
   status: "idle",
   error: null,
 };
@@ -123,6 +126,21 @@ const folderSlice = createSlice({
       .addCase(updateFolder.rejected, (state, action) => {
         state.error = action.payload as string;
         state.status = "failed";
+      })
+      .addCase(getFolderById.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(
+        getFolderById.fulfilled,
+        (state, action: PayloadAction<Folder>) => {
+          state.folder = action.payload;
+          state.status = "idle";
+        }
+      )
+      .addCase(getFolderById.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.status = "failed";
       });
   },
 });
@@ -130,5 +148,6 @@ const folderSlice = createSlice({
 export const selectFolders = (state: RootState) => state.folders.folders;
 export const selectFilesByFolderId = (folderId: string) => (state: RootState) =>
   state.folders.files[folderId] || []; // Selector to get files by folder ID
+export const selectFolder = (state: RootState) => state.folders.folder;
 
 export default folderSlice.reducer;

@@ -115,3 +115,17 @@ export const updateFolder = createAsyncThunk(
     }
   }
 );
+
+export const getFolderById = createAsyncThunk(
+  "folders/getFolderById",
+  async (folderId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${SERVER_URL}/api/folders/${folderId}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error fetching folder by ID"
+      );
+    }
+  }
+);

@@ -67,7 +67,11 @@ const MoveToFolderModal: React.FC<MoveFileModalProps> = ({
       showSuccessToast("File moved successfully");
       onClose();
     } catch (error: any) {
-      showErrorToast("Couldn't add file to folder" + error.message);
+      const errorMessage =
+        error.message ||
+        error.response?.data?.message ||
+        "Couldn't add file to folder";
+      showErrorToast(`File already exists: ${errorMessage}`);
     }
   };
 
