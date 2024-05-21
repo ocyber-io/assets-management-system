@@ -1,7 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { File } from "../../Types";
+import { File, SelectedFile } from "../../Types";
 import { selectError } from "../../reducers/file/fileSlice";
 import { fetchFiles } from "../../reducers/file/fileThunks";
 import { AppDispatch } from "../../stores/store";
@@ -18,6 +18,10 @@ type RecentFilesProps = {
   filesPerPage?: number;
   showFullLink?: boolean;
   fromTrash?: boolean;
+  fromFavorites?: boolean;
+  fromFolders?: boolean;
+  folderId?: string;
+  fetchFolders: () => void;
 };
 
 const RecentFiles: React.FC<RecentFilesProps> = ({
@@ -27,10 +31,14 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   tagFiles,
   files,
   fromTrash,
+  fromFavorites,
+  fromFolders,
+  folderId,
+  fetchFolders,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
-  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
@@ -45,9 +53,13 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [showRenameModal, setShowRenameModal] = useState<boolean>(false);
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showMoveToFolderModal, setShowMoveToFolderModal] = useState(false);
+  const [showRemoveFromFolderModal, setShowRemoveFromFolderModal] =
+    useState(false);
   const [showReplaceModal, setShowReplaceModal] = useState(false);
   const [selectedLink, setSelectedLink] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>("");
+  const [fileSize, setFileSize] = useState<string | null>("");
   const [fileId, setFileId] = useState<string | null>("");
   const [fileLink, setFileLink] = useState<string>("");
   const [selectedFileDetails, setSelectedFileDetails] = useState<
@@ -112,6 +124,12 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const toggleSuccessModal = () => {
     setShowSuccessModal(!showSuccessModal);
   };
+  const toggleMoveToFolderModal = () => {
+    setShowMoveToFolderModal(!showMoveToFolderModal);
+  };
+  const toggleRemoveFromFolderModal = () => {
+    setShowRemoveFromFolderModal(!showRemoveFromFolderModal);
+  };
 
   useEffect(() => {
     // Reset to first page if filesPerPage changes
@@ -125,29 +143,61 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  const toggleSelection = (id: string) => {
-    setSelectedFiles(
-      selectedFiles.includes(id)
-        ? selectedFiles.filter((selectedId) => selectedId !== id)
-        : [...selectedFiles, id]
-    );
-  };
+  const toggleSelection = (
+    id: string,
+    fileName: string,
+    fileLink: string,
+    isFavorite: boolean | undefined
+  ) => {
+    // Create an array to represent the selected file
+    const selectedFile: SelectedFile = {
+      id,
+      originalName: fileName,
+      link: fileLink,
+      isFavorite: isFavorite,
+    };
 
+    setSelectedFiles((prevSelectedFiles) => {
+      // Check if the selected file is already in the selectedFiles array
+      const isSelected = prevSelectedFiles.some((file) => file.id === id);
+
+      if (isSelected) {
+        // If the file is already selected, remove it from selectedFiles
+        return prevSelectedFiles.filter((file) => file.id !== id);
+      } else {
+        // If the file is not selected, add it to selectedFiles
+        return [...prevSelectedFiles, selectedFile];
+      }
+    });
+  };
   const deselectAll = () => {
     setSelectedFiles([]);
   };
 
   const selectAll = () => {
-    // Calculate the index of the first and last files on the current page
+    console.log("I got click to select all files");
     const lastFileIndex = currentPage * filesPerPage;
+    console.log({ lastFileIndex });
     const firstFileIndex = lastFileIndex - filesPerPage;
+    console.log({ firstFileIndex });
 
     if (!files) {
       return;
     }
-    setSelectedFiles(
-      files.slice(firstFileIndex, lastFileIndex).map((file) => file._id)
-    );
+
+    // Map each file to a SelectedFile object
+    const selectedFilesData: SelectedFile[] = files
+      .slice(firstFileIndex, lastFileIndex)
+      .map((file) => ({
+        id: file._id,
+        originalName: file.originalName,
+        link: file.link,
+        isFavorite: file.isFavorite,
+      }));
+
+    console.log({ selectedFilesData });
+    // Update the selectedFiles state with the new array of SelectedFile objects
+    setSelectedFiles(selectedFilesData);
   };
 
   const copyToClipboard = (link: string) => {
@@ -183,9 +233,19 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     toggleDeleteConfrimationModal();
     setFileId(fileId);
   };
-  const restoreHandler = (fileId: string) => {
+  const moveToFolderHandler = (fileId: string) => {
+    toggleMoveToFolderModal();
+    setFileId(fileId);
+  };
+  const restoreHandler = (
+    fileId: string,
+    filename: string,
+    filesize: string
+  ) => {
     toggleRestoreModal();
     setFileId(fileId);
+    setFileName(filename);
+    setFileSize(filesize);
   };
 
   const renameHandler = (filename: string, fileId: string) => {
@@ -208,6 +268,10 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     setSelectedFileDetails(fileDetails);
     toggleReplaceModal();
   };
+  const removeFromFolderHandler = (fileId: string) => {
+    setFileId(fileId);
+    toggleRemoveFromFolderModal();
+  };
 
   const shareSubmitClickHandler = () => {
     console.log("shared");
@@ -228,8 +292,12 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
       {selectedFiles.length > 0 && (
         <SelectedFilesActions
           selectedFilesCount={selectedFiles.length}
+          selectedFiles={selectedFiles}
           deselectAll={deselectAll}
           selectAll={selectAll}
+          fromFavorites={fromFavorites}
+          fromTrash={fromTrash}
+          fetchAllFiles={fetchAllFiles}
         />
       )}
       <div className={`mx-2 ${fullScreenList ? "h-screen" : ""}`}>
@@ -258,8 +326,12 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           fileInformationHandler={fileInformationHandler}
           shareHandler={shareHandler}
           replaceHandler={replaceHandler}
+          moveToFolderHandler={moveToFolderHandler}
+          removeFromFolderHandler={removeFromFolderHandler}
           showFullLink={showFullLink}
           fromTrash={fromTrash}
+          fromFavorites={fromFavorites}
+          fromFolders={fromFolders}
         />
         {files && files.length > filesPerPage && (
           <Pagination
@@ -282,6 +354,8 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         showRenameModal={showRenameModal}
         fileName={fileName}
         fileId={fileId}
+        fileSize={fileSize}
+        folderId={folderId}
         toggleRenameModal={toggleRenameModal}
         handleOkAction={handleOkAction}
         showFileInformationModal={showFileInformationModal}
@@ -303,6 +377,11 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         toggleDeleteConfirmationModal={toggleDeleteConfrimationModal}
         showRestoreModal={showRestoreModal}
         toggleRestoreModal={toggleRestoreModal}
+        showMoveToFolderModal={showMoveToFolderModal}
+        toggleMovetoFolderModal={toggleMoveToFolderModal}
+        showRemoveFromFolderModal={showRemoveFromFolderModal}
+        toggleRemoveFromFolderModal={toggleRemoveFromFolderModal}
+        fetchFolders={fetchFolders}
       />
     </div>
   );

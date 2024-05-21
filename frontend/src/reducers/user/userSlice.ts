@@ -51,7 +51,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(signUp.fulfilled, (state, action: PayloadAction<User>) => {
-        localStorage.setItem("token", action.payload.token);
+        // localStorage.setItem("token", action.payload.token);
         state.user = action.payload;
         state.status = "idle";
       })

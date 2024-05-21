@@ -34,8 +34,8 @@ const Signup: React.FC = () => {
       try {
         const actionResult = await dispatch(signUp(formData));
         unwrapResult(actionResult); // This will throw if the promise is rejected
-        showSuccessToast("Signup Successful!");
-        navigate("/");
+        showSuccessToast("Signup Successful, Please Login to continue...");
+        navigate("/login");
       } catch (error: any) {
         showErrorToast(error || "Failed to sign up");
       }

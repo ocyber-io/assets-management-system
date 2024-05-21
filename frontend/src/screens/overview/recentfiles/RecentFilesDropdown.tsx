@@ -16,8 +16,10 @@ import {
   disableIcon,
   EnableIcon,
   restoreIcon,
+  unstarIcon,
 } from "../../../helpers/dropdownIcons";
 import { File } from "../../../Types";
+import { removeFromFolderIcon } from "../../../helpers/icons";
 
 // Define an interface for submenu items
 type SubMenuItem = {
@@ -45,11 +47,19 @@ interface RecentDropdownProps {
   deleteHandler: (fileId: string) => void;
   renameHandler: (filename: string, fileId: string) => void;
   disableHandler: (fileId: string) => void;
+  moveToFolderHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
+  removeFromFolderHandler: (fileId: string) => void;
   copyToClipboard: (link: string) => void;
   deleteConfirmationHandler: (fileId: string) => void;
-  restoreHandler: (fileId: string) => void;
+  restoreHandler: (fileId: string, filename: string, filesize: string) => void;
+  toggleFavoriteFiles: (
+    fileId: string,
+    isFavorite: boolean | undefined
+  ) => void;
   fromTrash?: boolean;
+  fromFavorites?: boolean;
+  fromFolders?: boolean;
 }
 
 const subItems: MenuItem[] = [
@@ -74,7 +84,7 @@ const subItems: MenuItem[] = [
   {
     key: "share",
     label: "Share",
-    icon: organizeIcon,
+    icon: shareIcon,
     subItems: [
       { label: "Share", icon: shareIcon },
       { label: "Copy Link", icon: copylinkIcon },
@@ -86,7 +96,7 @@ const subItems: MenuItem[] = [
     icon: organizeIcon,
     subItems: [
       { label: "Move", icon: moveIcon },
-      { label: "Add to Starred", icon: starredIcon },
+      { label: "Add to Favorites", icon: starredIcon },
     ],
   },
   {
@@ -121,6 +131,10 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
   fromTrash,
   deleteConfirmationHandler,
   restoreHandler,
+  toggleFavoriteFiles,
+  moveToFolderHandler,
+  removeFromFolderHandler,
+  fromFolders,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
@@ -171,7 +185,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
             isOpen ? "block" : "hidden"
           } divide-y divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md ${
             !fromTrash ? "w-64" : "w-24"
-          } dark:bg-gray-700`}
+          } ${fromFolders ? "w-72" : "w-64"} dark:bg-gray-700`}
           style={{ right: "34px", bottom: "0" }}
         >
           <div className="flex">
@@ -199,13 +213,29 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                       renameHandler(file.originalName, file._id);
                   }}
                 />
-                <img
-                  src={starredIcon}
-                  className={`ml-4 ${
-                    file.isDisabled ? "opacity-30" : "cursor-pointer"
-                  }`}
-                  alt="Star"
-                />
+                {!file.isFavorite ? (
+                  <img
+                    src={starredIcon}
+                    className={`ml-4 ${
+                      file.isDisabled ? "opacity-30" : "cursor-pointer"
+                    }`}
+                    alt="Star"
+                    onClick={() =>
+                      toggleFavoriteFiles(file._id, file.isFavorite)
+                    }
+                  />
+                ) : (
+                  <img
+                    src={unstarIcon}
+                    className={`ml-4 ${
+                      file.isDisabled ? "opacity-30" : "cursor-pointer"
+                    }`}
+                    alt="Star"
+                    onClick={() =>
+                      toggleFavoriteFiles(file._id, file.isFavorite)
+                    }
+                  />
+                )}
                 <img
                   src={downloadIcon}
                   className={`ml-4 ${
@@ -228,14 +258,23 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                 />
               </>
             )}
-
+            {fromFolders && (
+              <img
+                src={removeFromFolderIcon}
+                className="ml-4 cursor-pointer opacity-60"
+                alt="removeFromFolder"
+                onClick={() => {
+                  removeFromFolderHandler(file._id);
+                }}
+              />
+            )}
             {fromTrash && (
               <img
                 src={restoreIcon}
                 className="ml-4 cursor-pointer"
                 alt="Restore"
                 onClick={() => {
-                  restoreHandler(file._id);
+                  restoreHandler(file._id, file.originalName, file.size);
                 }}
               />
             )}
@@ -334,33 +373,54 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                     )}
                   </button>
                   {openSubMenu === menu.key && (
-                    <ul className="absolute right-full top-0 mt-0 mr-1 bg-white rounded-md shadow-lg w-40 z-20">
+                    <ul className="absolute right-full top-0 mt-0 mr-1 bg-white rounded-md shadow-lg w-48 z-20">
                       {menu.subItems.map((subItem: SubMenuItem) => (
                         <li key={subItem.label}>
                           <button
                             className="flex w-full p-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
                             onClick={() => {
-                              // Trigger the handler when "Details" is clicked under "File information"
                               if (subItem.label === "Details") {
                                 fileInformationHandler(file);
                                 toggleDropdown();
-                              }
-                              if (subItem.label === "Share") {
+                              } else if (subItem.label === "Share") {
                                 shareHandler(file.link);
                                 toggleDropdown();
-                              }
-                              if (subItem.label === "Copy Link") {
+                              } else if (subItem.label === "Copy Link") {
                                 copyToClipboard(file.link);
                                 toggleDropdown();
+                              } else if (subItem.label === "Add to Favorites") {
+                                toggleFavoriteFiles(file._id, file.isFavorite);
+                                toggleDropdown();
+                              } else if (subItem.label === "Move") {
+                                moveToFolderHandler(file._id);
+                                toggleDropdown();
+                              } else {
+                                // For other subItems, directly execute their actions
+                                if (subItem.label === "Remove from Favorites") {
+                                  toggleFavoriteFiles(
+                                    file._id,
+                                    file.isFavorite
+                                  );
+                                  toggleDropdown();
+                                }
+                                // Add conditions for other subItems here if needed
                               }
                             }}
                           >
                             <img
-                              src={subItem.icon}
+                              src={
+                                subItem.label === "Add to Favorites" &&
+                                file.isFavorite
+                                  ? unstarIcon
+                                  : subItem.icon
+                              }
                               alt=""
                               className="mr-2 mt-1"
                             />
-                            {subItem.label}
+                            {subItem.label === "Add to Favorites" &&
+                            file.isFavorite
+                              ? "Remove from Favorites"
+                              : subItem.label}
                           </button>
                         </li>
                       ))}

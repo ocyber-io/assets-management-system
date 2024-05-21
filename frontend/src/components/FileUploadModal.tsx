@@ -77,7 +77,7 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
         .unwrap() // Assuming addFile is a thunk that returns a Promise
         .then(() => {
           showSuccessToast("File uploaded successfully!");
-          // Reset everything after successful upload
+          closeModal();
           resetForm();
         })
         .catch((error) => {

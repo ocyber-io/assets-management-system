@@ -121,3 +121,79 @@ export const restoreFile = createAsyncThunk(
     }
   }
 );
+
+export const toggleFileFavorite = createAsyncThunk(
+  "files/toggleFavorite",
+  async (fileId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/toggleFavorite/${fileId}`
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const toggleMultipleFilesFavorite = createAsyncThunk(
+  "files/toggleMultipleFilesFavorite",
+  async (fileIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/toggleMultipleFavorite`,
+        {
+          fileIds,
+        }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const deleteMultipleFiles = createAsyncThunk(
+  "files/deleteMultipleFiles",
+  async (fileIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `${SERVER_URL}/api/files/deleteMultiple`,
+        { data: { fileIds } }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const restoreMultipleFiles = createAsyncThunk(
+  "files/restoreMultipleFiles",
+  async (fileIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/restoreMultiple`,
+        { fileIds }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const disableMultipleFiles = createAsyncThunk(
+  "files/disableMultipleFiles",
+  async (fileIds: string[], { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${SERVER_URL}/api/files/disableMultiple`,
+        { fileIds }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);

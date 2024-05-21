@@ -6,9 +6,13 @@ import {
   deleteFile,
   toggleFileDisable,
   replaceFile,
-  restoreFile, // Import the replaceFile controller function
+  restoreFile,
+  toggleFileFavorite,
+  toggleMultipleFilesFavorite,
+  deleteMultipleFiles,
+  restoreMultipleFiles,
+  disableMultipleFiles,
 } from "../controllers/fileController";
-
 const router = express.Router();
 
 // Routes for file operations
@@ -18,10 +22,25 @@ router.patch("/rename/:fileId", renameFile); // PATCH endpoint for renaming a sp
 router.delete("/delete/:fileId", deleteFile); // DELETE endpoint for deleting a specific file
 router.patch("/:fileId/toggleDisable", toggleFileDisable); // PATCH endpoint for toggle disabling
 
-// Add the route for replacing a file
+// route for replacing a file
 router.patch("/replace/:fileId", replaceFile);
 
-// Add the route for restoring a file
+// route for restoring a file
 router.patch("/restore/:fileId", restoreFile);
+
+// route for toggling file favorite status
+router.patch("/toggleFavorite/:fileId", toggleFileFavorite);
+
+// route for toggling multiple files to favorites
+router.patch("/toggleMultipleFavorite", toggleMultipleFilesFavorite);
+
+// route for deleting multiple files
+router.delete("/deleteMultiple", deleteMultipleFiles);
+
+// route for deleting multiple files
+router.patch("/restoreMultiple", restoreMultipleFiles);
+
+// route for deleting multiple files
+router.patch("/disableMultiple", disableMultipleFiles);
 
 export default router;

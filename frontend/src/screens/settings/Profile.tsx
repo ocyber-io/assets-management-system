@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import editProfileImage from "../../assets/images/edit-profile.svg";
 import editUserImage from "../../assets/icons/editUsers.svg";
-import EditProfileModal from "./EditProfileModal";
+import EditProfileModal from "./profile/EditPasswordModal";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { jwtDecode } from "jwt-decode";
 

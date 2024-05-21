@@ -6,6 +6,7 @@ export type IUser = {
   lastname: string;
   email: string;
   password?: string;
+  profilePicture?: string;
   googleId?: string;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
@@ -42,6 +43,7 @@ const userSchema = new mongoose.Schema<IUser>({
   password: {
     type: String,
   },
+  profilePicture: { type: String },
   googleId: {
     type: String,
   },

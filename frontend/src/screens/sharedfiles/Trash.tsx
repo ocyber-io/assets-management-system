@@ -31,7 +31,12 @@ const Trash: React.FC = () => {
           </div>
         ) : (
           <>
-            <RecentFiles tagFiles={deletedFiles} fromTrash={true} />
+            <RecentFiles
+              tagFiles={deletedFiles}
+              files={deletedFiles}
+              fromTrash={true}
+              filesPerPage={8}
+            />
           </>
         )}
       </div>

@@ -40,7 +40,7 @@ const EnableModal: React.FC<EnableModalProps> = ({
 
     try {
       await dispatch(toggleFileDisable(fileId)).unwrap();
-      showSuccessToast("File disabled successfully");
+      showSuccessToast("File enabled successfully");
       fetchAllFiles();
       onClose();
     } catch (error: any) {

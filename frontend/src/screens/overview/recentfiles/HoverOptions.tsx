@@ -1,27 +1,37 @@
 import React from "react";
+import { File } from "../../../Types"; // Assuming this is the type definition for your files
 import {
+  EnableIcon,
   disableIcon,
   downloadIcon,
   movetobinIcon,
   renameIcon,
+  restoreIcon,
   shareIcon,
   starredIcon,
-  EnableIcon,
-  restoreIcon,
+  unstarIcon,
 } from "../../../helpers/dropdownIcons";
-import { File } from "../../../Types"; // Assuming this is the type definition for your files
+import { removeFromFolderIcon } from "../../../helpers/icons";
 
 interface HoverOptionsProps {
   file: File;
+
   hoveredItemId: string | null;
   renameHandler: (filename: string, fileId: string) => void;
   deleteHandler: (fileId: string) => void; // Assuming you need the file ID for deletion
   disableHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
+  removeFromFolderHandler: (fileId: string) => void;
   shareHandler: (fileLink: string) => void;
   deleteConfirmationHandler: (fileId: string) => void;
-  restoreHandler: (fileId: string) => void;
+  restoreHandler: (fileId: string, filename: string, filesize: string) => void;
+  toggleFavoriteFiles: (
+    fileId: string,
+    isFavorite: boolean | undefined
+  ) => void;
   fromTrash?: boolean;
+  fromFavorites?: boolean;
+  fromFolders?: boolean;
 }
 
 const HoverOptions: React.FC<HoverOptionsProps> = ({
@@ -35,6 +45,9 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
   fromTrash,
   deleteConfirmationHandler,
   restoreHandler,
+  toggleFavoriteFiles,
+  fromFolders,
+  removeFromFolderHandler,
 }) => {
   const downloadHandler = () => {
     if (file.link) {
@@ -48,9 +61,9 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
   };
   return (
     <div
-      className={`flex gap-x-1 xl:mt-2 md:mr-8 ${
-        hoveredItemId === file._id ? "visible" : "invisible"
-      }`}
+      className={`flex gap-x-1 xl:mt-2  ${
+        fromFolders ? "md:mr-12" : "md:mr-8"
+      } ${hoveredItemId === file._id ? "visible" : "invisible"}`}
     >
       {!fromTrash && (
         <>
@@ -84,14 +97,36 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
               if (!file.isDisabled) renameHandler(file.originalName, file._id);
             }}
           />
-          <img
-            src={starredIcon}
-            className={`ml-4 ${
-              file.isDisabled ? "opacity-30" : "cursor-pointer"
-            }`}
-            alt="Star"
-          />
+          {!file.isFavorite ? (
+            <img
+              src={starredIcon}
+              className={`ml-4 ${
+                file.isDisabled ? "opacity-30" : "cursor-pointer"
+              }`}
+              alt="Star"
+              onClick={() => toggleFavoriteFiles(file._id, file.isFavorite)}
+            />
+          ) : (
+            <img
+              src={unstarIcon}
+              className={`ml-4 ${
+                file.isDisabled ? "opacity-30" : "cursor-pointer"
+              }`}
+              alt="Star"
+              onClick={() => toggleFavoriteFiles(file._id, file.isFavorite)}
+            />
+          )}
         </>
+      )}
+      {fromFolders && (
+        <img
+          src={removeFromFolderIcon}
+          className="ml-4 cursor-pointer opacity-60"
+          alt="removeFromFolder"
+          onClick={() => {
+            removeFromFolderHandler(file._id);
+          }}
+        />
       )}
       {fromTrash && (
         <img
@@ -99,7 +134,7 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
           className="ml-4 cursor-pointer"
           alt="Restore"
           onClick={() => {
-            restoreHandler(file._id);
+            restoreHandler(file._id, file.originalName, file.size);
           }}
         />
       )}

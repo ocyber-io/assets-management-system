@@ -29,6 +29,6 @@ router.delete("/:id", deleteUser);
 
 // Additional routes for password reset functionality
 router.post("/verify-otp", verifyOtp); // Route for verifying OTP sent for password reset
-router.post("/reset-password", resetPassword); // Route for resetting password using OTP
+router.post("/reset-password", resetPassword); // Route for resetting password using OT
 
 export default router;

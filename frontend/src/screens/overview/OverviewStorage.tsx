@@ -1,13 +1,9 @@
-import { jwtDecode } from "jwt-decode";
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import React from "react";
 import { File } from "../../Types";
 import docIcon from "../../assets/icons/overview-storage/doc.svg";
 import otherIcon from "../../assets/icons/overview-storage/other.svg";
 import jpgIcon from "../../assets/icons/overview-storage/photo.svg";
 import videoIcon from "../../assets/icons/overview-storage/video.svg";
-import { getUserById } from "../../reducers/user/userThunks";
-import { AppDispatch } from "../../stores/store";
 import { calculateStorageUsage } from "../../utils/helpers";
 
 type OverViewStorageProps = {
@@ -34,30 +30,7 @@ const hexToRGBA = (hex: string, opacity: number): string => {
 };
 
 const OverviewStorage: React.FC<OverViewStorageProps> = ({ files }) => {
-  const token = localStorage.getItem("token");
-  const dispatch = useDispatch<AppDispatch>();
-  const [userId, setUserId] = useState<string>();
-
   const storageUsage = calculateStorageUsage(files);
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
-
-  useEffect(() => {
-    if (userId) dispatch(getUserById(userId));
-  }, [dispatch, userId]);
 
   const storageItems: StorageItem[] = [
     {

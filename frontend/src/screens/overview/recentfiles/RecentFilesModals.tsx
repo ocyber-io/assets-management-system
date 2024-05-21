@@ -12,9 +12,12 @@ import { File } from "../../../Types";
 import EnableModal from "../../../components/shared/EnableModal";
 import DeleteConfirmationModal from "../../../components/shared/DeleteConfirmationModal";
 import RestoreModal from "../../../components/shared/RestoreModal";
+import MoveToFolderModal from "../../../components/shared/MoveToFolderModal";
+import RemoveFromFolderModal from "../../../components/shared/folder-modals/RemoveFromFolderModal";
 
 type RecentFilesModalsProps = {
   fileId: string | null;
+  folderId: string | undefined;
   showLinkModal: boolean;
   selectedLink: string | null;
   setShowLinkModal: (show: boolean) => void;
@@ -27,6 +30,7 @@ type RecentFilesModalsProps = {
   showRenameModal: boolean;
   fileName: string | null;
   fileLink: string;
+  fileSize: string | null;
   toggleRenameModal: () => void;
   handleOkAction: () => void;
   toggleFileInformationModal: () => void;
@@ -39,18 +43,23 @@ type RecentFilesModalsProps = {
   shareSubmitClickHandler: () => void;
   showReplaceModal: boolean;
   showSuccessModal: boolean;
+  showMoveToFolderModal: boolean;
+  showRemoveFromFolderModal: boolean;
   toggleReplaceModal: () => void;
+  toggleMovetoFolderModal: () => void;
   toggleSuccessModal: () => void;
   toggleDeleteConfirmationModal: () => void;
   toggleRestoreModal: () => void;
   toggleReplaceSuccessModal: () => void;
-
+  toggleRemoveFromFolderModal: () => void;
   fetchAllFiles: () => void;
+  fetchFolders: () => void;
   selectedFileDetails: File | undefined;
 };
 
 const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   fileId,
+  folderId,
   showLinkModal,
   selectedLink,
   setShowLinkModal,
@@ -60,6 +69,7 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   toggleDeleteModal,
   showRenameModal,
   fileName,
+  fileSize,
   toggleRenameModal,
   toggleFileInformationModal,
   showFileInformationModal,
@@ -80,6 +90,11 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   toggleRestoreModal,
   showDeleteConfrimationModal,
   showRestoreModal,
+  showMoveToFolderModal,
+  toggleMovetoFolderModal,
+  showRemoveFromFolderModal,
+  toggleRemoveFromFolderModal,
+  fetchFolders,
 }) => {
   return (
     <>
@@ -142,6 +157,8 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
           submitButtonText="Yes, Restore"
           onClose={toggleRestoreModal}
           fileId={fileId}
+          fileName={fileName}
+          fileSize={fileSize}
           isOpen={showRestoreModal}
           fetchAllFiles={fetchAllFiles}
         />
@@ -183,6 +200,25 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
           onClose={toggleSuccessModal}
           onSubmit={() => console.log("Continue after success")}
           fileDetails={selectedFileDetails}
+        />
+      )}
+      {showMoveToFolderModal && (
+        <MoveToFolderModal
+          isOpen={showMoveToFolderModal}
+          onClose={toggleMovetoFolderModal}
+          fileId={fileId}
+        />
+      )}
+      {showRemoveFromFolderModal && (
+        <RemoveFromFolderModal
+          heading="Remove File?"
+          fileId={fileId}
+          folderId={folderId}
+          description="Are you sure you want to remove the file from this folder? It will only be removed from the current folder."
+          submitButtonText="Remove"
+          onClose={toggleRemoveFromFolderModal}
+          isOpen={showRemoveFromFolderModal}
+          fetchFolders={fetchFolders}
         />
       )}
     </>

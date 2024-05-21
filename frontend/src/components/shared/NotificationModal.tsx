@@ -60,7 +60,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           )}
           {heading && <h3 className={`${headingStyles}`}>{heading}</h3>}
           {description && (
-            <p className="text-gray-600 mt-2 text-sm">{description}</p>
+            <p className="text-gray-600  mt-2 text-sm">{description}</p>
           )}
 
           {/* Children elements rendered here */}

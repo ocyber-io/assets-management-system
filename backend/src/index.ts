@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import path from "path"; // Import path for resolving paths
 import userRoutes from "./routes/userRoutes";
 import fileRoutes from "./routes/fileRoutes";
+import folderRoutes from "./routes/folderRoutes";
 
 dotenv.config();
 
@@ -37,7 +38,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/files", fileRoutes);
-
+app.use("/api/folders", folderRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
