@@ -9,6 +9,7 @@ import TopBar from "./Navbar/TopBar";
 import NewFolderModal from "./shared/NewFolderModal";
 import { UserInfo } from "../Types";
 import { jwtDecode } from "jwt-decode";
+import { getFoldersByUserId } from "../reducers/folder/folderThunk";
 
 const Layout: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -44,6 +45,20 @@ const Layout: React.FC = () => {
 
   useEffect(() => {
     if (userId) dispatch(fetchFiles(userId));
+  }, [dispatch, userId]);
+
+  const fetchFolders = async () => {
+    if (userId) {
+      try {
+        await dispatch(getFoldersByUserId(userId));
+      } catch (error) {
+        console.error("Error fetching folders:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchFolders();
   }, [dispatch, userId]);
 
   return (

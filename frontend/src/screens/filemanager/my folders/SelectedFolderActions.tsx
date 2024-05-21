@@ -1,26 +1,28 @@
 import React from "react";
 import { RxCross1 } from "react-icons/rx";
 import {
-  disableIcon,
   downloadIcon,
   moreIcon,
   movetobinIcon,
-  renameIcon,
+  restoreIcon,
   //   restoreIcon,
   selectAllIcon,
 } from "../../../helpers/dropdownIcons";
+import { renameFolderIcon } from "../../../helpers/icons";
 
 interface SelectedFolderActionsProps {
   selectedFoldersCount: number;
   deselectAll: () => void;
   selectAll: () => void;
   selectedFolders: string[];
+  fromTrash?: boolean;
 }
 
 const SelectedFolderActions: React.FC<SelectedFolderActionsProps> = ({
   selectedFoldersCount,
   deselectAll,
   selectAll,
+  fromTrash,
 }) => {
   return (
     <>
@@ -38,31 +40,28 @@ const SelectedFolderActions: React.FC<SelectedFolderActionsProps> = ({
                 {selectedFoldersCount} Selected
               </span>
               <div className="flex bg-blue-50 p-2 rounded w-full">
-                <img
-                  src={downloadIcon}
-                  className="ml-4 cursor-pointer"
-                  alt="Download"
-                />
-                <img
-                  src={renameIcon}
-                  className={`ml-4 ${
-                    selectedFoldersCount > 1 ? "hidden" : "cursor-pointer"
-                  }`}
-                  alt="Rename"
-                  onClick={
-                    selectedFoldersCount === 1
-                      ? () => console.log("Rename")
-                      : undefined
-                  }
-                />
-                {/* <img
-                  src={restoreIcon}
-                  className="ml-4 cursor-pointer"
-                  alt="Restore"
-                  onClick={() => {
-                    // Handle Restore action
-                  }}
-                /> */}
+                {!fromTrash && (
+                  <>
+                    <img
+                      src={downloadIcon}
+                      className="ml-4 cursor-pointer"
+                      alt="Download"
+                    />
+                    <img
+                      src={renameFolderIcon}
+                      className={`ml-4 ${
+                        selectedFoldersCount > 1 ? "hidden" : "cursor-pointer"
+                      }`}
+                      alt="Rename"
+                      onClick={
+                        selectedFoldersCount === 1
+                          ? () => console.log("Rename")
+                          : undefined
+                      }
+                    />
+                  </>
+                )}
+
                 <img
                   src={movetobinIcon}
                   className="ml-4 cursor-pointer"
@@ -71,14 +70,16 @@ const SelectedFolderActions: React.FC<SelectedFolderActionsProps> = ({
                     // Handle Move to bin action
                   }}
                 />
-                <img
-                  src={disableIcon}
-                  className="ml-4 cursor-pointer"
-                  alt="Disable"
-                  onClick={() => {
-                    // Handle Disable action
-                  }}
-                />
+                {fromTrash && (
+                  <img
+                    src={restoreIcon}
+                    className="ml-4 cursor-pointer"
+                    alt="Restore folder"
+                    onClick={() => {
+                      // Handle Move to bin action
+                    }}
+                  />
+                )}
               </div>
             </div>
 

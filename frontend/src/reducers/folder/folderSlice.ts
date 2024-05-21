@@ -9,6 +9,7 @@ import {
   deleteFolder,
   getFolderById,
   getFoldersByUserId,
+  restoreFolder,
   updateFolder,
 } from "./folderThunk";
 
@@ -141,6 +142,28 @@ const folderSlice = createSlice({
       .addCase(getFolderById.rejected, (state, action) => {
         state.error = action.payload as string;
         state.status = "failed";
+      })
+      .addCase(restoreFolder.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(
+        restoreFolder.fulfilled,
+        (state, action: PayloadAction<Folder>) => {
+          const restoredFolderIndex = state.folders.findIndex(
+            (folder) => folder._id === action.payload._id
+          );
+          if (restoredFolderIndex !== -1) {
+            state.folders[restoredFolderIndex] = action.payload;
+          } else {
+            state.folders.push(action.payload);
+          }
+          state.status = "idle";
+        }
+      )
+      .addCase(restoreFolder.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.status = "failed";
       });
   },
 });
@@ -149,5 +172,6 @@ export const selectFolders = (state: RootState) => state.folders.folders;
 export const selectFilesByFolderId = (folderId: string) => (state: RootState) =>
   state.folders.files[folderId] || []; // Selector to get files by folder ID
 export const selectFolder = (state: RootState) => state.folders.folder;
+export const selectFolderLoading = (state: RootState) => state.folders.status;
 
 export default folderSlice.reducer;

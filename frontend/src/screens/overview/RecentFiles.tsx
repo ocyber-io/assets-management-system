@@ -21,7 +21,7 @@ type RecentFilesProps = {
   fromFavorites?: boolean;
   fromFolders?: boolean;
   folderId?: string;
-  fetchFolders: () => void;
+  fetchFolders?: () => void;
 };
 
 const RecentFiles: React.FC<RecentFilesProps> = ({

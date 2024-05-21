@@ -5,6 +5,8 @@ import User from "../models/userSchema";
 import { formatFileSize, sizeToBytes } from "../utils/helpers";
 import path from "path";
 import fs from "fs";
+import FolderModel from "../models/folderSchema";
+import mongoose from "mongoose";
 
 //---------------------------------------------------------------
 //Controller for Adding a file
@@ -185,6 +187,21 @@ export const deleteFile = async (req: Request, res: Response) => {
         user.usedStorage -= fileSizeInBytes;
         user.remainingStorage = 107374182400 - user.usedStorage; // Assuming total storage is a constant
         await user.save();
+      }
+
+      // Remove the file from its folder
+      const objectId = new mongoose.Types.ObjectId(fileId);
+      const result = await FolderModel.updateOne(
+        { files: objectId },
+        { $pull: { files: objectId } }
+      );
+
+      // Check if the update was successful
+      const updatedFolder = await FolderModel.findOne({ files: objectId });
+      if (updatedFolder) {
+        console.error("Failed to remove file from folder files array.");
+      } else {
+        console.log("File successfully removed from folder files array.");
       }
 
       // Delete the file record

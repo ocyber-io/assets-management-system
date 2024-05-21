@@ -10,6 +10,7 @@ type DeleteConfirmationModalProps = {
   heading?: string;
   description?: string;
   fetchAllFiles: () => void;
+  fetchFolders?: () => void;
   fileId: string | null;
   submitButtonText: string;
   onClose: () => void;
@@ -24,6 +25,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   isOpen,
   fileId,
   fetchAllFiles,
+  fetchFolders,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -41,6 +43,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
       await dispatch(deleteFile(fileId)).unwrap();
       showSuccessToast("File deleted successfully");
       fetchAllFiles();
+      fetchFolders && fetchFolders();
       onClose();
     } catch (error: any) {
       showErrorToast(error || "An error occurred while deleting the file.");

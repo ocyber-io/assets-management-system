@@ -129,3 +129,19 @@ export const getFolderById = createAsyncThunk(
     }
   }
 );
+
+export const restoreFolder = createAsyncThunk(
+  "folders/restoreFolder",
+  async (folderId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${SERVER_URL}/api/folders/${folderId}/restore`
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error restoring folder"
+      );
+    }
+  }
+);

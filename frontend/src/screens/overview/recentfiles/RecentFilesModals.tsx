@@ -53,7 +53,7 @@ type RecentFilesModalsProps = {
   toggleReplaceSuccessModal: () => void;
   toggleRemoveFromFolderModal: () => void;
   fetchAllFiles: () => void;
-  fetchFolders: () => void;
+  fetchFolders?: () => void;
   selectedFileDetails: File | undefined;
 };
 
@@ -148,6 +148,7 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
           fileId={fileId}
           isOpen={showDeleteConfrimationModal}
           fetchAllFiles={fetchAllFiles}
+          fetchFolders={fetchFolders}
         />
       )}
       {showRestoreModal && (

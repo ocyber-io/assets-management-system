@@ -13,7 +13,7 @@ type RemoveFromFolderModalProps = {
   description?: string;
   submitButtonText: string;
   onClose: () => void;
-  fetchFolders: () => void;
+  fetchFolders?: () => void;
   isOpen: boolean;
 };
 
@@ -44,7 +44,8 @@ const RemoveFromFolderModal: React.FC<RemoveFromFolderModalProps> = ({
       await dispatch(deleteFileFromFolder({ folderId, fileId })).unwrap();
       showSuccessToast("File removed from folder successfully");
       onClose();
-      fetchFolders();
+      // Check if fetchFolders exists before invoking it
+      fetchFolders && fetchFolders();
     } catch (error: any) {
       showErrorToast(
         error.message ||
@@ -52,7 +53,6 @@ const RemoveFromFolderModal: React.FC<RemoveFromFolderModalProps> = ({
       );
     }
   };
-
   return (
     <NotificationModal
       isOpen={isOpen}

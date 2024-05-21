@@ -3,6 +3,7 @@ import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { selectFiles } from "../../reducers/file/fileSlice";
+import { selectFolders } from "../../reducers/folder/folderSlice";
 
 type SubItem = {
   id: string;
@@ -30,6 +31,18 @@ const NavLinkItem: React.FC<NavLinkItemProps> = ({ item }) => {
   const [showSubItems, setShowSubItems] = useState<boolean>(false);
 
   const files = useSelector(selectFiles);
+  const folders = useSelector(selectFolders);
+
+  // Count of deleted files
+  const deletedFilesCount = files.filter((file) => file.isDeleted).length;
+
+  // Count of deleted folders
+  const deletedFoldersCount = folders.filter(
+    (folder) => folder.isDeleted
+  ).length;
+
+  // Combined count of deleted items
+  const combinedDeletedCount = deletedFilesCount + deletedFoldersCount;
 
   const getNavLinkClass = ({ isActive }: NavLinkProps) => {
     let baseClass =
@@ -83,7 +96,7 @@ const NavLinkItem: React.FC<NavLinkItemProps> = ({ item }) => {
               >
                 {item.countKey === "recentFiles"
                   ? files.filter((file) => !file.isDeleted).length
-                  : files.filter((file) => file.isDeleted).length}
+                  : combinedDeletedCount}
               </span>
             )}
           </>

@@ -10,6 +10,7 @@ import { AppDispatch } from "../../stores/store";
 import NotificationModal from "./NotificationModal";
 import { jwtDecode } from "jwt-decode";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import { fetchFiles } from "../../reducers/file/fileThunks";
 
 type MoveFileModalProps = {
   isOpen: boolean;
@@ -48,13 +49,15 @@ const MoveToFolderModal: React.FC<MoveFileModalProps> = ({
     }
   }, [token]);
 
+  const fetchFoldersAndFiles = async () => {
+    if (userId) {
+      await dispatch(getFoldersByUserId(userId));
+      await dispatch(fetchFiles(userId));
+    }
+  };
+
   useEffect(() => {
-    const fetchFolders = async () => {
-      if (userId) {
-        await dispatch(getFoldersByUserId(userId));
-      }
-    };
-    fetchFolders();
+    fetchFoldersAndFiles();
   }, [dispatch, userId]);
 
   const handleMoveFile = async () => {
@@ -65,6 +68,7 @@ const MoveToFolderModal: React.FC<MoveFileModalProps> = ({
         addFileToFolder({ folderId: selectedFolderId, fileId })
       ).unwrap();
       showSuccessToast("File moved successfully");
+      fetchFoldersAndFiles();
       onClose();
     } catch (error: any) {
       const errorMessage =
@@ -102,12 +106,14 @@ const MoveToFolderModal: React.FC<MoveFileModalProps> = ({
             <option value="" className="">
               Select Folder
             </option>
-            {folders.map((folder) => (
-              <option key={folder._id} value={folder._id}>
-                <FaFolderOpen className="inline-block mr-2 py-4" />
-                {folder.folderName}
-              </option>
-            ))}
+            {folders
+              .filter((folder) => folder.isDeleted === false)
+              .map((folder) => (
+                <option key={folder._id} value={folder._id}>
+                  <FaFolderOpen className="inline-block mr-2 py-4" />
+                  {folder.folderName}
+                </option>
+              ))}
           </select>
           <svg
             className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none h-5 w-5 text-gray-400"
