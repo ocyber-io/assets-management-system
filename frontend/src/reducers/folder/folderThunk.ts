@@ -44,7 +44,7 @@ export const addFileToFolder = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         `${SERVER_URL}/api/folders/${folderId}/files`,
         {
           fileId,
@@ -66,9 +66,11 @@ export const deleteFileFromFolder = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axios.delete(
-        `${SERVER_URL}/api/folders/${folderId}/files/${fileId}`
-      );
+      const response = await axios.request({
+        url: `${SERVER_URL}/api/folders/${folderId}/files`,
+        method: "DELETE",
+        data: { fileId },
+      });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(

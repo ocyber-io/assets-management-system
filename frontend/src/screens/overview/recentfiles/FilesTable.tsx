@@ -38,13 +38,16 @@ type FilesTableProps = {
   deleteConfirmationHandler: (fileId: string) => void;
   restoreHandler: (fileId: string, filename: string, filesize: string) => void;
   enableHandler: (fileId: string) => void;
+  removeFromFolderHandler: (fileId: string) => void;
   fileInformationHandler: (fileDetails: File) => void;
   shareHandler: (fileLink: string) => void;
+  moveToFolderHandler: (fileLink: string) => void;
   replaceHandler: (fileDetails: File) => void;
   disableHandler: (id: string) => void;
   showFullLink?: boolean;
   fromTrash?: boolean;
   fromFavorites?: boolean;
+  fromFolders?: boolean;
 };
 
 const FilesTable: React.FC<FilesTableProps> = ({
@@ -71,6 +74,9 @@ const FilesTable: React.FC<FilesTableProps> = ({
   fromFavorites,
   deleteConfirmationHandler,
   restoreHandler,
+  moveToFolderHandler,
+  fromFolders,
+  removeFromFolderHandler,
 }) => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const token = localStorage.getItem("token");
@@ -306,8 +312,10 @@ const FilesTable: React.FC<FilesTableProps> = ({
                               deleteConfirmationHandler
                             }
                             restoreHandler={restoreHandler}
+                            removeFromFolderHandler={removeFromFolderHandler}
                             fromTrash={fromTrash}
                             fromFavorites={fromFavorites}
+                            fromFolders={fromFolders}
                             toggleFavoriteFiles={toggleFavoriteFiles}
                           />
                         )}
@@ -341,9 +349,12 @@ const FilesTable: React.FC<FilesTableProps> = ({
                         copyToClipboard={copyToClipboard}
                         fromTrash={fromTrash}
                         fromFavorites={fromFavorites}
+                        moveToFolderHandler={moveToFolderHandler}
                         deleteConfirmationHandler={deleteConfirmationHandler}
                         restoreHandler={restoreHandler}
+                        removeFromFolderHandler={removeFromFolderHandler}
                         toggleFavoriteFiles={toggleFavoriteFiles}
+                        fromFolders={fromFolders}
                       />
                     )}
                   </td>

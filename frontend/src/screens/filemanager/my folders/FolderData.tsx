@@ -29,16 +29,17 @@ const FolderData: React.FC = () => {
     }
   }, [token]);
 
-  useEffect(() => {
-    const fetchFolders = async () => {
-      if (userId) {
-        try {
-          await dispatch(getFoldersByUserId(userId));
-        } catch (error) {
-          console.error("Error fetching folders:", error);
-        }
+  const fetchFolders = async () => {
+    if (userId) {
+      try {
+        await dispatch(getFoldersByUserId(userId));
+      } catch (error) {
+        console.error("Error fetching folders:", error);
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchFolders();
   }, [dispatch, userId]);
 
@@ -57,7 +58,12 @@ const FolderData: React.FC = () => {
 
   return (
     <div className="mt-6">
-      <RecentFiles tagFiles={undeletedFiles} />
+      <RecentFiles
+        tagFiles={undeletedFiles}
+        fromFolders={true}
+        folderId={folderId}
+        fetchFolders={fetchFolders}
+      />
     </div>
   ); // Adjust the JSX as needed
 };

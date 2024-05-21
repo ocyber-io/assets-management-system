@@ -4,6 +4,8 @@ import { BsFillFolderFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import DeleteFolderModal from "../../../components/shared/DeleteFolderModal";
+import ChangeColorModal from "../../../components/shared/folder-modals/ChangeColorModal";
+import RenameFolderModal from "../../../components/shared/folder-modals/RenameFolder";
 import {
   disableIcon,
   downloadIcon,
@@ -17,8 +19,6 @@ import { AppDispatch } from "../../../stores/store";
 import { formatDate } from "../../../utils/helpers";
 import FoldersDropdown from "./FoldersDropDown";
 import SelectedFolderActions from "./SelectedFolderActions";
-import RenameFolderModal from "../../../components/shared/folder-modals/RenameFolder";
-import ChangeColorModal from "../../../components/shared/folder-modals/ChangeColorModal";
 
 const MyFolders: React.FC = () => {
   const navigate = useNavigate();
@@ -226,6 +226,7 @@ const MyFolders: React.FC = () => {
                           alt="Rename"
                         />
                       </button>
+
                       <button
                         aria-label="Change folder color"
                         className="mr-2"

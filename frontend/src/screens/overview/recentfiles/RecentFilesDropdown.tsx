@@ -19,6 +19,7 @@ import {
   unstarIcon,
 } from "../../../helpers/dropdownIcons";
 import { File } from "../../../Types";
+import { removeFromFolderIcon } from "../../../helpers/icons";
 
 // Define an interface for submenu items
 type SubMenuItem = {
@@ -46,7 +47,9 @@ interface RecentDropdownProps {
   deleteHandler: (fileId: string) => void;
   renameHandler: (filename: string, fileId: string) => void;
   disableHandler: (fileId: string) => void;
+  moveToFolderHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
+  removeFromFolderHandler: (fileId: string) => void;
   copyToClipboard: (link: string) => void;
   deleteConfirmationHandler: (fileId: string) => void;
   restoreHandler: (fileId: string, filename: string, filesize: string) => void;
@@ -56,6 +59,7 @@ interface RecentDropdownProps {
   ) => void;
   fromTrash?: boolean;
   fromFavorites?: boolean;
+  fromFolders?: boolean;
 }
 
 const subItems: MenuItem[] = [
@@ -80,7 +84,7 @@ const subItems: MenuItem[] = [
   {
     key: "share",
     label: "Share",
-    icon: organizeIcon,
+    icon: shareIcon,
     subItems: [
       { label: "Share", icon: shareIcon },
       { label: "Copy Link", icon: copylinkIcon },
@@ -128,6 +132,9 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
   deleteConfirmationHandler,
   restoreHandler,
   toggleFavoriteFiles,
+  moveToFolderHandler,
+  removeFromFolderHandler,
+  fromFolders,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
@@ -178,7 +185,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
             isOpen ? "block" : "hidden"
           } divide-y divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md ${
             !fromTrash ? "w-64" : "w-24"
-          } dark:bg-gray-700`}
+          } ${fromFolders ? "w-72" : "w-64"} dark:bg-gray-700`}
           style={{ right: "34px", bottom: "0" }}
         >
           <div className="flex">
@@ -251,7 +258,16 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                 />
               </>
             )}
-
+            {fromFolders && (
+              <img
+                src={removeFromFolderIcon}
+                className="ml-4 cursor-pointer opacity-60"
+                alt="removeFromFolder"
+                onClick={() => {
+                  removeFromFolderHandler(file._id);
+                }}
+              />
+            )}
             {fromTrash && (
               <img
                 src={restoreIcon}
@@ -374,6 +390,9 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                                 toggleDropdown();
                               } else if (subItem.label === "Add to Favorites") {
                                 toggleFavoriteFiles(file._id, file.isFavorite);
+                                toggleDropdown();
+                              } else if (subItem.label === "Move") {
+                                moveToFolderHandler(file._id);
                                 toggleDropdown();
                               } else {
                                 // For other subItems, directly execute their actions

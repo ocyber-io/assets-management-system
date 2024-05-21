@@ -19,6 +19,9 @@ type RecentFilesProps = {
   showFullLink?: boolean;
   fromTrash?: boolean;
   fromFavorites?: boolean;
+  fromFolders?: boolean;
+  folderId?: string;
+  fetchFolders: () => void;
 };
 
 const RecentFiles: React.FC<RecentFilesProps> = ({
@@ -29,6 +32,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   files,
   fromTrash,
   fromFavorites,
+  fromFolders,
+  folderId,
+  fetchFolders,
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
@@ -47,6 +53,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [showRenameModal, setShowRenameModal] = useState<boolean>(false);
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showMoveToFolderModal, setShowMoveToFolderModal] = useState(false);
+  const [showRemoveFromFolderModal, setShowRemoveFromFolderModal] =
+    useState(false);
   const [showReplaceModal, setShowReplaceModal] = useState(false);
   const [selectedLink, setSelectedLink] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>("");
@@ -114,6 +123,12 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   };
   const toggleSuccessModal = () => {
     setShowSuccessModal(!showSuccessModal);
+  };
+  const toggleMoveToFolderModal = () => {
+    setShowMoveToFolderModal(!showMoveToFolderModal);
+  };
+  const toggleRemoveFromFolderModal = () => {
+    setShowRemoveFromFolderModal(!showRemoveFromFolderModal);
   };
 
   useEffect(() => {
@@ -218,6 +233,10 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     toggleDeleteConfrimationModal();
     setFileId(fileId);
   };
+  const moveToFolderHandler = (fileId: string) => {
+    toggleMoveToFolderModal();
+    setFileId(fileId);
+  };
   const restoreHandler = (
     fileId: string,
     filename: string,
@@ -248,6 +267,10 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const replaceHandler = (fileDetails: File) => {
     setSelectedFileDetails(fileDetails);
     toggleReplaceModal();
+  };
+  const removeFromFolderHandler = (fileId: string) => {
+    setFileId(fileId);
+    toggleRemoveFromFolderModal();
   };
 
   const shareSubmitClickHandler = () => {
@@ -303,9 +326,12 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           fileInformationHandler={fileInformationHandler}
           shareHandler={shareHandler}
           replaceHandler={replaceHandler}
+          moveToFolderHandler={moveToFolderHandler}
+          removeFromFolderHandler={removeFromFolderHandler}
           showFullLink={showFullLink}
           fromTrash={fromTrash}
           fromFavorites={fromFavorites}
+          fromFolders={fromFolders}
         />
         {files && files.length > filesPerPage && (
           <Pagination
@@ -329,6 +355,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         fileName={fileName}
         fileId={fileId}
         fileSize={fileSize}
+        folderId={folderId}
         toggleRenameModal={toggleRenameModal}
         handleOkAction={handleOkAction}
         showFileInformationModal={showFileInformationModal}
@@ -350,6 +377,11 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         toggleDeleteConfirmationModal={toggleDeleteConfrimationModal}
         showRestoreModal={showRestoreModal}
         toggleRestoreModal={toggleRestoreModal}
+        showMoveToFolderModal={showMoveToFolderModal}
+        toggleMovetoFolderModal={toggleMoveToFolderModal}
+        showRemoveFromFolderModal={showRemoveFromFolderModal}
+        toggleRemoveFromFolderModal={toggleRemoveFromFolderModal}
+        fetchFolders={fetchFolders}
       />
     </div>
   );
