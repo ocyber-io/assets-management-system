@@ -174,10 +174,20 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
   };
 
   const selectAll = () => {
-    const allFolderIds = folders.map((folder) => folder._id);
-    setSelectedFolders(allFolderIds);
+    let filteredFolderIds;
+    if (fromTrash) {
+      // Select only folders from trash whose isDeleted is true
+      filteredFolderIds = folders
+        .filter((folder) => folder.isDeleted)
+        .map((folder) => folder._id);
+    } else {
+      // Select only folders not from trash whose isDeleted is false
+      filteredFolderIds = folders
+        .filter((folder) => !folder.isDeleted)
+        .map((folder) => folder._id);
+    }
+    setSelectedFolders(filteredFolderIds);
   };
-
   const handleItemHover = (folderId: string) => {
     setHoveredItemId(folderId);
   };
