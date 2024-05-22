@@ -21,7 +21,7 @@ type RecentFilesProps = {
   fromFavorites?: boolean;
   fromFolders?: boolean;
   folderId?: string;
-  fetchFolders: () => void;
+  fetchFolders?: () => void;
 };
 
 const RecentFiles: React.FC<RecentFilesProps> = ({
@@ -89,9 +89,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     if (userId) dispatch(fetchFiles(userId));
   };
 
-  // useEffect(() => {
-  //   fetchAllFiles();
-  // }, [dispatch, userId]);
+  useEffect(() => {
+    fetchAllFiles();
+  }, [dispatch, userId]);
 
   const toggleDisableModal = () => {
     setShowWarningModal(!showWarningModal);
@@ -259,9 +259,10 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     toggleFileInformationModal();
   };
 
-  const shareHandler = (fileLink: string) => {
+  const shareHandler = (fileLink: string, fileId: string) => {
     toggleShareModal();
     setFileLink(fileLink);
+    setFileId(fileId);
   };
 
   const replaceHandler = (fileDetails: File) => {

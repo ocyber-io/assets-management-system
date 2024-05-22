@@ -12,6 +12,8 @@ type DeleteFolderModalProps = {
   folderId: string | null;
   submitButtonText: string;
   onClose: () => void;
+  fetchFolders: () => void;
+  fetchAllFiles: () => void;
   isOpen: boolean;
 };
 
@@ -22,6 +24,8 @@ const DeleteFolderModal: React.FC<DeleteFolderModalProps> = ({
   onClose,
   isOpen,
   folderId,
+  fetchFolders,
+  fetchAllFiles,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -33,7 +37,9 @@ const DeleteFolderModal: React.FC<DeleteFolderModalProps> = ({
     if (!folderId) return;
     try {
       await dispatch(deleteFolder(folderId)).unwrap();
-      showSuccessToast("Folder deleted successfully");
+      showSuccessToast("Folder moved to bin successfully");
+      fetchFolders();
+      fetchAllFiles();
       onClose();
     } catch (error: any) {
       showErrorToast(error || "An error occurred while moving the file.");

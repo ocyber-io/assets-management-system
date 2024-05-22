@@ -1,30 +1,35 @@
 import React, { useState } from "react";
-import NotificationModal from "./NotificationModal";
+import { useDispatch } from "react-redux";
 import {
   canEditIcon,
+  canViewIcon,
+  cantEditIcon,
+  copylinkIcon,
   downArrowIcon,
   newMessageIcon,
   userIcon,
-  cantEditIcon,
-  canViewIcon,
   viewIcon,
-  copylinkIcon,
 } from "../../helpers/icons";
+import { sendFileByEmail } from "../../reducers/file/fileThunks";
+import { AppDispatch } from "../../stores/store";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import NotificationModal from "./NotificationModal";
 
 type ShareProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: () => void;
   fileLink: string;
+  fileId: string | null;
 };
 
 const ShareModal: React.FC<ShareProps> = ({
   isOpen,
   onClose,
-  onSubmit,
   fileLink,
+  fileId,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const copyToClipboard = (link: string) => {
     navigator.clipboard.writeText(link).then(
       () => {
@@ -42,6 +47,8 @@ const ShareModal: React.FC<ShareProps> = ({
 
   const [permission, setPermission] = useState<string>("Can edit");
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
 
   const permissions: { label: string; description: string; icon: string }[] = [
     { label: "Can edit", description: "Make any changes", icon: canEditIcon },
@@ -52,6 +59,28 @@ const ShareModal: React.FC<ShareProps> = ({
       icon: cantEditIcon,
     },
   ];
+
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const submitHandler = () => {
+    if (!fileId) return;
+
+    if (!isValidEmail(email)) {
+      showErrorToast("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      dispatch(sendFileByEmail({ fileId, email, message }));
+      showSuccessToast("File shared successfully");
+      onClose();
+    } catch (error: any) {
+      showErrorToast(error.message);
+    }
+  };
 
   return (
     <div>
@@ -65,7 +94,7 @@ const ShareModal: React.FC<ShareProps> = ({
         cancelButtonText="Copy Link"
         cancelButtonIcon={copylinkIcon}
         isOpen={isOpen}
-        onSubmit={onSubmit}
+        onSubmit={submitHandler}
         onCancel={cancelHandler}
       >
         <div className="flex items-center border-2 border-gray-200 rounded mt-4 focus-within:border-2 focus-within:border-blue-500">
@@ -74,6 +103,8 @@ const ShareModal: React.FC<ShareProps> = ({
             type="text"
             placeholder="Enter user email"
             className="flex-1 outline-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <button
             onClick={() => setShowDropdown(!showDropdown)}
@@ -117,6 +148,8 @@ const ShareModal: React.FC<ShareProps> = ({
             className="resize-none rounded border-2 border-gray-200 w-full focus:outline-blue-500 pl-10 p-2"
             placeholder="Add a message"
             rows={4}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
           ></textarea>
         </div>
       </NotificationModal>

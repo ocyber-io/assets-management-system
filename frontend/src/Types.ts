@@ -43,5 +43,6 @@ export type Folder = {
   userId: string;
   createdAt: string;
   updatedAt: string;
-  files: File[]; // Assuming file IDs are stored as strings
+  files: File[];
+  isDeleted: boolean; // Assuming file IDs are stored as strings
 };

@@ -2,6 +2,7 @@ import React from "react";
 import { FaTimes } from "react-icons/fa"; // Ensure you have react-icons installed
 import { useSelector } from "react-redux";
 import { selectLoading } from "../../reducers/file/fileSlice";
+import { selectFolderLoading } from "../../reducers/folder/folderSlice";
 
 type NotificationModalProps = {
   isOpen: boolean;
@@ -42,7 +43,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 }) => {
   if (!isOpen) return null;
   const loading = useSelector(selectLoading);
-
+  const folderLoading = useSelector(selectFolderLoading);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50 ">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative max-h-screen overflow-y-scroll no-scrollbar">
@@ -94,9 +95,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             disabled={loading}
           >
             {submitButtonText}
-            {loading && (
-              <div className="ml-2 w-4 h-4 border-2 border-t-2 mt-1 border-white rounded-full animate-spin"></div>
-            )}
+            {loading ||
+              (folderLoading === "loading" && (
+                <div className="ml-2 w-4 h-4 border-2 border-t-2 mt-1 border-white rounded-full animate-spin"></div>
+              ))}
           </button>
         </div>
       </div>

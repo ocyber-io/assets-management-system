@@ -11,6 +11,7 @@ import {
   replaceFile,
   restoreFile,
   restoreMultipleFiles,
+  sendFileByEmail,
   toggleFileDisable,
   toggleFileFavorite,
   toggleMultipleFilesFavorite,
@@ -225,6 +226,17 @@ const fileSlice = createSlice({
         state.loading = false;
         state.error =
           action.error.message || "Failed to disable multiple files";
+      })
+      .addCase(sendFileByEmail.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(sendFileByEmail.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(sendFileByEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to send file by email";
       });
   },
 });

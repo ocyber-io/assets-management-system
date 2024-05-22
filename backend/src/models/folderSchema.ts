@@ -5,6 +5,7 @@ export interface IFolder extends Document {
   folderColor: string;
   userId: mongoose.Types.ObjectId;
   files: mongoose.Types.ObjectId[];
+  isDeleted: boolean;
 }
 
 const folderSchema: Schema<IFolder> = new Schema(
@@ -17,6 +18,7 @@ const folderSchema: Schema<IFolder> = new Schema(
       required: true,
     },
     files: [{ type: mongoose.Schema.Types.ObjectId, ref: "File" }],
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

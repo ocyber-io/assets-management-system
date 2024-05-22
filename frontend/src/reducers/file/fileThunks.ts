@@ -197,3 +197,25 @@ export const disableMultipleFiles = createAsyncThunk(
     }
   }
 );
+
+export const sendFileByEmail = createAsyncThunk(
+  "files/sendFileByEmail",
+  async (
+    {
+      fileId,
+      email,
+      message,
+    }: { fileId: string; email: string; message: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.post(
+        `${SERVER_URL}/api/files/sendByEmail/${fileId}`,
+        { email, message }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);

@@ -53,7 +53,7 @@ type RecentFilesModalsProps = {
   toggleReplaceSuccessModal: () => void;
   toggleRemoveFromFolderModal: () => void;
   fetchAllFiles: () => void;
-  fetchFolders: () => void;
+  fetchFolders?: () => void;
   selectedFileDetails: File | undefined;
 };
 
@@ -75,7 +75,6 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   showFileInformationModal,
   toggleShareModal,
   showShareModal,
-  shareSubmitClickHandler,
   showReplaceModal,
   showSuccessModal,
   toggleReplaceModal,
@@ -148,6 +147,7 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
           fileId={fileId}
           isOpen={showDeleteConfrimationModal}
           fetchAllFiles={fetchAllFiles}
+          fetchFolders={fetchFolders}
         />
       )}
       {showRestoreModal && (
@@ -176,8 +176,8 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
         <ShareModal
           isOpen={showShareModal}
           onClose={toggleShareModal}
-          onSubmit={shareSubmitClickHandler}
           fileLink={fileLink}
+          fileId={fileId}
         />
       )}
       {showFileInformationModal && sampleFileDetailsData && (
@@ -192,6 +192,7 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
           onClose={toggleReplaceModal}
           fileDetails={selectedFileDetails}
           toggleReplaceSuccessModal={toggleReplaceSuccessModal}
+          fetchAllFiles={fetchAllFiles}
         />
       )}
       {showSuccessModal && (

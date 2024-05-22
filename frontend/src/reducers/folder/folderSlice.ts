@@ -7,20 +7,26 @@ import {
   addFolder,
   deleteFileFromFolder,
   deleteFolder,
+  deleteMultipleFolders,
+  getFolderById,
   getFoldersByUserId,
+  restoreFolder,
+  restoreMultipleFolders,
   updateFolder,
 } from "./folderThunk";
 
 interface FolderState {
   folders: Folder[];
-  files: { [folderId: string]: File[] }; // Changed to an object to store files by folder ID
+  folder: Folder | null;
+  files: { [folderId: string]: File[] };
   status: "idle" | "loading" | "failed";
   error: string | null;
 }
 
 const initialState: FolderState = {
   folders: [],
-  files: {}, // Initialize as an empty object
+  folder: null, // Initialize as null
+  files: {},
   status: "idle",
   error: null,
 };
@@ -123,6 +129,80 @@ const folderSlice = createSlice({
       .addCase(updateFolder.rejected, (state, action) => {
         state.error = action.payload as string;
         state.status = "failed";
+      })
+      .addCase(getFolderById.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(
+        getFolderById.fulfilled,
+        (state, action: PayloadAction<Folder>) => {
+          state.folder = action.payload;
+          state.status = "idle";
+        }
+      )
+      .addCase(getFolderById.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.status = "failed";
+      })
+      .addCase(restoreFolder.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(
+        restoreFolder.fulfilled,
+        (state, action: PayloadAction<Folder>) => {
+          const restoredFolderIndex = state.folders.findIndex(
+            (folder) => folder._id === action.payload._id
+          );
+          if (restoredFolderIndex !== -1) {
+            state.folders[restoredFolderIndex] = action.payload;
+          } else {
+            state.folders.push(action.payload);
+          }
+          state.status = "idle";
+        }
+      )
+      .addCase(restoreFolder.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.status = "failed";
+      })
+      .addCase(deleteMultipleFolders.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(
+        deleteMultipleFolders.fulfilled,
+        (state, action: PayloadAction<string[]>) => {
+          state.folders = state.folders.filter(
+            (folder) => !action.payload.includes(folder._id)
+          );
+          state.status = "idle";
+        }
+      )
+      .addCase(deleteMultipleFolders.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.status = "failed";
+      })
+      // New cases for restoreMultipleFolders
+      .addCase(restoreMultipleFolders.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(
+        restoreMultipleFolders.fulfilled,
+        (state, action: PayloadAction<string[]>) => {
+          state.folders = state.folders.map((folder) =>
+            action.payload.includes(folder._id)
+              ? { ...folder, isDeleted: false }
+              : folder
+          );
+          state.status = "idle";
+        }
+      )
+      .addCase(restoreMultipleFolders.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.status = "failed";
       });
   },
 });
@@ -130,5 +210,7 @@ const folderSlice = createSlice({
 export const selectFolders = (state: RootState) => state.folders.folders;
 export const selectFilesByFolderId = (folderId: string) => (state: RootState) =>
   state.folders.files[folderId] || []; // Selector to get files by folder ID
+export const selectFolder = (state: RootState) => state.folders.folder;
+export const selectFolderLoading = (state: RootState) => state.folders.status;
 
 export default folderSlice.reducer;

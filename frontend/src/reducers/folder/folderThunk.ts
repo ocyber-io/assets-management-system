@@ -115,3 +115,65 @@ export const updateFolder = createAsyncThunk(
     }
   }
 );
+
+export const getFolderById = createAsyncThunk(
+  "folders/getFolderById",
+  async (folderId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${SERVER_URL}/api/folders/${folderId}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error fetching folder by ID"
+      );
+    }
+  }
+);
+
+export const restoreFolder = createAsyncThunk(
+  "folders/restoreFolder",
+  async (folderId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${SERVER_URL}/api/folders/${folderId}/restore`
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error restoring folder"
+      );
+    }
+  }
+);
+
+export const deleteMultipleFolders = createAsyncThunk(
+  "folders/deleteMultipleFolders",
+  async (folderIds: string[], { rejectWithValue }) => {
+    try {
+      await axios.post(`${SERVER_URL}/api/folders/delete-multiple`, {
+        folderIds,
+      });
+      return folderIds;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error deleting folders"
+      );
+    }
+  }
+);
+
+export const restoreMultipleFolders = createAsyncThunk(
+  "folders/restoreMultipleFolders",
+  async (folderIds: string[], { rejectWithValue }) => {
+    try {
+      await axios.post(`${SERVER_URL}/api/folders/restore-multiple`, {
+        folderIds,
+      });
+      return folderIds;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error restoring folders"
+      );
+    }
+  }
+);

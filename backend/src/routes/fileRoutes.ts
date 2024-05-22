@@ -12,6 +12,7 @@ import {
   deleteMultipleFiles,
   restoreMultipleFiles,
   disableMultipleFiles,
+  sendFileByEmail,
 } from "../controllers/fileController";
 const router = express.Router();
 
@@ -43,4 +44,6 @@ router.patch("/restoreMultiple", restoreMultipleFiles);
 // route for deleting multiple files
 router.patch("/disableMultiple", disableMultipleFiles);
 
+// route for deleting multiple files
+router.post("/sendByEmail/:fileId", sendFileByEmail);
 export default router;

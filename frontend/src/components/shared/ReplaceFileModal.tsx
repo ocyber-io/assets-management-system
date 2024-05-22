@@ -23,6 +23,7 @@ type ReplaceFileModalProps = {
   onClose: () => void;
   fileDetails: any;
   toggleReplaceSuccessModal: () => void;
+  fetchAllFiles: () => void;
   // Replace with the actual type of fileDetails
 };
 
@@ -31,6 +32,7 @@ const ReplaceFileModal: React.FC<ReplaceFileModalProps> = ({
   onClose,
   fileDetails,
   toggleReplaceSuccessModal,
+  fetchAllFiles,
 }) => {
   const [fileDescription, setFileDescription] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
@@ -85,9 +87,11 @@ const ReplaceFileModal: React.FC<ReplaceFileModalProps> = ({
       formData.append("tags", tags.join(","));
       formData.append("userId", userId);
 
-      dispatch(replaceFile({ fileId: fileDetails._id, fileData: formData }))
-        .then((response) => {
-          dispatch(saveNewFileDetails(response.payload));
+      await dispatch(
+        replaceFile({ fileId: fileDetails._id, fileData: formData })
+      )
+        .then(async (response) => {
+          await dispatch(saveNewFileDetails(response.payload));
           onClose();
           toggleReplaceSuccessModal();
         })

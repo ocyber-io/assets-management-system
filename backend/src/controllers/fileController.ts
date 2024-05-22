@@ -5,6 +5,9 @@ import User from "../models/userSchema";
 import { formatFileSize, sizeToBytes } from "../utils/helpers";
 import path from "path";
 import fs from "fs";
+import FolderModel from "../models/folderSchema";
+import mongoose from "mongoose";
+import nodemailer from "nodemailer";
 
 //---------------------------------------------------------------
 //Controller for Adding a file
@@ -185,6 +188,21 @@ export const deleteFile = async (req: Request, res: Response) => {
         user.usedStorage -= fileSizeInBytes;
         user.remainingStorage = 107374182400 - user.usedStorage; // Assuming total storage is a constant
         await user.save();
+      }
+
+      // Remove the file from its folder
+      const objectId = new mongoose.Types.ObjectId(fileId);
+      const result = await FolderModel.updateOne(
+        { files: objectId },
+        { $pull: { files: objectId } }
+      );
+
+      // Check if the update was successful
+      const updatedFolder = await FolderModel.findOne({ files: objectId });
+      if (updatedFolder) {
+        console.error("Failed to remove file from folder files array.");
+      } else {
+        console.log("File successfully removed from folder files array.");
       }
 
       // Delete the file record
@@ -582,5 +600,51 @@ export const toggleMultipleFilesFavorite = async (
   } catch (err) {
     console.error("Error toggling multiple files favorite status:", err);
     res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+//---------------------------------------------------------------
+//Controller for Sharing a file
+//---------------------------------------------------------------
+export const sendFileByEmail = async (req: Request, res: Response) => {
+  const { fileId } = req.params;
+  const { email, message } = req.body;
+
+  try {
+    // Find the file by fileId
+    const file = await FileModel.findById(fileId);
+    if (!file) {
+      return res.status(404).send({ message: "File not found." });
+    }
+
+    const admin = "cute.arro@outlook.com";
+    // Configure nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      service: "Outlook",
+      auth: {
+        user: admin,
+        pass: "Love14321",
+      },
+    });
+
+    // Compose email message
+    const mailOptions = {
+      from: admin,
+      to: email,
+      subject: "File Sharing",
+      text: `${admin} shared a file with you: \n\n ${message}\n\nLink: ${file.fullLink}\n\nFile size: ${file.size}`,
+    };
+
+    // Send email
+    transporter.sendMail(mailOptions, (error) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).send({ message: "Error sending email." });
+      }
+      return res.status(200).send({ message: "Email sent successfully." });
+    });
+  } catch (error) {
+    console.error("Error sending file by email:", error);
+    return res.status(500).send({ message: "Internal server error." });
   }
 };

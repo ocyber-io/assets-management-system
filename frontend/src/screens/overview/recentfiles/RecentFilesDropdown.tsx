@@ -42,7 +42,7 @@ interface RecentDropdownProps {
   isOpen: boolean;
   toggleDropdown: () => void;
   fileInformationHandler: (fileDetails: File) => void;
-  shareHandler: (fileLink: string) => void;
+  shareHandler: (fileLink: string, fileId: string) => void;
   replaceHandler: (fileDetails: File) => void;
   deleteHandler: (fileId: string) => void;
   renameHandler: (filename: string, fileId: string) => void;
@@ -198,7 +198,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                   }`}
                   alt="Share"
                   onClick={() => {
-                    if (!file.isDisabled) shareHandler(file.link);
+                    if (!file.isDisabled) shareHandler(file.link, file._id);
                   }}
                 />
 
@@ -383,7 +383,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                                 fileInformationHandler(file);
                                 toggleDropdown();
                               } else if (subItem.label === "Share") {
-                                shareHandler(file.link);
+                                shareHandler(file.link, file._id);
                                 toggleDropdown();
                               } else if (subItem.label === "Copy Link") {
                                 copyToClipboard(file.link);
