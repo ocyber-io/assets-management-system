@@ -49,6 +49,10 @@ const RecentStorage: React.FC = () => {
     File | undefined
   >();
 
+  useEffect(() => {
+    fetchAllFiles();
+  }, [dispatch, userId]);
+
   const toggleDisableModal = () => {
     setShowWarningModal(!showWarningModal);
   };
@@ -210,10 +214,6 @@ const RecentStorage: React.FC = () => {
       }
     }
   };
-
-  useEffect(() => {
-    if (userId) dispatch(fetchFiles(userId));
-  }, [dispatch, userId]);
 
   const undeletedFiles = files.filter((file) => !file.isDeleted);
 

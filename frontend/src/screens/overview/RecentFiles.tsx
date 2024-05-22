@@ -89,9 +89,9 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     if (userId) dispatch(fetchFiles(userId));
   };
 
-  // useEffect(() => {
-  //   fetchAllFiles();
-  // }, [dispatch, userId]);
+  useEffect(() => {
+    fetchAllFiles();
+  }, [dispatch, userId]);
 
   const toggleDisableModal = () => {
     setShowWarningModal(!showWarningModal);

@@ -192,6 +192,7 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
           onClose={toggleReplaceModal}
           fileDetails={selectedFileDetails}
           toggleReplaceSuccessModal={toggleReplaceSuccessModal}
+          fetchAllFiles={fetchAllFiles}
         />
       )}
       {showSuccessModal && (
