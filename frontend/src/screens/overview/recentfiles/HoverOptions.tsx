@@ -22,7 +22,7 @@ interface HoverOptionsProps {
   disableHandler: (fileId: string) => void;
   enableHandler: (fileId: string) => void;
   removeFromFolderHandler: (fileId: string) => void;
-  shareHandler: (fileLink: string) => void;
+  shareHandler: (fileLink: string, fileId: string) => void;
   deleteConfirmationHandler: (fileId: string) => void;
   restoreHandler: (fileId: string, filename: string, filesize: string) => void;
   toggleFavoriteFiles: (
@@ -74,7 +74,7 @@ const HoverOptions: React.FC<HoverOptionsProps> = ({
             }`}
             alt="Share"
             onClick={() => {
-              if (!file.isDisabled) shareHandler(file.link);
+              if (!file.isDisabled) shareHandler(file.link, file._id);
             }}
           />
           <img

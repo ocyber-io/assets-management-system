@@ -1,5 +1,5 @@
 import React from "react";
-import viewIcon from "../../assets/icons/dashboardSquare.svg";
+// import viewIcon from "../../assets/icons/dashboardSquare.svg";
 import sortIcon from "../../assets/icons/sortArrow.svg";
 
 // Define a type for the props
@@ -33,10 +33,10 @@ const OverviewTopBar: React.FC<OverviewTopBarProps> = ({
           <img src={sortIcon} alt="Sort" className="mr-2" />
           <span className="text-xs md:text-sm">Sort</span>
         </button>
-        <button className="text-gray-600 bg-gray-100 hover:bg-gray-200 flex items-center font-semibold px-3 py-1.5 rounded-md">
+        {/* <button className="text-gray-600 bg-gray-100 hover:bg-gray-200 flex items-center font-semibold px-3 py-1.5 rounded-md">
           <img src={viewIcon} alt="View" className="mr-2" />
           <span className="text-xs md:text-sm">View</span>
-        </button>
+        </button> */}
       </div>
     </div>
   );

@@ -75,7 +75,6 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   showFileInformationModal,
   toggleShareModal,
   showShareModal,
-  shareSubmitClickHandler,
   showReplaceModal,
   showSuccessModal,
   toggleReplaceModal,
@@ -177,8 +176,8 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
         <ShareModal
           isOpen={showShareModal}
           onClose={toggleShareModal}
-          onSubmit={shareSubmitClickHandler}
           fileLink={fileLink}
+          fileId={fileId}
         />
       )}
       {showFileInformationModal && sampleFileDetailsData && (

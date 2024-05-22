@@ -29,6 +29,9 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
     (state: RootState) => state.fileDetails.newFileDetails
   );
 
+  console.log({ oldFileDetails });
+  console.log({ newFileDetails });
+
   return (
     <div>
       <NotificationModal

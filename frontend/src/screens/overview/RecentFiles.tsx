@@ -259,9 +259,10 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
     toggleFileInformationModal();
   };
 
-  const shareHandler = (fileLink: string) => {
+  const shareHandler = (fileLink: string, fileId: string) => {
     toggleShareModal();
     setFileLink(fileLink);
+    setFileId(fileId);
   };
 
   const replaceHandler = (fileDetails: File) => {
