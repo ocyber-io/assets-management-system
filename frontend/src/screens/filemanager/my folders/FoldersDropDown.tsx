@@ -6,6 +6,7 @@ import {
   restoreIcon,
 } from "../../../helpers/dropdownIcons";
 import { folderColorIcon, renameFolderIcon } from "../../../helpers/icons";
+import { Folder } from "../../../Types";
 
 type MenuItem = {
   key: string;
@@ -21,10 +22,13 @@ interface FolderDropdownProps {
   restoreFolderHandler: (folderId: string) => void;
   deleteFolderFromBinHandler: (folderId: string) => void;
   renameHandler: (folderId: string, fileName: string) => void;
+  handleDownloadFolder: (folder: Folder, files: any[]) => void;
   changeColorHandler: (folderId: string) => void;
   folderId: string;
   folderName: string | null;
   fromTrash?: boolean;
+  folderForDropDown: Folder | undefined;
+  filesForDropDown: any[] | undefined;
 }
 
 const menuItems: MenuItem[] = [
@@ -73,10 +77,12 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
   deleteFolderFromBinHandler,
   restoreFolderHandler,
   fromTrash,
+  folderForDropDown,
+  filesForDropDown,
+  handleDownloadFolder,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isDesktopOrLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -98,6 +104,10 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
     };
   }, [isOpen, toggleDropdown]);
 
+  const onDownloadFolder = () => {
+    if (folderForDropDown && filesForDropDown)
+      handleDownloadFolder(folderForDropDown, filesForDropDown);
+  };
   return (
     <div ref={dropdownRef} className="relative">
       {!isDesktopOrLaptop ? (
@@ -110,7 +120,12 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
           <div className="flex">
             {!fromTrash && (
               <>
-                <img src={downloadIcon} className="ml-4" alt="Download" />
+                <img
+                  src={downloadIcon}
+                  className="ml-4"
+                  alt="Download"
+                  onClick={onDownloadFolder}
+                />
 
                 <img
                   src={renameFolderIcon}
@@ -177,13 +192,7 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
                     ) : (
                       <button
                         className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
-                        onClick={
-                          menu.key === "restore"
-                            ? () => {
-                                restoreFolderHandler(folderId);
-                              } // Rename handler
-                            : () => changeColorHandler(folderId) // Change color handler
-                        }
+                        onClick={() => restoreFolderHandler(folderId)}
                       >
                         <img src={menu.icon} alt="" className="mr-2" />
                         {menu.label}
@@ -198,31 +207,38 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
                 ))
               : menuItems.map((menu: MenuItem) => (
                   <li key={menu.key} className="relative">
-                    {menu.key === "trash" ? (
-                      <button
-                        className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
-                        onClick={() => onDeleteFolder(folderId)}
-                      >
-                        <img src={menu.icon} alt="" className="mr-2" />
-                        {menu.label}
-                      </button>
-                    ) : (
-                      <button
-                        className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
-                        onClick={
-                          menu.key === "rename"
-                            ? () => {
-                                console.log({ folderName });
-                                if (!folderName) return;
-                                renameHandler(folderId, folderName);
-                              } // Rename handler
-                            : () => changeColorHandler(folderId) // Change color handler
+                    <button
+                      className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
+                      onClick={() => {
+                        switch (menu.key) {
+                          case "trash":
+                            onDeleteFolder(folderId);
+                            break;
+                          case "rename":
+                            if (!folderName) return;
+                            renameHandler(folderId, folderName);
+                            break;
+                          case "download":
+                            if (folderForDropDown && filesForDropDown) {
+                              handleDownloadFolder(
+                                folderForDropDown,
+                                filesForDropDown
+                              );
+                            }
+                            break;
+                          case "foldercolor":
+                            changeColorHandler(folderId);
+                            break;
+                          default:
+                            // Default case, do nothing
+                            break;
                         }
-                      >
-                        <img src={menu.icon} alt="" className="mr-2" />
-                        {menu.label}
-                      </button>
-                    )}
+                      }}
+                    >
+                      <img src={menu.icon} alt="" className="mr-2" />
+                      {menu.label}
+                    </button>
+
                     {["download", "foldercolor"].includes(menu.key) && (
                       <li>
                         <div className="border-t border-gray-200"></div>

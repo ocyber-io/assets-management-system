@@ -7,7 +7,9 @@ import path from "path";
 import { sizeToBytes } from "../utils/helpers";
 import fs from "fs";
 
-// Add a new folder
+//================================================================
+// Add new Folders
+//================================================================
 export const addFolder = async (req: Request, res: Response) => {
   try {
     const { folderName, folderColor, userId } = req.body;
@@ -27,7 +29,9 @@ export const addFolder = async (req: Request, res: Response) => {
   }
 };
 
+//================================================================
 // Delete a folder
+//================================================================
 export const deleteFolder = async (req: Request, res: Response) => {
   try {
     const { folderId } = req.params;
@@ -63,6 +67,58 @@ export const deleteFolder = async (req: Request, res: Response) => {
   }
 };
 
+//================================================================
+// Delete multiple folders
+//================================================================
+export const deleteMultipleFolders = async (req: Request, res: Response) => {
+  try {
+    const { folderIds } = req.body;
+
+    // Iterate over each folder ID and perform deletion
+    for (const folderId of folderIds) {
+      const folder = await FolderModel.findById(folderId).populate("files");
+      if (!folder) {
+        console.error(`Folder with ID ${folderId} not found`);
+        continue; // Move to the next folder if current folder is not found
+      }
+
+      // Check if the folder is already marked as deleted
+      if (folder.isDeleted) {
+        // If already deleted, remove files from the database and physically
+        for (const file of folder.files) {
+          await deleteFileById(file._id.toString());
+        }
+        await FolderModel.findByIdAndDelete(folderId);
+        console.log(
+          `Folder with ID ${folderId} and its files deleted successfully`
+        );
+      } else {
+        // If not deleted, mark the folder and its files as deleted
+        folder.isDeleted = true;
+        await folder.save();
+
+        // Mark all files in the folder as deleted
+        for (const file of folder.files) {
+          await markFileAsDeleted(file._id.toString());
+        }
+        console.log(
+          `Folder with ID ${folderId} and its files marked as deleted`
+        );
+      }
+    }
+
+    res.status(200).json({
+      message:
+        "Folders and their files deleted or marked as deleted successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+//================================================================
+//helper functions for deleting
+//================================================================
 const markFileAsDeleted = async (fileId: string) => {
   const file = await FileModel.findById(fileId);
   if (file) {
@@ -118,6 +174,9 @@ const deleteFileById = async (fileId: string) => {
     });
   }
 };
+//================================================================
+//helper functions for deleint ends here
+//================================================================
 
 // Add a file to a folder
 export const addFileToFolder = async (req: Request, res: Response) => {
@@ -151,7 +210,9 @@ export const addFileToFolder = async (req: Request, res: Response) => {
   }
 };
 
+//================================================================
 // Delete a file from a folder
+//================================================================
 export const deleteFileFromFolder = async (req: Request, res: Response) => {
   try {
     const { folderId } = req.params;
@@ -171,6 +232,9 @@ export const deleteFileFromFolder = async (req: Request, res: Response) => {
   }
 };
 
+//================================================================
+// Get folders by userId
+//================================================================
 export const getFoldersByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -190,7 +254,9 @@ export const getFoldersByUserId = async (req: Request, res: Response) => {
   }
 };
 
+//================================================================
 // Update a folder
+//================================================================
 export const updateFolder = async (req: Request, res: Response) => {
   try {
     const { folderId } = req.params;
@@ -210,7 +276,9 @@ export const updateFolder = async (req: Request, res: Response) => {
   }
 };
 
+//================================================================
 //get folder details by ID
+//================================================================
 export const getFolderById = async (req: Request, res: Response) => {
   try {
     const { folderId } = req.params;
@@ -226,7 +294,9 @@ export const getFolderById = async (req: Request, res: Response) => {
   }
 };
 
+//================================================================
 // Restore a folder
+//================================================================
 export const restoreFolder = async (req: Request, res: Response) => {
   try {
     const { folderId } = req.params;
@@ -250,6 +320,48 @@ export const restoreFolder = async (req: Request, res: Response) => {
     await folder.save();
 
     res.status(200).json({ message: "Folder restored successfully", folder });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+//================================================================
+// restore multiple folders
+//================================================================
+export const restoreMultipleFolders = async (req: Request, res: Response) => {
+  try {
+    // Get an array of folder IDs from the request body
+    const { folderIds } = req.body;
+
+    // Find all folders with the provided IDs
+    const folders = await FolderModel.find({ _id: { $in: folderIds } });
+
+    // Check if all folders exist
+    if (folders.length !== folderIds.length) {
+      return res.status(404).json({ message: "One or more folders not found" });
+    }
+
+    // Iterate over each folder
+    for (const folder of folders) {
+      // Check if the folder is already restored
+      if (!folder.isDeleted) {
+        console.log(`Folder ${folder._id} is not marked as deleted`);
+        continue; // Move to the next folder
+      }
+
+      // Restore the folder by setting isDeleted to false
+      folder.isDeleted = false;
+
+      // Iterate over each file in the folder and mark it as undeleted
+      for (const fileId of folder.files) {
+        await markFileAsUndeleted(fileId.toString());
+      }
+
+      // Save the changes to the folder
+      await folder.save();
+    }
+
+    res.status(200).json({ message: "Folders restored successfully" });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

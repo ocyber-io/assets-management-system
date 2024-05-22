@@ -145,3 +145,35 @@ export const restoreFolder = createAsyncThunk(
     }
   }
 );
+
+export const deleteMultipleFolders = createAsyncThunk(
+  "folders/deleteMultipleFolders",
+  async (folderIds: string[], { rejectWithValue }) => {
+    try {
+      await axios.post(`${SERVER_URL}/api/folders/delete-multiple`, {
+        folderIds,
+      });
+      return folderIds;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error deleting folders"
+      );
+    }
+  }
+);
+
+export const restoreMultipleFolders = createAsyncThunk(
+  "folders/restoreMultipleFolders",
+  async (folderIds: string[], { rejectWithValue }) => {
+    try {
+      await axios.post(`${SERVER_URL}/api/folders/restore-multiple`, {
+        folderIds,
+      });
+      return folderIds;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Error restoring folders"
+      );
+    }
+  }
+);
