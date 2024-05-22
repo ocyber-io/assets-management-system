@@ -30,6 +30,7 @@ import FoldersDropdown from "./FoldersDropDown";
 import SelectedFolderActions from "./SelectedFolderActions";
 import DeleteMultipleFoldersModal from "../../../components/shared/folder-modals/DeleteMultipleFoldersModal";
 import DeleteMultipleFoldersConfirmationModal from "../../../components/shared/folder-modals/DeleteMultipleFoldersConfirmationModal";
+import RestoreMultipleFoldersModal from "../../../components/shared/folder-modals/RestoreMultipleFoldersModal";
 
 type MyFoldersProps = {
   deletedFolders: Folder[];
@@ -53,6 +54,8 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
     setShowDeleteMultipleFoldersConfirmationModal,
   ] = useState<boolean>(false);
   const [showRestoreFolderModal, setShowRestoreFolderModal] =
+    useState<boolean>(false);
+  const [showMultipleRestoreFoldersModal, setShowMultipleRestoreFoldersModal] =
     useState<boolean>(false);
   const [showDeleteFolderFromBinModal, setShowDeleteFolderFromBinModal] =
     useState<boolean>(false);
@@ -78,6 +81,9 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
   const toggleRestoreFolderModal = () => {
     setShowRestoreFolderModal(!showRestoreFolderModal);
   };
+  const toggleMultipleRestoreFoldersModal = () => {
+    setShowMultipleRestoreFoldersModal(!showMultipleRestoreFoldersModal);
+  };
   const toggleDeleteFolderFromBinModal = () => {
     setShowDeleteFolderFromBinModal(!showDeleteFolderFromBinModal);
   };
@@ -102,6 +108,9 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
   const restoreFolderHandler = (folderId: string) => {
     toggleRestoreFolderModal();
     setFolderId(folderId);
+  };
+  const restoreMultipleFoldersHandler = () => {
+    toggleMultipleRestoreFoldersModal();
   };
   const deleteFolderFromBinHandler = (folderId: string) => {
     toggleDeleteFolderFromBinModal();
@@ -251,6 +260,7 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
         deleteMultipleFoldersConfirmationHandler={
           deleteMultipleFoldersConfirmationHandler
         }
+        restoreMultipleFoldersHandler={restoreMultipleFoldersHandler}
       />
       <div className="">
         <table className="min-w-full divide-y divide-gray-200">
@@ -591,6 +601,22 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
           heading="Restore Folder"
           submitButtonText="Yes, Restore"
           description="Are you sure you want to restore the folder?"
+          fetchAllFiles={fetchAllFiles}
+        />
+      )}
+      {showMultipleRestoreFoldersModal && (
+        <RestoreMultipleFoldersModal
+          isOpen={showMultipleRestoreFoldersModal}
+          onClose={toggleMultipleRestoreFoldersModal}
+          folderIds={selectedFolders}
+          fetchFolders={fetchFolders}
+          heading={`Restore ${selectedFolders.length} Folder${
+            selectedFolders.length !== 1 ? "s" : ""
+          }?`}
+          description={`Do you really want to restore ${
+            selectedFolders.length !== 1 ? "these folders" : "this folder"
+          }? `}
+          submitButtonText="Yes, Restore"
           fetchAllFiles={fetchAllFiles}
         />
       )}

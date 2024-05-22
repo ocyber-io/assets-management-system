@@ -18,6 +18,7 @@ interface SelectedFolderActionsProps {
   selectAll: () => void;
   deleteMultipleFoldersHandler: () => void;
   deleteMultipleFoldersConfirmationHandler: () => void;
+  restoreMultipleFoldersHandler: () => void;
   selectedFolders: string[];
   fromTrash?: boolean;
 }
@@ -30,6 +31,7 @@ const SelectedFolderActions: React.FC<SelectedFolderActionsProps> = ({
   fromTrash,
   deleteMultipleFoldersHandler,
   deleteMultipleFoldersConfirmationHandler,
+  restoreMultipleFoldersHandler,
 }) => {
   const folders = useSelector(selectFolders);
   const fetchFolderDetails = async (folderId: string) => {
@@ -107,9 +109,7 @@ const SelectedFolderActions: React.FC<SelectedFolderActionsProps> = ({
                   src={restoreIcon}
                   className="ml-4 cursor-pointer"
                   alt="Restore folder"
-                  onClick={() => {
-                    // Handle Restore action
-                  }}
+                  onClick={restoreMultipleFoldersHandler}
                 />
               )}
             </div>

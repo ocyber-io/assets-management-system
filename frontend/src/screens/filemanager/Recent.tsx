@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import OverviewTopBar from "../overview/OverviewTopBar"; // Convert OverviewTopBar to TSX if needed
 import RecentFiles from "../overview/RecentFiles"; // Make sure RecentTable is also converted to TSX if needed
 import { selectFiles } from "../../reducers/file/fileSlice";
@@ -17,6 +17,11 @@ const Recent: React.FC = () => {
   const sortHandler = () => {
     toggleSort();
   };
+
+  useEffect(() => {
+    // Scroll to the top when the component mounts
+    window.scrollTo(0, 0);
+  }, []);
 
   if (isSorted) {
     undeletedFiles = undeletedFiles.sort((a, b) => {
