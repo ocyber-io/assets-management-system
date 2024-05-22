@@ -1,11 +1,16 @@
+import { saveAs } from "file-saver";
+import JSZip from "jszip";
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { BsFillFolderFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { Folder } from "../../../Types";
 import DeleteFolderModal from "../../../components/shared/DeleteFolderModal";
 import ChangeColorModal from "../../../components/shared/folder-modals/ChangeColorModal";
+import DeleteFolderFromBinModal from "../../../components/shared/folder-modals/DeleteFolderFromBinModal";
 import RenameFolderModal from "../../../components/shared/folder-modals/RenameFolder";
+import RestoreFolderModal from "../../../components/shared/folder-modals/RestoreFolderModal";
 import {
   downloadIcon,
   moreIcon,
@@ -13,16 +18,16 @@ import {
   restoreIcon,
 } from "../../../helpers/dropdownIcons";
 import { folderColorIcon, renameFolderIcon } from "../../../helpers/icons";
+import { fetchFiles } from "../../../reducers/file/fileThunks";
 import { selectFolders } from "../../../reducers/folder/folderSlice";
-import { getFoldersByUserId } from "../../../reducers/folder/folderThunk";
+import {
+  getFolderById,
+  getFoldersByUserId,
+} from "../../../reducers/folder/folderThunk";
 import { AppDispatch } from "../../../stores/store";
 import { formatDate } from "../../../utils/helpers";
 import FoldersDropdown from "./FoldersDropDown";
 import SelectedFolderActions from "./SelectedFolderActions";
-import { Folder } from "../../../Types";
-import DeleteFolderFromBinModal from "../../../components/shared/folder-modals/DeleteFolderFromBinModal";
-import RestoreFolderModal from "../../../components/shared/folder-modals/RestoreFolderModal";
-import { fetchFiles } from "../../../reducers/file/fileThunks";
 
 type MyFoldersProps = {
   deletedFolders: Folder[];
@@ -34,8 +39,8 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
   const folders = useSelector(selectFolders);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch<AppDispatch>();
-  const [folderId, setFolderId] = useState<string | null>("");
-  const [folderName, setFolderName] = useState<string | null>("");
+  const [folderId, setFolderId] = useState<string | null>(null);
+  const [folderName, setFolderName] = useState<string | null>(null);
   const [userId, setUserId] = useState<string>();
   const [showDeleteFolderModal, setShowDeleteFolderModal] =
     useState<boolean>(false);
@@ -112,6 +117,7 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
       }
     }
   };
+
   const fetchAllFiles = async () => {
     if (userId) {
       try {
@@ -159,6 +165,36 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
 
   const toggleDropdown = (folderId: string) => {
     setOpenDropdownId(openDropdownId === folderId ? null : folderId);
+  };
+
+  const fetchFolder = async () => {
+    if (!folderId) return;
+    await dispatch(getFolderById(folderId));
+  };
+
+  useEffect(() => {
+    fetchFolder();
+  }, []);
+
+  const handleDownloadFolder = async (folder: Folder, files: any[]) => {
+    const zip = new JSZip();
+    const folderZip = zip.folder(folder.folderName);
+
+    const fetchFileContent = async (fileUrl: string) => {
+      const response = await fetch(fileUrl);
+      return await response.blob();
+    };
+
+    const filePromises = files.map(async (file) => {
+      const fileContent = await fetchFileContent(file.fullLink);
+      folderZip?.file(file.originalName, fileContent);
+    });
+
+    await Promise.all(filePromises);
+
+    zip.generateAsync({ type: "blob" }).then((content) => {
+      saveAs(content, `${folder.folderName}.zip`);
+    });
   };
 
   return (
@@ -348,6 +384,9 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
                             <button
                               aria-label="Download folder"
                               className="mr-2"
+                              onClick={() =>
+                                handleDownloadFolder(folder, folder.files)
+                              }
                             >
                               <img
                                 src={downloadIcon}
