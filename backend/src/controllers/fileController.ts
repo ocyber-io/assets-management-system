@@ -9,6 +9,10 @@ import FolderModel from "../models/folderSchema";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 
+interface CustomRequest extends Request {
+  user?: { id: string; isAdmin?: boolean };
+}
+
 //---------------------------------------------------------------
 //Controller for Adding a file
 //---------------------------------------------------------------
@@ -646,5 +650,48 @@ export const sendFileByEmail = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error sending file by email:", error);
     return res.status(500).send({ message: "Internal server error." });
+  }
+};
+
+//---------------------------------------------------------------
+//Controller for searching a file
+//---------------------------------------------------------------
+export const searchFiles = async (req: CustomRequest, res: Response) => {
+  const { keyword } = req.query;
+
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized. User must be logged in." });
+  }
+
+  const userId = req.user.id;
+
+  if (!userId) {
+    return res.status(403).json({ message: "User ID is missing in token" });
+  }
+
+  if (!keyword) {
+    return res
+      .status(400)
+      .json({ message: "Search keyword must be provided." });
+  }
+
+  try {
+    // Construct the search criteria
+    const searchCriteria = {
+      owner: userId, // Only include files owned by the logged-in user
+      $or: [
+        { originalName: { $regex: keyword, $options: "i" } }, // Case-insensitive regex search in originalName
+        { tags: { $regex: keyword, $options: "i" } }, // Case-insensitive regex search in tags
+      ],
+    };
+
+    const files = await FileModel.find(searchCriteria);
+
+    res.status(200).json(files);
+  } catch (err: any) {
+    console.error("Error searching files:", err);
+    res.status(500).json({ message: "Internal server error." });
   }
 };

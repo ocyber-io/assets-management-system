@@ -13,7 +13,9 @@ import {
   restoreMultipleFiles,
   disableMultipleFiles,
   sendFileByEmail,
+  searchFiles,
 } from "../controllers/fileController";
+import { isAuthenticated } from "../middlewares/authMiddleware";
 const router = express.Router();
 
 // Routes for file operations
@@ -46,4 +48,7 @@ router.patch("/disableMultiple", disableMultipleFiles);
 
 // route for deleting multiple files
 router.post("/sendByEmail/:fileId", sendFileByEmail);
+
+// route for searching a file
+router.get("/search", isAuthenticated, searchFiles);
 export default router;
