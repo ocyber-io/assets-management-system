@@ -1,11 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { UserInfo } from "../../Types";
 import downArrowIcon from "../../assets/icons/arrow-down-profile.svg";
 import bellIcon from "../../assets/icons/bell.svg";
 import searchIcon from "../../assets/icons/search.svg";
+import { searchFiles, setKeyword } from "../../reducers/search/searchSlice";
 import { logout } from "../../reducers/user/userSlice";
-import { AppDispatch } from "../../stores/store";
+import { AppDispatch, RootState } from "../../stores/store";
+
+// Custom hook for debouncing
+const useDebounce = (callback: Function, delay: number) => {
+  const timeoutRef = useRef<number | null>(null);
+
+  return (...args: any[]) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+};
 
 type UserInfoProps = {
   userInfo: UserInfo;
@@ -16,10 +32,15 @@ const TopBar: React.FC<UserInfoProps> = ({ userInfo, userInitials }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch<AppDispatch>();
   const token = localStorage.getItem("token");
+  const keyword = useSelector((state: RootState) => state.search.keyword);
 
-  console.log({ userInfo });
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
+  const debouncedSearch = useDebounce((value: string) => {
+    dispatch(searchFiles({ keyword: value }));
+  }, 500);
+
+  const handleSearch = (value: string) => {
+    dispatch(setKeyword(value)); // Dispatch setKeyword action to update the keyword
+    debouncedSearch(value);
   };
 
   useEffect(() => {
@@ -36,7 +57,11 @@ const TopBar: React.FC<UserInfoProps> = ({ userInfo, userInitials }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [token]);
+  }, [token, dropdownOpen]);
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
   const logoutHandler = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -45,8 +70,6 @@ const TopBar: React.FC<UserInfoProps> = ({ userInfo, userInitials }) => {
     event.stopPropagation();
     dispatch(logout());
   };
-
-  console.log(userInfo.profilePicture);
 
   return (
     <div className="bg-white h-28 md:h-16 fixed top-0 left-0 right-0 z-20 p-4 md:relative flex md:items-center flex-col md:flex-row justify-between md:shadow-md md:px-4 rounded-lg">
@@ -75,6 +98,8 @@ const TopBar: React.FC<UserInfoProps> = ({ userInfo, userInitials }) => {
           <input
             type="text"
             placeholder="Search..."
+            value={keyword} // Bind input value to the keyword from the store
+            onChange={(e) => handleSearch(e.target.value)}
             className="py-2 ml-1 text-sm text-gray-700 placeholder-gray-400 focus:outline-none bg-transparent w-full"
           />
         </div>
