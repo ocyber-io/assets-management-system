@@ -1,15 +1,14 @@
 import React from "react";
 import successfullReplaceImage from "../../assets/images/file-replacement-success.svg";
 import NotificationModal from "./NotificationModal";
-
 import dummyCompressed from "../../assets/images/compressedDummy.svg";
 import dummyImage from "../../assets/images/dummyDocument.svg";
 import dummyVideo from "../../assets/images/dummyVideo.svg";
-
 import { useSelector } from "react-redux";
 import { File } from "../../Types";
 import { RootState } from "../../stores/store";
 import { formatFilenameInSuccessModal } from "../../utils/helpers";
+
 
 type ReplaceSuccessfullModalProps = {
   isOpen: boolean;
