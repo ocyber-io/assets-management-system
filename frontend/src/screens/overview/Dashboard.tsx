@@ -68,6 +68,7 @@ const Dashboard: React.FC = () => {
           <RecentFiles
             files={files.filter((file) => !file.isDeleted)}
             filesPerPage={6}
+            fromDashboard={true}
           />
         </>
       );

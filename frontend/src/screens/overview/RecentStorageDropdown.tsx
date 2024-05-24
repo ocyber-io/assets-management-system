@@ -227,10 +227,10 @@ const RecentStorageDropdown: React.FC<RecentStorageDropdownProps> = ({
         <div
           className={`absolute z-50 ${
             isOpen ? "block" : "hidden"
-          } divide-y divide-gray-100 rounded-md bg-white border-2 border-gray-200 shadow w-44 dark:bg-gray-700`}
+          } divide-y divide-gray-100 rounded-md bg-white border-2 border-gray-200 shadow w-44 `}
           style={{ bottom: "24px", right: "16px" }}
         >
-          <ul className="py-2 text-sm text-gray-700 text-left dark:text-gray-200">
+          <ul className="py-2 text-sm text-gray-700 text-left ">
             {subItems.map((menu: MenuItem, index) => (
               <React.Fragment key={index}>
                 <li className="relative">
@@ -239,7 +239,7 @@ const RecentStorageDropdown: React.FC<RecentStorageDropdownProps> = ({
                       openSubMenu === menu.key
                         ? "bg-blue-50"
                         : "hover:bg-blue-50"
-                    } dark:hover:bg-gray-600 dark:hover:text-white`}
+                    } `}
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent the event from propagating to the outside click handler
                       if (menu.subItems.length !== 0) {
@@ -273,7 +273,7 @@ const RecentStorageDropdown: React.FC<RecentStorageDropdownProps> = ({
                       {menu.subItems.map((subItem: SubMenuItem) => (
                         <li key={subItem.label}>
                           <button
-                            className="flex w-full p-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
+                            className="flex w-full p-2 hover:bg-blue-50 "
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent the event from propagating to the outside click handler
                               if (subItem.label === "Details") {

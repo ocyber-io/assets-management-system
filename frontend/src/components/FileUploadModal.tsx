@@ -62,7 +62,7 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
         clearInterval(interval);
         setUploadProgress(100); // Ensure it's exactly 100 at the end
       }
-    }, 50); // Update every 50ms
+    }, 10); // Update every 50ms
   };
 
   const handleFileUpload = async () => {

@@ -18,6 +18,7 @@ type RecentFilesProps = {
   filesPerPage?: number;
   showFullLink?: boolean;
   fromTrash?: boolean;
+  fromDashboard?: boolean;
   fromFavorites?: boolean;
   fromFolders?: boolean;
   folderId?: string;
@@ -35,6 +36,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   fromFolders,
   folderId,
   fetchFolders,
+  fromDashboard
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
@@ -336,6 +338,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           fromTrash={fromTrash}
           fromFavorites={fromFavorites}
           fromFolders={fromFolders}
+          fromDashboard={fromDashboard}
         />
         {files && files.length > filesPerPage && (
           <Pagination

@@ -60,6 +60,7 @@ interface RecentDropdownProps {
   fromTrash?: boolean;
   fromFavorites?: boolean;
   fromFolders?: boolean;
+  fromDashboard?: boolean;
 }
 
 const subItems: MenuItem[] = [
@@ -135,11 +136,12 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
   moveToFolderHandler,
   removeFromFolderHandler,
   fromFolders,
+  fromDashboard
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
+  const [positionStyle, setPositionStyle] = useState({});
   const isDesktopOrLaptop = useMediaQuery({ query: "(min-width: 1024px)" });
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -162,6 +164,14 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
     };
   }, [isOpen, toggleDropdown]);
 
+  useEffect(() => {
+    if (!fromDashboard) {
+        setPositionStyle({ top: "-10px", left: "54px" });
+    } else {
+      setPositionStyle({ bottom: "24px", right: "20px" });
+    }
+  }, [fromDashboard]);
+
   const toggleSubMenu = (menuKey: string) => {
     setOpenSubMenu(openSubMenu === menuKey ? null : menuKey);
   };
@@ -177,6 +187,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
     }
   };
 
+
   return (
     <div ref={dropdownRef} className="relative">
       {!isDesktopOrLaptop ? (
@@ -185,7 +196,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
             isOpen ? "block" : "hidden"
           } divide-y divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md ${
             !fromTrash ? "w-64" : "w-24"
-          } ${fromFolders ? "w-72" : "w-64"} dark:bg-gray-700`}
+          } ${fromFolders ? "w-72" : "w-64"}  `}
           style={{ right: "34px", bottom: "0" }}
         >
           <div className="flex">
@@ -329,12 +340,12 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
         </div>
       ) : (
         <div
-          className={`absolute z-50 ${
-            isOpen ? "block" : "hidden"
-          } divide-y divide-gray-100 rounded-md bg-white border-2 border-gray-200 shadow w-44 dark:bg-gray-700`}
-          style={{ bottom: "24px", right: "16px" }}
-        >
-          <ul className="py-2 text-sm text-gray-700 text-left dark:text-gray-200">
+        className={`absolute z-50 ${
+          isOpen ? "block" : "hidden"
+        } divide-y divide-gray-100 rounded-md bg-white border-2 border-gray-200 shadow w-44  `}
+        style={positionStyle}
+      >
+          <ul className="py-2 text-sm text-gray-700 text-left  ">
             {subItems.map((menu: MenuItem, index) => (
               <React.Fragment key={index}>
                 <li className="relative">
@@ -343,7 +354,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                       openSubMenu === menu.key
                         ? "bg-blue-50"
                         : "hover:bg-blue-50"
-                    } dark:hover:bg-gray-600 dark:hover:text-white`}
+                    }`}
                     onClick={() => {
                       if (menu.subItems.length !== 0) {
                         toggleSubMenu(menu.key);
@@ -377,7 +388,7 @@ const RecentFilesDropdown: React.FC<RecentDropdownProps> = ({
                       {menu.subItems.map((subItem: SubMenuItem) => (
                         <li key={subItem.label}>
                           <button
-                            className="flex w-full p-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
+                            className="flex w-full p-2 hover:bg-blue-50"
                             onClick={() => {
                               if (subItem.label === "Details") {
                                 fileInformationHandler(file);

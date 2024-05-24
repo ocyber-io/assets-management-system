@@ -48,6 +48,7 @@ type FilesTableProps = {
   fromTrash?: boolean;
   fromFavorites?: boolean;
   fromFolders?: boolean;
+  fromDashboard?: boolean;
 };
 
 const FilesTable: React.FC<FilesTableProps> = ({
@@ -77,6 +78,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
   moveToFolderHandler,
   fromFolders,
   removeFromFolderHandler,
+  fromDashboard
 }) => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const token = localStorage.getItem("token");
@@ -355,6 +357,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
                         removeFromFolderHandler={removeFromFolderHandler}
                         toggleFavoriteFiles={toggleFavoriteFiles}
                         fromFolders={fromFolders}
+                        fromDashboard={fromDashboard}
                       />
                     )}
                   </td>
