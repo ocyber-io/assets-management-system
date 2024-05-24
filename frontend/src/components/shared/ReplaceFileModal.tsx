@@ -1,5 +1,4 @@
-import { jwtDecode } from "jwt-decode";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDispatch } from "react-redux";
 import crossIcon from "../../assets/icons/cross.svg";
@@ -16,15 +15,15 @@ import {
   saveNewFileDetails,
   saveOldFileDetails,
 } from "../../reducers/file/fileDetailsSlice";
-import { formatFilenameInSuccessModal } from "../../utils/helpers";
+import { convertImageToBase64, formatFilenameInSuccessModal } from "../../utils/helpers";
+import { useUser } from "../hooks/useUserDetails";
 
 type ReplaceFileModalProps = {
   isOpen: boolean;
   onClose: () => void;
   fileDetails: any;
-  toggleReplaceSuccessModal: () => void;
+  toggleReplaceSuccessModal: (base64Image: string | null) => void;
   fetchAllFiles: () => void;
-  // Replace with the actual type of fileDetails
 };
 
 const ReplaceFileModal: React.FC<ReplaceFileModalProps> = ({
@@ -32,33 +31,29 @@ const ReplaceFileModal: React.FC<ReplaceFileModalProps> = ({
   onClose,
   fileDetails,
   toggleReplaceSuccessModal,
-  fetchAllFiles,
 }) => {
   const [fileDescription, setFileDescription] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
+  const [base64Image, setBase64Image] = useState<string | null>(null);  // State for Base64 image
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [userId, setUserId] = useState<string | undefined>();
   const dispatch = useDispatch<AppDispatch>();
-
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{ id: string }>(token);
-        setUserId(decoded.id);
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+  const { userId } = useUser();
+  
+  
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (acceptedFiles: File[]) => {
+    onDrop: async (acceptedFiles: File[]) => {
       setFile(acceptedFiles[0]);
       simulateFileUpload(acceptedFiles[0]);
+      
+      if (acceptedFiles[0].type.startsWith("image/")) {
+        const base64 = await convertImageToBase64(acceptedFiles[0]);
+        setBase64Image(base64);  // Set the Base64 image state
+      } else {
+        setBase64Image(null);  // Clear the Base64 image state if the file is not an image
+      }
     },
   });
 
@@ -93,7 +88,7 @@ const ReplaceFileModal: React.FC<ReplaceFileModalProps> = ({
         .then(async (response) => {
           await dispatch(saveNewFileDetails(response.payload));
           onClose();
-          toggleReplaceSuccessModal();
+          toggleReplaceSuccessModal(base64Image);
         })
         .catch((error) => {
           console.error("Replace file failed: ", error);

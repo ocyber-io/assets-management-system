@@ -1,7 +1,7 @@
-import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { File, SelectedFile } from "../../Types";
+import { useUser } from "../../components/hooks/useUserDetails";
 import { selectError } from "../../reducers/file/fileSlice";
 import { fetchFiles } from "../../reducers/file/fileThunks";
 import { AppDispatch } from "../../stores/store";
@@ -18,6 +18,7 @@ type RecentFilesProps = {
   filesPerPage?: number;
   showFullLink?: boolean;
   fromTrash?: boolean;
+  fromDashboard?: boolean;
   fromFavorites?: boolean;
   fromFolders?: boolean;
   folderId?: string;
@@ -35,6 +36,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   fromFolders,
   folderId,
   fetchFolders,
+  fromDashboard
 }) => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [hoverLinkId, setHoverLinkId] = useState<string | null>(null);
@@ -65,25 +67,12 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [selectedFileDetails, setSelectedFileDetails] = useState<
     File | undefined
   >();
+  const [base64ImagePreview, setBase64ImagePreview] = useState<string | null>(null);  // State for Base64 image
+
   const error = useSelector(selectError);
   const dispatch = useDispatch<AppDispatch>();
-  const [userId, setUserId] = useState<string>();
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+  const {userId} = useUser();
+  
 
   const fetchAllFiles = async () => {
     if (userId) dispatch(fetchFiles(userId));
@@ -121,7 +110,8 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const toggleReplaceModal = () => {
     setShowReplaceModal(!showReplaceModal);
   };
-  const toggleSuccessModal = () => {
+  const toggleSuccessModal = (base64Image: string | null) => {
+    setBase64ImagePreview(base64Image);
     setShowSuccessModal(!showSuccessModal);
   };
   const toggleMoveToFolderModal = () => {
@@ -333,6 +323,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
           fromTrash={fromTrash}
           fromFavorites={fromFavorites}
           fromFolders={fromFolders}
+          fromDashboard={fromDashboard}
         />
         {files && files.length > filesPerPage && (
           <Pagination
@@ -373,6 +364,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         selectedFileDetails={selectedFileDetails}
         fetchAllFiles={fetchAllFiles}
         fileLink={fileLink}
+        setShowSuccessModal={()=>setShowSuccessModal(false)}
         toggleReplaceSuccessModal={toggleSuccessModal}
         showDeleteConfrimationModal={showDeleteConfrimationModal}
         toggleDeleteConfirmationModal={toggleDeleteConfrimationModal}
@@ -383,6 +375,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         showRemoveFromFolderModal={showRemoveFromFolderModal}
         toggleRemoveFromFolderModal={toggleRemoveFromFolderModal}
         fetchFolders={fetchFolders}
+        newBase64ImageUrl={base64ImagePreview}
       />
     </div>
   );

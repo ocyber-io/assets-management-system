@@ -2,46 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
 import { fetchFiles } from "../reducers/file/fileThunks";
+import { getFoldersByUserId } from "../reducers/folder/folderThunk";
 import { AppDispatch } from "../stores/store";
 import FileUploadModal from "./FileUploadModal";
 import SideBar from "./Navbar/SideBar";
 import TopBar from "./Navbar/TopBar";
+import { useUser } from "./hooks/useUserDetails";
 import NewFolderModal from "./shared/NewFolderModal";
-import { UserInfo } from "../Types";
-import { jwtDecode } from "jwt-decode";
-import { getFoldersByUserId } from "../reducers/folder/folderThunk";
 
 const Layout: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isNewFolderModalOpen, setIsNewFolderModalOpen] = useState(false);
-  const [userInfo, setUserInfo] = useState<UserInfo>();
-  const [userInitials, setUserInitials] = useState("SM");
-  const token = localStorage.getItem("token");
   const dispatch = useDispatch<AppDispatch>();
-  const [userId, setUserId] = useState<string>();
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-          firstname: string;
-          lastname: string;
-          email: string;
-          profilePicture: string;
-          googleId: string;
-        }>(token);
-        if (decoded) {
-          setUserInfo(decoded);
-          setUserId(decoded.id);
-          const initials = `${decoded.firstname[0]}${decoded.lastname[0]}`;
-          setUserInitials(initials.toUpperCase());
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+  const { userInfo, userInitials, userId } = useUser();
 
   useEffect(() => {
     if (userId) dispatch(fetchFiles(userId));

@@ -114,7 +114,7 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
         <div
           className={`absolute z-50 ${isOpen ? "block" : "hidden"} divide-y ${
             fromTrash ? "w-20" : "w-36"
-          } mb-[-4px] divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md dark:bg-gray-700`}
+          } mb-[-4px] divide-gray-100 rounded-md bg-white border py-2 border-gray-200 shadow-md  `}
           style={{ right: "50px", bottom: "0" }}
         >
           <div className="flex">
@@ -174,16 +174,16 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
         <div
           className={`absolute z-50 ${
             isOpen ? "block" : "hidden"
-          } divide-y divide-gray-100 rounded-md bg-white border-2 border-gray-200 shadow w-44 dark:bg-gray-700`}
+          } divide-y divide-gray-100 rounded-md bg-white border-2 border-gray-200 shadow w-44  `}
           style={{ top: "2px", right: "30px" }}
         >
-          <ul className="py-2 text-sm text-gray-700 text-left dark:text-gray-200">
+          <ul className="py-2 text-sm text-gray-700 text-left ">
             {fromTrash
               ? trashMenuItems.map((menu: MenuItem) => (
                   <li key={menu.key} className="relative">
                     {menu.key === "delete" ? (
                       <button
-                        className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
+                        className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 "
                         onClick={() => deleteFolderFromBinHandler(folderId)}
                       >
                         <img src={menu.icon} alt="" className="mr-2" />
@@ -191,7 +191,7 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
                       </button>
                     ) : (
                       <button
-                        className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
+                        className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50"
                         onClick={() => restoreFolderHandler(folderId)}
                       >
                         <img src={menu.icon} alt="" className="mr-2" />
@@ -208,7 +208,7 @@ const FoldersDropdown: React.FC<FolderDropdownProps> = ({
               : menuItems.map((menu: MenuItem) => (
                   <li key={menu.key} className="relative">
                     <button
-                      className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-600 dark:hover:text-white"
+                      className="w-full text-left flex items-center px-4 py-2 hover:bg-blue-50 "
                       onClick={() => {
                         switch (menu.key) {
                           case "trash":

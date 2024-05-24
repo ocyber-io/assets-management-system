@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../stores/store";
-import { jwtDecode } from "jwt-decode";
-import { showErrorToast, showSuccessToast } from "../../../utils/toast";
-import NotificationModal from "../NotificationModal";
 import { updateFolder } from "../../../reducers/folder/folderThunk"; // Import the updateFolder thunk
+import { AppDispatch } from "../../../stores/store";
+import { showErrorToast, showSuccessToast } from "../../../utils/toast";
+import { useUser } from "../../hooks/useUserDetails";
+import NotificationModal from "../NotificationModal";
 
 type ChangeColorProps = {
   isOpen: boolean;
@@ -21,23 +21,8 @@ const ChangeColorModal: React.FC<ChangeColorProps> = ({
 }) => {
   const [selectedColor, setSelectedColor] = useState("");
   const dispatch = useDispatch<AppDispatch>();
-  const token = localStorage.getItem("token");
-  const [userId, setUserId] = useState<string>();
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+  const {userId} = useUser();
+ 
 
   const colors = [
     "#f44336",

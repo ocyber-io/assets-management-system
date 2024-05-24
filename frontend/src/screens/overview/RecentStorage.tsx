@@ -1,27 +1,25 @@
-import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useMemo, useState } from "react";
 import { MdMoreVert } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
+import { File } from "../../Types";
+import dummyCompressed from "../../assets/images/compressedDummy.svg";
+import dummyImage from "../../assets/images/dummyDocument.svg";
+import dummyVideo from "../../assets/images/dummyVideo.svg";
+import { useUser } from "../../components/hooks/useUserDetails";
 import { selectError, selectFiles } from "../../reducers/file/fileSlice";
 import { fetchFiles, toggleFileFavorite } from "../../reducers/file/fileThunks";
+import { getFoldersByUserId } from "../../reducers/folder/folderThunk";
 import { AppDispatch } from "../../stores/store";
 import useIsMobile from "../../utils/IsMobile";
 import { formatFilename } from "../../utils/helpers";
-import dummyImage from "../../assets/images/dummyDocument.svg";
-import dummyVideo from "../../assets/images/dummyVideo.svg";
-import dummyCompressed from "../../assets/images/compressedDummy.svg";
-import RecentStorageDropdown from "./RecentStorageDropdown";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
-import { File } from "../../Types";
+import RecentStorageDropdown from "./RecentStorageDropdown";
 import RecentFilesModals from "./recentfiles/RecentFilesModals";
-import { getFoldersByUserId } from "../../reducers/folder/folderThunk";
 
 const RecentStorage: React.FC = () => {
   const files = useSelector(selectFiles);
   const error = useSelector(selectError);
   const dispatch = useDispatch<AppDispatch>();
-  const [userId, setUserId] = useState<string>();
-  const token = localStorage.getItem("token");
   const isMobile = useIsMobile();
   const [selectedLink, setSelectedLink] = useState<string | null>(null);
   const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
@@ -48,6 +46,7 @@ const RecentStorage: React.FC = () => {
   const [selectedFileDetails, setSelectedFileDetails] = useState<
     File | undefined
   >();
+  const {userId} = useUser();
 
   useEffect(() => {
     fetchAllFiles();
@@ -190,20 +189,6 @@ const RecentStorage: React.FC = () => {
     if (userId) dispatch(fetchFiles(userId));
   };
 
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
 
   const fetchFolders = async () => {
     if (userId) {

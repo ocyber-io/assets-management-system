@@ -1,26 +1,27 @@
 import React from "react";
 import successfullReplaceImage from "../../assets/images/file-replacement-success.svg";
 import NotificationModal from "./NotificationModal";
-
 import dummyCompressed from "../../assets/images/compressedDummy.svg";
 import dummyImage from "../../assets/images/dummyDocument.svg";
 import dummyVideo from "../../assets/images/dummyVideo.svg";
-
 import { useSelector } from "react-redux";
 import { File } from "../../Types";
 import { RootState } from "../../stores/store";
 import { formatFilenameInSuccessModal } from "../../utils/helpers";
 
+
 type ReplaceSuccessfullModalProps = {
   isOpen: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   onSubmit: () => void;
   fileDetails: File | undefined;
+  newImageUrl?: string | null;
 };
 
 const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
   isOpen,
   onClose,
+  newImageUrl
 }) => {
   const oldFileDetails = useSelector(
     (state: RootState) => state.fileDetails.oldFileDetails
@@ -29,6 +30,13 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
     (state: RootState) => state.fileDetails.newFileDetails
   );
 
+  const handleSubmit = () => {
+    if(newImageUrl){
+      window.location.reload();
+    } else {
+      onClose && onClose();
+    }
+  }
   return (
     <div>
       <NotificationModal
@@ -37,11 +45,11 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
         descriptionAndHeadingPosition="text-center"
         description="The file has been successfully replaced with the new file."
         headingStyles="font-semibold text-xl"
-        closeModal={onClose}
+        closeModal={handleSubmit}
         submitButtonText="Continue"
         submitButtonStyle="bg-blue-500 hover:bg-blue-600"
         isOpen={isOpen}
-        onSubmit={onClose}
+        onSubmit={handleSubmit}
       >
         <div className="mt-5">
           <h1 className="font-medium">Old File</h1>
@@ -107,7 +115,7 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
                 {newFileDetails.type &&
                 newFileDetails.type.startsWith("image/") ? (
                   <img
-                    src={newFileDetails.link}
+                    src={newImageUrl ? newImageUrl : dummyImage}
                     alt={newFileDetails.originalName}
                     className="max-h-24 w-full mt-3 object-cover "
                   />

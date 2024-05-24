@@ -1,8 +1,8 @@
-import { jwtDecode } from "jwt-decode";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import { File } from "../../../Types";
 import { downRightArrowIcon, pdfSmallIcon } from "../../../helpers/icons";
+import { useUser } from "../../hooks/useUserDetails";
 
 interface ActivityProps {
   timePeriod: string;
@@ -100,28 +100,8 @@ const TimePeriodActivities: React.FC<ActivityProps> = ({
 };
 
 export const ActivityTab: React.FC<ActivityTabProps> = ({ file }) => {
-  const token = localStorage.getItem("token");
   const today: Date = new Date();
-  const [userInitials, setUserInitials] = useState<string>(""); // Initialize userInitials state
-
-  useEffect(() => {
-    if (token && file) {
-      // Check if file is defined
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-          firstname: string;
-          lastname: string;
-        }>(token);
-        if (decoded) {
-          const initials = `${decoded.firstname[0]}${decoded.lastname[0]}`;
-          setUserInitials(initials); // Set the user initials
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token, file]); // Add file to the dependency array
+  const {userInitials} = useUser();
 
   // Define arrays for last week, last month, and last year
   const lastWeek: FilesArray = [];

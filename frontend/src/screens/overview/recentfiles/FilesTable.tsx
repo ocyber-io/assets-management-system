@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { useDispatch } from "react-redux";
 import { File, SelectedFile } from "../../../Types";
 import fileIcon from "../../../assets/icons/file.svg";
+import { useUser } from "../../../components/hooks/useUserDetails";
 import { copylinkIcon, fullLinkIcon } from "../../../helpers/dropdownIcons";
-import { formatDate } from "../../../utils/helpers";
-import HoverOptions from "./HoverOptions";
-import RecentFilesDropdown from "./RecentFilesDropdown";
-import NameFilter from "./NameFilter";
 import {
   fetchFiles,
   toggleFileFavorite,
 } from "../../../reducers/file/fileThunks";
-import { jwtDecode } from "jwt-decode";
 import { AppDispatch } from "../../../stores/store";
-import { useDispatch } from "react-redux";
+import { formatDate } from "../../../utils/helpers";
 import { showErrorToast, showSuccessToast } from "../../../utils/toast";
+import HoverOptions from "./HoverOptions";
+import NameFilter from "./NameFilter";
+import RecentFilesDropdown from "./RecentFilesDropdown";
 
 type FilesTableProps = {
   files: File[] | undefined;
@@ -48,6 +48,7 @@ type FilesTableProps = {
   fromTrash?: boolean;
   fromFavorites?: boolean;
   fromFolders?: boolean;
+  fromDashboard?: boolean;
 };
 
 const FilesTable: React.FC<FilesTableProps> = ({
@@ -77,26 +78,12 @@ const FilesTable: React.FC<FilesTableProps> = ({
   moveToFolderHandler,
   fromFolders,
   removeFromFolderHandler,
+  fromDashboard
 }) => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
-  const token = localStorage.getItem("token");
   const dispatch = useDispatch<AppDispatch>();
-  const [userId, setUserId] = useState<string>();
+  const {userId} = useUser();
 
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
 
   const fetchFileDetails = async () => {
     if (userId) await dispatch(fetchFiles(userId));
@@ -355,6 +342,7 @@ const FilesTable: React.FC<FilesTableProps> = ({
                         removeFromFolderHandler={removeFromFolderHandler}
                         toggleFavoriteFiles={toggleFavoriteFiles}
                         fromFolders={fromFolders}
+                        fromDashboard={fromDashboard}
                       />
                     )}
                   </td>

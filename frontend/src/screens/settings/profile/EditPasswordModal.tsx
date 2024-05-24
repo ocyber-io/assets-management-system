@@ -18,7 +18,7 @@ type UserInfo = {
 const EditPasswordModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  handleChangePasswordSuccessModal: () => void;
+  handleChangePasswordSuccessModal?: () => void;
   userInfo?: UserInfo;
 }> = ({ isOpen, onClose, userInfo, handleChangePasswordSuccessModal }) => {
   if (!isOpen) return null;
@@ -82,7 +82,7 @@ const EditPasswordModal: React.FC<{
     if (updateUser.fulfilled.match(resultAction)) {
       showSuccessToast("Password changed successfully!");
       onClose();
-      handleChangePasswordSuccessModal();
+      handleChangePasswordSuccessModal && handleChangePasswordSuccessModal();
     } else if (updateUser.rejected.match(resultAction)) {
       showErrorToast(resultAction.payload || "Failed to update password");
     }

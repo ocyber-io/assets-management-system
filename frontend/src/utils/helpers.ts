@@ -126,3 +126,14 @@ export const calculateStorageUsage = (files: any) => {
 
   return storageTypes;
 };
+
+
+
+export const convertImageToBase64 = (file: File): Promise<string | null> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string | null); // Explicitly type the result
+    reader.onerror = (error) => reject(error);
+  });
+};

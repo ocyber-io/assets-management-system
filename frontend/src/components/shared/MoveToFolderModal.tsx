@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { FaFolderOpen } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchFiles } from "../../reducers/file/fileThunks";
 import { selectFolders } from "../../reducers/folder/folderSlice";
 import {
   addFileToFolder,
   getFoldersByUserId,
 } from "../../reducers/folder/folderThunk";
 import { AppDispatch } from "../../stores/store";
-import NotificationModal from "./NotificationModal";
-import { jwtDecode } from "jwt-decode";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
-import { fetchFiles } from "../../reducers/file/fileThunks";
+import { useUser } from "../hooks/useUserDetails";
+import NotificationModal from "./NotificationModal";
 
 type MoveFileModalProps = {
   isOpen: boolean;
@@ -26,28 +26,7 @@ const MoveToFolderModal: React.FC<MoveFileModalProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const folders = useSelector(selectFolders);
   const [selectedFolderId, setSelectedFolderId] = useState<string>("");
-  const token = localStorage.getItem("token");
-  const [userId, setUserId] = useState<string>();
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-          firstname: string;
-          lastname: string;
-          email: string;
-          profilePicture: string;
-          googleId: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+  const { userId } = useUser();
 
   const fetchFoldersAndFiles = async () => {
     if (userId) {
