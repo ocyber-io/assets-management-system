@@ -1,39 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useUser } from "../../../components/hooks/useUserDetails";
 import {
   selectFilesByFolderId,
   selectFolder,
 } from "../../../reducers/folder/folderSlice";
-import { AppDispatch, RootState } from "../../../stores/store"; // Import the RootState type
-import RecentFiles from "../../overview/RecentFiles";
 import {
   getFolderById,
   getFoldersByUserId,
 } from "../../../reducers/folder/folderThunk";
-import { jwtDecode } from "jwt-decode";
+import { AppDispatch, RootState } from "../../../stores/store"; // Import the RootState type
+import RecentFiles from "../../overview/RecentFiles";
 import FolderBreadcrumb from "./FolderBreadcrumb";
 
 const FolderData: React.FC = () => {
   const { folderId } = useParams();
   const dispatch = useDispatch<AppDispatch>();
-  const token = localStorage.getItem("token");
-  const [userId, setUserId] = useState<string>();
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+  const {userId} = useUser();
+  
 
   const fetchFolders = async () => {
     if (userId) {

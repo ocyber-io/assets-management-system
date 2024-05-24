@@ -47,30 +47,47 @@ const EditProfileDetailsModal: React.FC<EditProfileDetailsModalProps> = ({
       showErrorToast(error);
       return;
     }
-
-    const updatePayload = new FormData();
-    updatePayload.append("firstname", firstName);
-    updatePayload.append("lastname", lastName);
-    updatePayload.append("email", email);
-
-    if (profilePicture) {
-      updatePayload.append("file", profilePicture);
-    }
-
+  
     try {
-      await dispatch(
-        updateUser({
-          id: userInfo!.id,
-          updates: updatePayload,
-        })
-      ).unwrap();
+      if (profilePicture) {
+        // If profile picture exists, update it separately
+        const picturePayload = new FormData();
+        picturePayload.append("file", profilePicture);
+        await dispatch(
+          updateUser({
+            id: userInfo!.id,
+            updates: picturePayload,
+          })
+        ).unwrap();
+        window.location.reload();
+      }
+  
+      // Construct payload for other details
+      const detailsPayload = {
+        firstname: firstName,
+        lastname: lastName,
+        email: email,
+      };
+  
+      // Update other details if there are changes
+      if (Object.keys(detailsPayload).length > 0) {
+        await dispatch(
+          updateUser({
+            id: userInfo!.id,
+            updates: detailsPayload,
+          })
+        ).unwrap();
+      }
+  
       showSuccessToast("Profile updated successfully");
       onClose();
-      window.location.reload();
     } catch (error: any) {
       showErrorToast("Error updating profile: " + error.message);
     }
   };
+  
+  
+  
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

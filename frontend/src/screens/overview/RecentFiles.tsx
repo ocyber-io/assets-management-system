@@ -1,7 +1,7 @@
-import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { File, SelectedFile } from "../../Types";
+import { useUser } from "../../components/hooks/useUserDetails";
 import { selectError } from "../../reducers/file/fileSlice";
 import { fetchFiles } from "../../reducers/file/fileThunks";
 import { AppDispatch } from "../../stores/store";
@@ -71,23 +71,8 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
 
   const error = useSelector(selectError);
   const dispatch = useDispatch<AppDispatch>();
-  const [userId, setUserId] = useState<string>();
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+  const {userId} = useUser();
+  
 
   const fetchAllFiles = async () => {
     if (userId) dispatch(fetchFiles(userId));

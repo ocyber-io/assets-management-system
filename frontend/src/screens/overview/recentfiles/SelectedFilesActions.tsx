@@ -1,9 +1,12 @@
-import { jwtDecode } from "jwt-decode";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import { useDispatch } from "react-redux";
 import { SelectedFile } from "../../../Types";
+import { useUser } from "../../../components/hooks/useUserDetails";
+import MultipleDeleteConfirmationModal from "../../../components/shared/MultipleDeleteConfirmationModa";
 import MultipleDeleteModal from "../../../components/shared/MultipleDeleteModal";
+import MultipleDisableModal from "../../../components/shared/MultipleDisableModal";
+import MultipleRestoreModal from "../../../components/shared/MultipleRestoreModal";
 import {
   disableIcon,
   downloadIcon,
@@ -22,9 +25,6 @@ import {
 } from "../../../reducers/file/fileThunks";
 import { AppDispatch } from "../../../stores/store";
 import { showErrorToast, showSuccessToast } from "../../../utils/toast";
-import MultipleDeleteConfirmationModal from "../../../components/shared/MultipleDeleteConfirmationModa";
-import MultipleRestoreModal from "../../../components/shared/MultipleRestoreModal";
-import MultipleDisableModal from "../../../components/shared/MultipleDisableModal";
 
 interface SelectedFilesActionsProps {
   selectedFilesCount: number;
@@ -46,8 +46,6 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
   fromTrash,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const token = localStorage.getItem("token");
-  const [userId, setUserId] = useState<string>();
   const [filesIds, setFileIds] = useState<string[]>();
   const [showMultipleDeleteModal, setShowMultipleDeleteModal] =
     useState<boolean>(false);
@@ -74,21 +72,8 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
   const toggleMultipleDisableModal = () => {
     setShowMultipleDisableModal(!showMultipleDisableModal);
   };
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
-
+  const {userId} = useUser();
+ 
   const fetchFileDetails = () => {
     if (userId) dispatch(fetchFiles(userId));
   };

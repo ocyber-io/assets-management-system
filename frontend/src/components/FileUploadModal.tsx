@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch } from "../stores/store";
-import { addFile } from "../reducers/file/fileThunks";
 import crossIcon from "../assets/icons/cross.svg";
 import fileUploadIcon from "../assets/icons/fileUpload.svg";
 import modalUploadIcon from "../assets/icons/modalUpload.svg";
-import { jwtDecode } from "jwt-decode";
-import { showErrorToast, showSuccessToast } from "../utils/toast";
-import { FaTimes } from "react-icons/fa";
 import { selectLoading } from "../reducers/file/fileSlice";
+import { addFile } from "../reducers/file/fileThunks";
+import { AppDispatch } from "../stores/store";
+import { showErrorToast, showSuccessToast } from "../utils/toast";
+import { useUser } from "./hooks/useUserDetails";
 
 type FileUploadModalProps = {
   isOpen: boolean;
@@ -25,22 +25,11 @@ const FileUploadModal: React.FC<FileUploadModalProps> = ({
   const [tagInput, setTagInput] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [userId, setUserId] = useState<string | undefined>();
   const dispatch = useDispatch<AppDispatch>();
   const loading = useSelector(selectLoading);
+  const { userId } = useUser();
 
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{ id: string }>(token);
-        setUserId(decoded.id);
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+ 
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles: File[]) => {

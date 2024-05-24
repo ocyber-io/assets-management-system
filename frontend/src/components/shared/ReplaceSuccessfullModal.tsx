@@ -12,10 +12,10 @@ import { formatFilenameInSuccessModal } from "../../utils/helpers";
 
 type ReplaceSuccessfullModalProps = {
   isOpen: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   onSubmit: () => void;
   fileDetails: File | undefined;
-  newImageUrl: string | null;
+  newImageUrl?: string | null;
 };
 
 const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
@@ -34,7 +34,7 @@ const ReplaceSuccessfullModal: React.FC<ReplaceSuccessfullModalProps> = ({
     if(newImageUrl){
       window.location.reload();
     } else {
-      onClose();
+      onClose && onClose();
     }
   }
   return (

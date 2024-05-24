@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import NotificationModal from "./NotificationModal";
-import { AppDispatch } from "../../stores/store";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addFolder } from "../../reducers/folder/folderThunk";
-import { jwtDecode } from "jwt-decode";
+import { AppDispatch } from "../../stores/store";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import { useUser } from "../hooks/useUserDetails";
+import NotificationModal from "./NotificationModal";
 
 type NewFolderProps = {
   isOpen: boolean;
@@ -20,23 +20,9 @@ const NewFolderModal: React.FC<NewFolderProps> = ({
   const [folderName, setFolderName] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const dispatch = useDispatch<AppDispatch>();
-  const token = localStorage.getItem("token");
-  const [userId, setUserId] = useState<string>();
+  const { userId } = useUser();
 
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{
-          id: string;
-        }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
+  
 
   const colors = [
     "#f44336",

@@ -29,7 +29,7 @@ type RecentFilesModalsProps = {
   toggleDeleteModal: () => void;
   showRenameModal: boolean;
   fileName: string | null;
-  newBase64ImageUrl: string | null;
+  newBase64ImageUrl?: string | null;
   fileLink: string;
   fileSize: string | null;
   toggleRenameModal: () => void;
@@ -55,7 +55,7 @@ type RecentFilesModalsProps = {
   toggleRemoveFromFolderModal: () => void;
   fetchAllFiles: () => void;
   fetchFolders?: () => void;
-  setShowSuccessModal: () => void;
+  setShowSuccessModal?: () => void;
   selectedFileDetails: File | undefined;
 };
 

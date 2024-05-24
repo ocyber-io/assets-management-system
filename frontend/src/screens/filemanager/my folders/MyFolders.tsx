@@ -1,16 +1,19 @@
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
-import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { BsFillFolderFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Folder } from "../../../Types";
+import { useUser } from "../../../components/hooks/useUserDetails";
 import DeleteFolderModal from "../../../components/shared/DeleteFolderModal";
 import ChangeColorModal from "../../../components/shared/folder-modals/ChangeColorModal";
 import DeleteFolderFromBinModal from "../../../components/shared/folder-modals/DeleteFolderFromBinModal";
+import DeleteMultipleFoldersConfirmationModal from "../../../components/shared/folder-modals/DeleteMultipleFoldersConfirmationModal";
+import DeleteMultipleFoldersModal from "../../../components/shared/folder-modals/DeleteMultipleFoldersModal";
 import RenameFolderModal from "../../../components/shared/folder-modals/RenameFolder";
 import RestoreFolderModal from "../../../components/shared/folder-modals/RestoreFolderModal";
+import RestoreMultipleFoldersModal from "../../../components/shared/folder-modals/RestoreMultipleFoldersModal";
 import {
   downloadIcon,
   moreIcon,
@@ -28,9 +31,6 @@ import { AppDispatch } from "../../../stores/store";
 import { formatDate } from "../../../utils/helpers";
 import FoldersDropdown from "./FoldersDropDown";
 import SelectedFolderActions from "./SelectedFolderActions";
-import DeleteMultipleFoldersModal from "../../../components/shared/folder-modals/DeleteMultipleFoldersModal";
-import DeleteMultipleFoldersConfirmationModal from "../../../components/shared/folder-modals/DeleteMultipleFoldersConfirmationModal";
-import RestoreMultipleFoldersModal from "../../../components/shared/folder-modals/RestoreMultipleFoldersModal";
 
 type MyFoldersProps = {
   deletedFolders: Folder[];
@@ -40,11 +40,9 @@ type MyFoldersProps = {
 const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
   const navigate = useNavigate();
   const folders = useSelector(selectFolders);
-  const token = localStorage.getItem("token");
   const dispatch = useDispatch<AppDispatch>();
   const [folderId, setFolderId] = useState<string | null>(null);
   const [folderName, setFolderName] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string>();
   const [showDeleteFolderModal, setShowDeleteFolderModal] =
     useState<boolean>(false);
   const [showDeleteMultipleFoldersModal, setShowDeleteMultipleFoldersModal] =
@@ -66,6 +64,7 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
   const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const {userId} = useUser();
 
   const toggleDeleteFolderModal = () => {
     setShowDeleteFolderModal(!showDeleteFolderModal);
@@ -127,19 +126,7 @@ const MyFolders: React.FC<MyFoldersProps> = ({ deletedFolders, fromTrash }) => {
     setFolderId(folderId);
   };
 
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{ id: string }>(token);
-        if (decoded) {
-          setUserId(decoded.id);
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-      }
-    }
-  }, [token]);
-
+  
   const fetchFolders = async () => {
     if (userId) {
       try {
