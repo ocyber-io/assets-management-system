@@ -29,6 +29,7 @@ type RecentFilesModalsProps = {
   toggleDeleteModal: () => void;
   showRenameModal: boolean;
   fileName: string | null;
+  newBase64ImageUrl: string | null;
   fileLink: string;
   fileSize: string | null;
   toggleRenameModal: () => void;
@@ -47,13 +48,14 @@ type RecentFilesModalsProps = {
   showRemoveFromFolderModal: boolean;
   toggleReplaceModal: () => void;
   toggleMovetoFolderModal: () => void;
-  toggleSuccessModal: () => void;
+  toggleSuccessModal: (base64Image: string | null) => void;
   toggleDeleteConfirmationModal: () => void;
   toggleRestoreModal: () => void;
-  toggleReplaceSuccessModal: () => void;
+  toggleReplaceSuccessModal: (base64Image: string | null) => void;
   toggleRemoveFromFolderModal: () => void;
   fetchAllFiles: () => void;
   fetchFolders?: () => void;
+  setShowSuccessModal: () => void;
   selectedFileDetails: File | undefined;
 };
 
@@ -94,6 +96,8 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
   showRemoveFromFolderModal,
   toggleRemoveFromFolderModal,
   fetchFolders,
+  setShowSuccessModal,
+  newBase64ImageUrl
 }) => {
   return (
     <>
@@ -198,9 +202,10 @@ const RecentFilesModals: React.FC<RecentFilesModalsProps> = ({
       {showSuccessModal && (
         <ReplaceSuccessfullModal
           isOpen={showSuccessModal}
-          onClose={toggleSuccessModal}
+          onClose={setShowSuccessModal}
           onSubmit={() => console.log("Continue after success")}
           fileDetails={selectedFileDetails}
+          newImageUrl={newBase64ImageUrl}
         />
       )}
       {showMoveToFolderModal && (

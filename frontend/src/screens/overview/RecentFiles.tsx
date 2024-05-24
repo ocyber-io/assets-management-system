@@ -65,6 +65,8 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const [selectedFileDetails, setSelectedFileDetails] = useState<
     File | undefined
   >();
+  const [base64ImagePreview, setBase64ImagePreview] = useState<string | null>(null);  // State for Base64 image
+
   const error = useSelector(selectError);
   const dispatch = useDispatch<AppDispatch>();
   const [userId, setUserId] = useState<string>();
@@ -121,7 +123,8 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   const toggleReplaceModal = () => {
     setShowReplaceModal(!showReplaceModal);
   };
-  const toggleSuccessModal = () => {
+  const toggleSuccessModal = (base64Image: string | null) => {
+    setBase64ImagePreview(base64Image);
     setShowSuccessModal(!showSuccessModal);
   };
   const toggleMoveToFolderModal = () => {
@@ -373,6 +376,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         selectedFileDetails={selectedFileDetails}
         fetchAllFiles={fetchAllFiles}
         fileLink={fileLink}
+        setShowSuccessModal={()=>setShowSuccessModal(false)}
         toggleReplaceSuccessModal={toggleSuccessModal}
         showDeleteConfrimationModal={showDeleteConfrimationModal}
         toggleDeleteConfirmationModal={toggleDeleteConfrimationModal}
@@ -383,6 +387,7 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         showRemoveFromFolderModal={showRemoveFromFolderModal}
         toggleRemoveFromFolderModal={toggleRemoveFromFolderModal}
         fetchFolders={fetchFolders}
+        newBase64ImageUrl={base64ImagePreview}
       />
     </div>
   );
