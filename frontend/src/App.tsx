@@ -18,6 +18,7 @@ import MyFolders from "./screens/filemanager/my folders/MyFolders";
 import FolderData from "./screens/filemanager/my folders/FolderData";
 import Favorites from "./screens/filemanager/favorites/Favorites";
 import ProfileDashboard from "./screens/settings/profile/ProfileDashboard";
+import Error from "./components/Error";
 
 const App: React.FC = () => {
   return (
@@ -60,6 +61,8 @@ const App: React.FC = () => {
           <Route path="profile" element={<ProfileDashboard />} />
           <Route path="document-links" element={<DocumentLinks />} />
         </Route>
+        {/* Catch all undefined routes */}
+        <Route path="*" element={<Error />} />
       </Route>
     </Routes>
   );
