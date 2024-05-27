@@ -165,11 +165,8 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
   };
 
   const selectAll = () => {
-    console.log("I got click to select all files");
     const lastFileIndex = currentPage * filesPerPage;
-    console.log({ lastFileIndex });
     const firstFileIndex = lastFileIndex - filesPerPage;
-    console.log({ firstFileIndex });
 
     if (!files) {
       return;
@@ -185,7 +182,6 @@ const RecentFiles: React.FC<RecentFilesProps> = ({
         isFavorite: file.isFavorite,
       }));
 
-    console.log({ selectedFilesData });
     // Update the selectedFiles state with the new array of SelectedFile objects
     setSelectedFiles(selectedFilesData);
   };

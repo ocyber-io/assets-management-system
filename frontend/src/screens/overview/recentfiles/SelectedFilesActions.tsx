@@ -178,7 +178,7 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
           </span>
           {!fromTrash && (
             <>
-              <img
+              {/* <img
                 src={shareIcon}
                 className={`ml-6  ${
                   selectedFilesCount > 1 ? "hidden" : "cursor-pointer"
@@ -189,7 +189,7 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
                     ? () => console.log("Share")
                     : undefined
                 }
-              />
+              /> */}
               <img
                 src={downloadIcon}
                 className="ml-4 cursor-pointer"
@@ -198,7 +198,7 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
                   downloadHandler(selectedFiles);
                 }}
               />
-              <img
+              {/* <img
                 src={renameIcon}
                 className={`ml-4  ${
                   selectedFilesCount > 1 ? "hidden" : "cursor-pointer"
@@ -209,7 +209,7 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
                     ? () => console.log("Rename")
                     : undefined
                 }
-              />
+              /> */}
             </>
           )}
 
@@ -219,14 +219,14 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
                 {fromFavorites ? (
                   <img
                     src={unstarIcon}
-                    className="ml-4 cursor-pointer"
+                    className="ml-4 cursor-pointer h-4 w-4 mt-1.5"
                     alt="Star"
                     onClick={() => handleRemoveMultipleFavorites(selectedFiles)}
                   />
                 ) : (
                   <img
                     src={starredIcon}
-                    className="ml-4 cursor-pointer"
+                    className="ml-4 cursor-pointer h-4 w-4 mt-1.5"
                     alt="Star"
                     onClick={() => handleMultipleFavorites(selectedFiles)}
                   />
@@ -237,7 +237,7 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
             {fromTrash && (
               <img
                 src={restoreIcon}
-                className="ml-4 cursor-pointer"
+                className="ml-4 cursor-pointer h-4 w-4 mt-1.5"
                 alt="Restore"
                 onClick={() => {
                   handleMultipleRestoreModal(selectedFiles);
@@ -247,14 +247,14 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
             {fromTrash ? (
               <img
                 src={movetobinIcon}
-                className="ml-4 cursor-pointer"
+                className="ml-4 cursor-pointer h-4 w-4 mt-1.5"
                 alt="Move to bin"
                 onClick={() => handleDeleteConfirmationModal(selectedFiles)}
               />
             ) : (
               <img
                 src={movetobinIcon}
-                className="ml-4 cursor-pointer"
+                className="ml-4 cursor-pointer h-4 w-4 mt-1.5"
                 alt="Move to bin"
                 onClick={() => handleDeleteModal(selectedFiles)}
               />
@@ -262,7 +262,7 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
             {!fromTrash && (
               <img
                 src={disableIcon}
-                className="ml-4 cursor-pointer"
+                className="ml-4 cursor-pointer h-4 w-4 mt-1.5"
                 alt="Disable"
                 onClick={() => handleDisableModal(selectedFiles)}
               />
@@ -272,13 +272,13 @@ const SelectedFilesActions: React.FC<SelectedFilesActionsProps> = ({
         <div className="flex">
           <img
             src={selectAllIcon}
-            className="md:ml-4 mx-2 cursor-pointer"
+            className="md:ml-4 mx-2 cursor-pointer h-4 w-4 mt-1.5"
             alt="Select All"
             onClick={selectAll} // Add onClick handler here
           />
           <img
             src={moreIcon}
-            className="md:ml-4 mx-2 cursor-pointer"
+            className="md:ml-4 mx-2 cursor-pointer h-4 w-4 mt-1.5"
             alt="More"
           />
         </div>

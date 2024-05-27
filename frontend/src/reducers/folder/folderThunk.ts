@@ -3,6 +3,9 @@ import axios from "axios";
 import { SERVER_URL } from "../../constants/constants";
 import { Folder } from "../../Types";
 
+// Helper function to get the token
+const getToken = () => localStorage.getItem("token");
+
 export const addFolder = createAsyncThunk(
   "folders/addFolder",
   async (
@@ -10,9 +13,13 @@ export const addFolder = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      const token = getToken();
       const response = await axios.post(
         `${SERVER_URL}/api/folders`,
-        folderData
+        folderData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       return response.data;
     } catch (error: any) {
@@ -27,7 +34,10 @@ export const deleteFolder = createAsyncThunk(
   "folders/deleteFolder",
   async (folderId: string, { rejectWithValue }) => {
     try {
-      await axios.delete(`${SERVER_URL}/api/folders/${folderId}`);
+      const token = getToken();
+      await axios.delete(`${SERVER_URL}/api/folders/${folderId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return folderId;
     } catch (error: any) {
       return rejectWithValue(
@@ -44,10 +54,12 @@ export const addFileToFolder = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      const token = getToken();
       const response = await axios.put(
         `${SERVER_URL}/api/folders/${folderId}/files`,
+        { fileId },
         {
-          fileId,
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       return response.data;
@@ -66,10 +78,12 @@ export const deleteFileFromFolder = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      const token = getToken();
       const response = await axios.request({
         url: `${SERVER_URL}/api/folders/${folderId}/files`,
         method: "DELETE",
         data: { fileId },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
     } catch (error: any) {
@@ -84,8 +98,12 @@ export const getFoldersByUserId = createAsyncThunk(
   "folders/getFoldersByUserId",
   async (userId: string, { rejectWithValue }) => {
     try {
+      const token = getToken();
       const response = await axios.get(
-        `${SERVER_URL}/api/folders/user/${userId}`
+        `${SERVER_URL}/api/folders/user/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       return response.data;
     } catch (error: any) {
@@ -103,9 +121,13 @@ export const updateFolder = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      const token = getToken();
       const response = await axios.put(
         `${SERVER_URL}/api/folders/${folderId}`,
-        updates
+        updates,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       return response.data;
     } catch (error: any) {
@@ -120,7 +142,10 @@ export const getFolderById = createAsyncThunk(
   "folders/getFolderById",
   async (folderId: string, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${SERVER_URL}/api/folders/${folderId}`);
+      const token = getToken();
+      const response = await axios.get(`${SERVER_URL}/api/folders/${folderId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -134,8 +159,13 @@ export const restoreFolder = createAsyncThunk(
   "folders/restoreFolder",
   async (folderId: string, { rejectWithValue }) => {
     try {
+      const token = getToken();
       const response = await axios.put(
-        `${SERVER_URL}/api/folders/${folderId}/restore`
+        `${SERVER_URL}/api/folders/${folderId}/restore`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       return response.data;
     } catch (error: any) {
@@ -150,9 +180,14 @@ export const deleteMultipleFolders = createAsyncThunk(
   "folders/deleteMultipleFolders",
   async (folderIds: string[], { rejectWithValue }) => {
     try {
-      await axios.post(`${SERVER_URL}/api/folders/delete-multiple`, {
-        folderIds,
-      });
+      const token = getToken();
+      await axios.post(
+        `${SERVER_URL}/api/folders/delete-multiple`,
+        { folderIds },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return folderIds;
     } catch (error: any) {
       return rejectWithValue(
@@ -166,9 +201,14 @@ export const restoreMultipleFolders = createAsyncThunk(
   "folders/restoreMultipleFolders",
   async (folderIds: string[], { rejectWithValue }) => {
     try {
-      await axios.post(`${SERVER_URL}/api/folders/restore-multiple`, {
-        folderIds,
-      });
+      const token = getToken();
+      await axios.post(
+        `${SERVER_URL}/api/folders/restore-multiple`,
+        { folderIds },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return folderIds;
     } catch (error: any) {
       return rejectWithValue(

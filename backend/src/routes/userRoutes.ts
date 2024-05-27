@@ -22,10 +22,10 @@ router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 
 // Admin routes
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
+// router.get("/", getAllUsers);
+router.get("/:id",  isAuthenticated, getUserById);
 router.put("/:id", isAuthenticated, updateUser);
-router.delete("/:id", deleteUser);
+// router.delete("/:id", deleteUser);
 
 // Additional routes for password reset functionality
 router.post("/verify-otp", verifyOtp); // Route for verifying OTP sent for password reset
