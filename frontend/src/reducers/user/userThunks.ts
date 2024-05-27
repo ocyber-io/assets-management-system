@@ -22,6 +22,9 @@ interface VerifyOtpError {
   error: string;
 }
 
+const getToken = () => localStorage.getItem("token");
+
+
 export const signUp = createAsyncThunk(
   "user/signUp",
   async (
@@ -103,6 +106,10 @@ export const login = createAsyncThunk(
   }
 );
 
+
+// =============================================
+// Thunk for Super Admin
+// =============================================
 export const fetchUsers = createAsyncThunk(
   "user/fetchUsers",
   async (_, { rejectWithValue, getState }) => {
@@ -136,6 +143,11 @@ export const updateUser = createAsyncThunk<
   }
 });
 
+
+
+// =============================================
+// Thunk for Super Admin
+// =============================================
 export const deleteUser = createAsyncThunk(
   "user/deleteUser",
   async (id: string, { rejectWithValue, getState }) => {
@@ -150,7 +162,6 @@ export const deleteUser = createAsyncThunk(
     }
   }
 );
-
 export const forgotPassword = createAsyncThunk(
   "user/forgotPassword",
   async (email: string, { rejectWithValue }) => {
@@ -178,10 +189,8 @@ export const verifyOtp = createAsyncThunk<
       email,
       otp,
     });
-    // Assume the response data is in the correct format
     return response.data as VerifyOtpResponse;
   } catch (error: any) {
-    // Create and return a structured error object
     return rejectWithValue({
       error: error.response?.data?.message || "OTP verification failed",
     });
@@ -192,12 +201,11 @@ export const resetPassword = createAsyncThunk(
   "user/resetPassword",
   async (
     { userId, newPassword }: { userId: string; newPassword: string },
-    { rejectWithValue }
-  ) => {
+    { rejectWithValue }) => {
     try {
       const response = await axios.post(
         `${SERVER_URL}/api/users/reset-password`,
-        { userId, newPassword }
+        { userId, newPassword },
       );
       return response.data;
     } catch (error: any) {
@@ -212,7 +220,10 @@ export const getUserById = createAsyncThunk(
   "user/getUserById",
   async (id: string, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${SERVER_URL}/api/users/${id}`);
+      const token = getToken();
+      const response = await axios.get(`${SERVER_URL}/api/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error: any) {
       return rejectWithValue(
